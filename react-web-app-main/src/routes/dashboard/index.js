@@ -781,41 +781,25 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
         color: 'red',
         stats: [
           { title: 'Trials', metric: result.trials },
-          { title: 'Sites', metric: result.sites },
+
           { title: 'Participants', metric: result.participants }
         ]
       },
-      {
-        color: 'orange',
-        stats: [
 
-          { title: 'Interventions', metric: result.interventions }
-        ]
-      },
       {
         color: 'green',
         stats: [
           { title: 'Outcomes', metric: result.outcomes }
         ]
       },
-      {
-        color: 'blue',
-        stats: [
-          { title: 'Countries', metric: result.manufacturers }
-        ]
-      },
+
       {
         color: 'indigo',
         stats: [
           { title: 'Sponsors', metric: result.sponsors }
         ]
       },
-      {
-        color: 'violet',
-        stats: [
-          { title: 'Publications', metric: result.publications }
-        ]
-      }
+      
     ])
     setLoadingStatsData(false)
   }
@@ -1778,50 +1762,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                   </Row>
                   <Row>
                     <Col>
-                      <SectionTitle title="Outcomes" color="yellow" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <PrismBarChart
-                        color="yellow"
-                        layout="horizontal"
-                        title="Top 10 Outcomes"
-                        chartData={conditionsTop10ParentBarChartData.data}
-                        groupKeys={conditionsTop10ParentBarChartData.group_keys}
-                        indexKey="outcome"
-                        xAxisLabel=""
-                        yAxisLabel="Outcomes"
-                        loading={loadingConditionsData}
-                      />
-                    </Col>
-
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Interventions" color="green" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <PrismBarChart
-                        color="green"
-                        layout="horizontal"
-                        title="Intervention Types"
-                        chartData={measuresTop10BarChartData.data}
-                        groupKeys={measuresTop10BarChartData.group_keys}
-                        indexKey="intervention"
-                        xAxisLabel="Trials"
-                        yAxisLabel=""
-                        loading={loadingMeasuresData}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Populations" color="yellow" />
+                      <SectionTitle title="Populations" color="orange" />
                     </Col>
                   </Row>
                   <Row>
@@ -1837,7 +1778,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                   <Row>
                     <Col>
                       <PrismBarChart
-                        color="yellow"
+                        color="orange"
                         layout="horizontal"
                         title="Typical Enrollment Sizes"
                         chartData={top10TechnologiesAsInterventionBarChartData.data}
@@ -1849,6 +1790,49 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       />
                     </Col>
                   </Row>
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Interventions" color="yellow" />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <PrismBarChart
+                        color="yellow"
+                        layout="horizontal"
+                        title="Intervention Types"
+                        chartData={measuresTop10BarChartData.data}
+                        groupKeys={measuresTop10BarChartData.group_keys}
+                        indexKey="intervention"
+                        xAxisLabel=""
+                        yAxisLabel=""
+                        loading={loadingMeasuresData}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Outcomes" color="green" />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <PrismBarChart
+                        color="green"
+                        layout="horizontal"
+                        title="Top 10 Outcomes"
+                        chartData={conditionsTop10ParentBarChartData.data}
+                        groupKeys={conditionsTop10ParentBarChartData.group_keys}
+                        indexKey="outcome"
+                        xAxisLabel=""
+                        yAxisLabel=""
+                        loading={loadingConditionsData}
+                      />
+                    </Col>
+
+                  </Row>
+
                   <Row>
                     <Col>
                       <SectionTitle title="Sponsors" color="blue" />
@@ -1865,6 +1849,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                         indexKey="sponsor"
                         xAxisLabel="Sponsor Type"
                         yAxisLabel=""
+                        showLegend={false}
                         loading={loadingSponsorsData}
                       />
                     </Col>
