@@ -264,7 +264,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
   var Airtable = require('airtable');
-  var base = new Airtable({apiKey: API_KEY}).base(BASE_ID);
+  var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appmh47tLfNhe7i80');
   //TRIALS SETS
   var phases_set = new Set();
   var status_set = new Set();
@@ -432,7 +432,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             if (typeof(outcome)==='object'){
               for (var item of outcome){
                 if (item === null){
-                  outcomes_set.add(null)
+                  console.log("null")
                 } else {
                   var itemlist = item.split(", ")
                   for (var j of itemlist){
@@ -906,24 +906,42 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setLoadingTrialsData(false)
   }
 
+  // this creates the data for a bar chart given a dictionary of name and number
+  function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict[[bar_type]] = keys[i];
+      new_dict[[keys[i]]] = value[i];
+      bar_data.push(new_dict)
+    }
+    //line_formatted["id"] = 0;
+    bar_formatted["data"] = bar_data;
+    bar_formatted["group_keys"] = keys
+  }
+
   var single_multi_site_dict = {}
   var single_multi_site_pie = [];
-
+  var enrollment_dict = {}
+  var enrollment_bar = []
+  var enrollment_bar_formatted = {}
   var population_result = {}
   function getPopulationsChartsData() {
 
     return new Promise((resolve, reject) => {
       base('Trials').select({
-          // Selecting the first 3 records in Raw View:
+
           filterByFormula: airtableFilters,
           view: "Raw View"
       }).eachPage(function page(records, fetchNextPage) {
-          // This function (`page`) will get called for each page of records.
+
 
 
           records.forEach(function(record) {
 
             pie_collection(single_multi_site_dict, record.get('Single_Multi_Site'))
+            pie_collection(enrollment_dict, record.get('Enrollment_Target'))
 
           });
 
@@ -934,19 +952,13 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             console.error(err);
             return reject({});
           }
-          //console.log("age groups pre-list: ", age_groups_pie_dict)
-          //console.log("purpose pre-list: ", purpose_pie_dict)
-          //console.log("type pre-list: ", type_pie_dict)
-          //console.log("status pre-list: ", status_pie_dict)
 
           pie_formatting(single_multi_site_dict, single_multi_site_pie)
-
-
-
           population_result["sites_pie"] = single_multi_site_pie;
 
-          //console.log('RESULT OF PIE DATA IS; ', trials_result)
-          // here is where we'll run pie formatting
+          bar_formatting(enrollment_dict, enrollment_bar, enrollment_bar_formatted, "enrollment")
+          population_result["enrollment_bar"] = enrollment_bar_formatted
+          console.log("ENROLLMET data: ", enrollment_bar_formatted)
 
           resolve(population_result)
 
@@ -975,66 +987,188 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setLoadingLandscapeData(false)
   }
 
+
+
+// for populations
   const fetchTechnologyMetricData = async () => {
-    // const result = await axios.post(
-    //   'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/technology',
-    //   {
-    //     filters: generateFiltersPostBody()
-    //   },
-    //   {
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     }
-    //   }
-    // );
+
     const result = await getPopulationsChartsData()
 
 
     setTechnologyComponentsPieChartData(result.sites_pie);
     // setBodyLocationsComponentsPieChartData(result.data.technologies_body_locations_pie);
-    // setTop10TechnologiesAsInterventionBarChartData(result.data.technologies_top_10_as_intervention_bar)
+    setTop10TechnologiesAsInterventionBarChartData(result.enrollment_bar)
     // setTop10TechnologiesAsOutcomesBarChartData(result.data.technologies_top_10_as_outcomes_bar)
     // setNewTechnologiesPerYearBarChartData(result.data.technologies_new_technologies_per_year_bar)
 
     setLoadingTechnologyData(false)
   }
 
+  function sort_object(obj) {
+      var items = Object.keys(obj).map(function(key) {
+          return [key, obj[key]];
+      });
+      items.sort(function(first, second) {
+          return second[1] - first[1];
+      });
+      var sorted_obj={}
+      items.forEach(function(k, v) {
+          var use_key = v[0]
+          var use_value = v[1]
+          sorted_obj[use_key] = use_value
+      })
+      return(sorted_obj)
+  }
+
+  var outcomes_dict = {}
+  var outcomes_bar = []
+  var outcomes_bar_formatted = {}
+  var outcomes_result = {}
+  function getOutcomesChartsData() {
+
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+          records.forEach(function(record) {
+            // OUTCOMES FILTERS
+
+            var outcome = record.get('Outcome_Concepts')
+            if (typeof(outcome)==='object'){
+              for (var item of outcome){
+                if (item === null){
+                  console.log()
+                } else {
+                  var itemlist = item.split(", ")
+                  for (var j of itemlist){
+                    //console.log("j: ", j)
+                    pie_collection(outcomes_dict, j)
+                  }
+                }
+              }
+            } else {
+              //console.log("outcome: ", outcome)
+              pie_collection(outcomes_dict, outcome)
+            }
+          //  console.log("what is outcomes_dict now: ", outcomes_dict)
+
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          console.log("OUTCOMES DICT: ", outcomes_dict)
+          // sort the outcomes dict
+          // grab the top 10
+          // feed those into bar formatting
+          // Create items array
+          var items = Object.keys(outcomes_dict).map(function(key) {
+            return [key, outcomes_dict[key]];
+          });
+
+          // Sort the array based on the second element
+          items.sort(function(first, second) {
+            return second[1] - first[1];
+          });
+
+          var updated_outcomes_dict = {}
+          for (var item of items.slice(0, 10)){
+            updated_outcomes_dict[item[0]] = item[1]
+          }
+
+
+          bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
+          outcomes_result["outcome_bar"] = outcomes_bar_formatted
+          console.log("OUTCOME data: ", outcomes_bar_formatted)
+
+          resolve(outcomes_result)
+
+      })
+    })
+  }// end
+
+
+  // use this for outcomes
   const fetchConditionsMetricData = async () => {
-    const result = await axios.post(
-      'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/conditions',
-      {
-        filters: generateFiltersPostBody()
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+
+    const result = await getOutcomesChartsData()
 
 
-    setConditionsTop10ParentBarChartData(result.data.conditions_top_10_parents_bar);
-    setConditionsTop10ChildBarChartData(result.data.conditions_top_10_children_bar);
-    setConditionsBreakdownSunburstChartData(result.data.conditions_breakdown_sunburst)
+    setConditionsTop10ParentBarChartData(result.outcome_bar);
 
     setLoadingConditionsData(false)
   }
 
-  const fetchMeasuresMetricData = async () => {
-    const result = await axios.post(
-      'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/measures',
-      {
-        filters: generateFiltersPostBody()
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+  var interventions_dict = {}
+  var interventions_bar = []
+  var interventions_bar_formatted = {}
+  var interventions_result = {}
+  function getInterventionsChartsData() {
 
-    setMeasuresTop10BarChartData(result.data.measures_top_10_measures_bar);
-    setMeasuresOverTimeLineChart(result.data.measures_over_time_line);
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+          records.forEach(function(record) {
+            // OUTCOMES FILTERS
+            var interventions = record.get('Intervention_Types').split(", ")
+            for (var item of interventions){
+              pie_collection(interventions_dict, item)
+            }
+
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          console.log("Inteerventions DICT: ", interventions_dict)
+
+          var items = Object.keys(interventions_dict).map(function(key) {
+            return [key, interventions_dict[key]];
+          });
+
+          // Sort the array based on the second element
+          items.sort(function(first, second) {
+            return second[1] - first[1];
+          });
+
+          var updated_interventions_dict = {}
+          for (var item of items.slice(0, 10)){
+            updated_interventions_dict[item[0]] = item[1]
+          }
+
+
+          bar_formatting(updated_interventions_dict, interventions_bar, interventions_bar_formatted, "intervention")
+          interventions_result["interventions_bar"] = interventions_bar_formatted
+          console.log("InTERVENtION data: ", interventions_bar_formatted)
+
+          resolve(interventions_result)
+
+      })
+    })
+  }// end
+
+  const fetchMeasuresMetricData = async () => {
+
+    const result = await getInterventionsChartsData()
+    setMeasuresTop10BarChartData(result.interventions_bar);
+    // setMeasuresOverTimeLineChart(result.data.measures_over_time_line);
 
     setLoadingMeasuresData(false)
   }
@@ -1058,22 +1192,54 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setLoadingManufacturersData(false)
   }
 
-  const fetchSponsorsData = async () => {
-        const result = await axios.post(
-          'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/sponsors',
-          {
-            filters: generateFiltersPostBody()
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
 
-        setSponsorsTop10ByTrialsBarChartData(result.data.sponsors_top_10_by_trials);
-        setSponsorsTop10ByEnrollmentBarChartData(result.data.sponsors_top_10_by_enrollment);
-        setSponsorsBreakdownChartData(result.data.sponsors_breakdown);
+  var sponsors_dict = {}
+  var sponsors_bar = []
+  var sponsors_bar_formatted = {}
+  var sponsors_result = {}
+  function getSponsorsChartsData() {
+
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+
+
+          records.forEach(function(record) {
+
+            pie_collection(sponsors_dict, record.get('Sponsor_Type'))
+
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+
+
+          bar_formatting(sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
+          sponsors_result["sponsors_bar"] = sponsors_bar_formatted
+          console.log("SPONSOR data: ", sponsors_bar_formatted)
+
+          resolve(sponsors_result)
+
+      })
+    })
+}// end of get trialStatusPieChartData
+
+  const fetchSponsorsData = async () => {
+        const result = await getSponsorsChartsData()
+
+        setSponsorsTop10ByTrialsBarChartData(result.sponsors_bar);
+        // setSponsorsTop10ByEnrollmentBarChartData(result.data.sponsors_top_10_by_enrollment);
+        //setSponsorsBreakdownChartData(result.data.sponsors_breakdown);
 
         setLoadingSponsorsData(false)
       }
@@ -1616,43 +1782,22 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                     </Col>
                   </Row>
                   <Row>
-                    <Col lg={{span: 6}}>
+                    <Col>
                       <PrismBarChart
                         color="yellow"
                         layout="horizontal"
-                        title="Disease Areas"
+                        title="Top 10 Outcomes"
                         chartData={conditionsTop10ParentBarChartData.data}
                         groupKeys={conditionsTop10ParentBarChartData.group_keys}
-                        indexKey="condition"
-                        xAxisLabel="Trials"
-                        yAxisLabel=""
+                        indexKey="outcome"
+                        xAxisLabel=""
+                        yAxisLabel="Outcomes"
                         loading={loadingConditionsData}
                       />
                     </Col>
-                    <Col lg={{span: 6}}>
-                      <PrismBarChart
-                        color="yellow"
-                        layout="horizontal"
-                        title="Specific Diseases"
-                        chartData={conditionsTop10ChildBarChartData.data}
-                        groupKeys={conditionsTop10ChildBarChartData.group_keys}
-                        indexKey="condition"
-                        xAxisLabel="Trials"
-                        yAxisLabel=""
-                        loading={loadingConditionsData}
-                      />
-                    </Col>
+
                   </Row>
-                  <Row>
-                    <Col>
-                      <PrismSunburst
-                        colors="rainbow"
-                        title="Conditons Breakdown"
-                        chartData={conditionsBreakdownSunburstChartData}
-                        loading={loadingConditionsData}
-                      />
-                    </Col>
-                  </Row>
+
                   <Row>
                     <Col>
                       <SectionTitle title="Interventions" color="green" />
@@ -1663,35 +1808,24 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       <PrismBarChart
                         color="green"
                         layout="horizontal"
-                        title="Top 10 Measures"
+                        title="Intervention Types"
                         chartData={measuresTop10BarChartData.data}
                         groupKeys={measuresTop10BarChartData.group_keys}
-                        indexKey="measure"
+                        indexKey="intervention"
                         xAxisLabel="Trials"
                         yAxisLabel=""
                         loading={loadingMeasuresData}
                       />
                     </Col>
                   </Row>
+
                   <Row>
                     <Col>
-                      <PrismLineChart
-                        colors="rainbow"
-                        title="Measure Use Over Time"
-                        chartData={measuresOverTimeLineChart}
-                        xAxisLabel="Year"
-                        yAxisLabel=""
-                        loading={loadingMeasuresData}
-                      />
+                      <SectionTitle title="Populations" color="yellow" />
                     </Col>
                   </Row>
                   <Row>
                     <Col>
-                      <SectionTitle title="Populations" color="blue" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg={{span: 6}}>
                       <PrismPieChart
                         colors="rainbow"
                         title="Site Types"
@@ -1700,7 +1834,41 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       />
                     </Col>
                   </Row>
-
+                  <Row>
+                    <Col>
+                      <PrismBarChart
+                        color="yellow"
+                        layout="horizontal"
+                        title="Typical Enrollment Sizes"
+                        chartData={top10TechnologiesAsInterventionBarChartData.data}
+                        groupKeys={top10TechnologiesAsInterventionBarChartData.group_keys}
+                        indexKey="enrollment"
+                        xAxisLabel="Enrollment Category"
+                        yAxisLabel=""
+                        loading={loadingTechnologyData}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Sponsors" color="blue" />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <PrismBarChart
+                        color="blue"
+                        layout="vertical"
+                        title="Sponsor Types"
+                        chartData={sponsorsTop10ByTrialsBarChartData.data}
+                        groupKeys={sponsorsTop10ByTrialsBarChartData.group_keys}
+                        indexKey="sponsor"
+                        xAxisLabel="Sponsor Type"
+                        yAxisLabel=""
+                        loading={loadingSponsorsData}
+                      />
+                    </Col>
+                  </Row>
                   <Row>
                     <Col>
                       <SectionTitle title="Geography" color="indigo" />
