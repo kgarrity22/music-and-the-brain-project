@@ -1,0 +1,77 @@
+.section-title-container {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  margin-bottom: 45px;
+  margin-top: 10px;
+}
+
+.section-title-container .title {
+  margin-bottom: 0px;
+  margin-right: 15px;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 30px;
+  letter-spacing: 0.1px;
+}
+
+.section-title-container.red .title {
+  color: #E2445C;
+}
+
+.section-title-container.orange .title {
+  color: #FDAB3D;
+}
+
+.section-title-container.yellow .title {
+  color: #F8C500;
+}
+
+.section-title-container.green .title {
+  color: #2ED47A;
+}
+
+.section-title-container.blue .title {
+  color: #579BFC;
+}
+
+.section-title-container.indigo .title {
+  color: #7E3B8A;
+}
+
+.section-title-container.violet .title {
+  color: #A25DDC;
+}
+
+.section-title-container .divider {
+  height: 4px;
+  width: 100%;
+}
+
+.section-title-container.red .divider {
+  background-color: #E2445C;
+}
+
+.section-title-container.orange .divider {
+  background-color: #FDAB3D;
+}
+
+.section-title-container.yellow .divider {
+  background-color: #F8C500;
+}
+
+.section-title-container.green .divider {
+  background-color: #2ED47A;
+}
+
+.section-title-container.blue .divider {
+  background-color: #579BFC;
+}
+
+.section-title-container.indigo .divider {
+  background-color: #7E3B8A;
+}
+
+.section-title-container.violet .divider {
+  background-color: #A25DDC;
+}

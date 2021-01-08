@@ -1,0 +1,124 @@
+.dashboard-route {
+  height: 100%;
+  display: flex;
+  padding-left: 250px;
+  padding-right: 0;
+}
+
+.dashboard-route .searchbar-container {
+  position: fixed;
+  z-index: 5;
+}
+
+.dashboard-route .scrollable-container {
+  overflow-y: auto;
+}
+
+.dashboard-route .scrollable-container .row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.dashboard-route .row-flex-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.dashboard-route .column-flex-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-route .y-scrollable {
+  overflow-y: scroll;
+}
+
+.dashboard-route .dashboard-charts-container {
+  padding-top: 20px;
+}
+
+.dashboard-route .dashboard-charts-container .row {
+  margin-bottom: 30px;
+}
+
+.dashboard-route .single-stats-containers {
+  margin-left: 20px;
+  display: flex;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #EBEFF2;
+}
+.dashboard-route .single-stats-containers .single-stats-container {
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.dashboard-route .single-stats-containers .single-stats-container {
+  margin-right: 15px;
+}
+
+.slide-pane__content {
+  overflow-y: unset;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0px;
+  margin-top: 60px;
+  height: 100vh;
+}
+
+.slide-pane,
+.slide-pane__overlay.ReactModal__Overlay--after-open {
+    background-color: transparent;
+    box-shadow: unset;
+}
+
+.sliding-pane-container {
+  display: flex;
+  flex-direction: row;
+  background-color: #fff;
+  padding-bottom: 60px;
+  height: 100%;
+}
+
+.sliding-pane-container.red {
+  border-right: 5px solid #E2445C;
+}
+
+.sliding-pane-container.orange {
+  border-right: 5px solid #FDAB3D;
+}
+
+.sliding-pane-container.yellow {
+  border-right: 5px solid #F8C500;
+}
+
+.sliding-pane-container.green {
+  border-right: 5px solid #2ED47A;
+}
+
+.sliding-pane-container.blue {
+  border-right: 5px solid #579BFC;
+}
+
+.sliding-pane-container.indigo {
+  border-right: 5px solid #7E3B8A;
+}
+
+.sliding-pane-container.violet {
+  border-right: 5px solid #A25DDC;
+}
+
+.sliding-pane-container .left-pane {
+    margin-left: 250px;
+    margin-top: 40px;
+    height: 100%;
+    width: 250px;
+    overflow-y: auto;
+}
+
+.sliding-pane-container .right-pane {
+  height: 100%;
+  width: 250px;
+  padding-top: 60px;
+  overflow-y: auto;
+  border-left: 1px solid #E1E1E1;
+}

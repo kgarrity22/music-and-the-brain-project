@@ -1,0 +1,101 @@
+.filter-nav {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  min-width: 250px;
+  background-color: #192A3E;
+  height: 100vh;
+  z-index: 5;
+  position: fixed;
+}
+
+.filter-nav .header-container {
+  border-bottom: 1px solid #EBEFF2;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  background-color: #334D6E;
+}
+
+.filter-nav .header-container p {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #EBEFF2;
+  margin-left: 5px;
+  margin-bottom: 0px;
+}
+
+.filter-nav .header-container svg {
+  margin-left: 20px;
+}
+
+.filter-nav .nav-item-container {
+  margin-top: 35px;
+  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-nav .nav-item .nav-link {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+  margin-bottom: 20px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  padding: 0px;
+}
+
+.filter-nav .nav-item .nav-link.red {
+  color: #E2445C;
+}
+
+.filter-nav .nav-item .nav-link.orange {
+  color: #FDAB3D;
+}
+
+.filter-nav .nav-item .nav-link.yellow {
+  color: #F8C500;
+}
+
+.filter-nav .nav-item .nav-link.green {
+  color: #2ED47A;
+}
+
+.filter-nav .nav-item .nav-link.blue {
+  color: #579BFC;
+}
+
+.filter-nav .nav-item .nav-link.indigo {
+  color: #7E3B8A;
+}
+
+.filter-nav .nav-item .nav-link.violet {
+  color: #A25DDC;
+}
+
+.filter-nav .nav-item .nav-link svg {
+  margin-right: 14px;
+  margin-left: 25px;
+}
+
+.filter-nav .btn {
+  height: 32px;
+  width: 95%;
+  background: #3899EC;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 93px;
+  margin: auto;
+  margin-top: 30px;
+  text-align: start;
+  color: #FFFFFF;
+  padding: 0px;
+}
+
+.filter-nav .btn svg {
+  margin-right: 14px;
+  margin-left: 20px;
+}

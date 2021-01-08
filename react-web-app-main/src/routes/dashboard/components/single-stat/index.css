@@ -1,0 +1,89 @@
+.single-stats-container {
+  display: flex;
+  position: relative;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  justify-content: center;
+}
+
+.single-stats-container.red {
+  border-bottom: 4px solid #E2445C;
+}
+
+.single-stats-container.orange {
+  border-bottom: 4px solid #FDAB3D;
+}
+
+.single-stats-container.yellow {
+  border-bottom: 4px solid #F8C500;
+}
+
+.single-stats-container.green {
+  border-bottom: 4px solid #2ED47A;
+}
+
+.single-stats-container.blue {
+  border-bottom: 4px solid #579BFC;
+}
+
+.single-stats-container.indigo {
+  border-bottom: 4px solid #7E3B8A;
+}
+
+.single-stats-container.violet {
+  border-bottom: 4px solid #A25DDC;
+}
+
+.single-stat-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.single-stats-container .single-stat {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.single-stats-container .single-stat-container .stat-divider {
+  height: 34px;
+  width: 1px;
+  background-color: #E1E1E1;
+  margin-top: 15px;
+}
+
+.single-stats-container .single-stat .stat-title {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: #323338;
+  margin-bottom: 5px;
+}
+
+.single-stats-container .single-stat .stat-metric {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
+  letter-spacing: 0.1px;
+  color: #323338;
+  margin-bottom: 0px;
+}
+
+.single-stats-container .overlay {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9)
+}
+
+.single-stats-container .overlay .sk-spinner {
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  color: #fff;
+}

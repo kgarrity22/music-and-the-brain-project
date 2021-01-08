@@ -1,0 +1,190 @@
+.search-filters-form {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  padding: 0px 20px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-filters-form .search-filter-section {
+  border-bottom: 2px solid #EBEFF2;
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: 0.1px;
+  color: #34AFF9;
+  text-decoration: none;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group .btn {
+  text-decoration: none;
+  text-align: left;
+  padding: 0px;
+  width: 100%;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group .btn:focus {
+  box-shadow:none !important;
+  outline:0px !important;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group.red .btn {
+  color: #E2445C;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group.orange .btn {
+  color: #FDAB3D;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group.yellow .btn {
+  color: #F8C500;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group.green .btn {
+  color: #2ED47A;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group.blue .btn {
+  color: #579BFC;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group.indigo .btn {
+  color: #7E3B8A;
+}
+
+.search-filters-form .search-filter-section .title-checkbox-group.violet .btn {
+  color: #A25DDC;
+}
+
+.search-filters-form .search-filter-section .checkbox-group:hover {
+  background: rgba(51, 77, 110, 0.1);
+  border-radius: 2px 0px 0px 2px;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.red.active,
+.search-filters-form .search-filter-section .checkbox-group.red.active:hover {
+  background: rgba(226, 68, 92, 0.1);
+  border-right: 2px solid rgba(226, 68, 92, 1);
+}
+
+.search-filters-form .search-filter-section .checkbox-group.orange.active,
+.search-filters-form .search-filter-section .checkbox-group.orange.active:hover {
+  background: rgba(253, 171, 61, 0.1);
+  border-right: 2px solid rgba(253, 171, 61, 1);
+}
+
+.search-filters-form .search-filter-section .checkbox-group.yellow.active,
+.search-filters-form .search-filter-section .checkbox-group.yellow.active:hover {
+  background: rgba(248, 197, 0, 0.1);
+  border-right: 2px solid rgba(248, 197, 0, 1);
+}
+
+.search-filters-form .search-filter-section .checkbox-group.green.active,
+.search-filters-form .search-filter-section .checkbox-group.green.active:hover {
+  background: rgba(46, 212, 122, 0.1);
+  border-right: 2px solid rgba(46, 212, 122, 1);
+}
+
+.search-filters-form .search-filter-section .checkbox-group.blue.active,
+.search-filters-form .search-filter-section .checkbox-group.blue.active:hover {
+  background: rgba(87, 155, 252, 0.1);
+  border-right: 2px solid rgba(87, 155, 252, 1);
+}
+
+.search-filters-form .search-filter-section .checkbox-group.indigo.active,
+.search-filters-form .search-filter-section .checkbox-group.indigo.active:hover {
+  background: rgba(126, 59, 138, 0.1);
+  border-right: 2px solid rgba(126, 59, 138, 1);
+}
+
+.search-filters-form .search-filter-section .checkbox-group.violet.active,
+.search-filters-form .search-filter-section .checkbox-group.violet.active:hover {
+  background: rgba(162, 93, 220, 0.1);
+  border-right: 2px solid rgba(162, 93, 220, 1);
+}
+
+.search-filters-form .search-filter-section .checkbox-group label {
+  width: 100%;
+  cursor: pointer;
+}
+
+.search-filters-form .search-filter-section .search-filters-container {
+  margin-left: 15px;
+}
+
+.search-filters-form .search-filter-section .search-filters-container .checkbox-group {
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: 0.1px;
+  color: #000;
+  margin-bottom: 0;
+}
+
+.search-filters-form .search-filter-section .search-filters-container .checkbox-group .btn {
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: 0.1px;
+  color: #000;
+  padding: 0px;
+  text-decoration: none;
+  text-align: left;
+  width: 100%;
+}
+
+.search-filters-form .search-filter-section .search-filters-container .checkbox-group .btn:focus {
+  box-shadow:none !important;
+  outline:0px !important;
+}
+
+.search-filters-form .search-filter-section .checkbox-group .custom-control-label,
+.search-filters-form .search-filter-section .checkbox-group .custom-control-label:focus,
+.search-filters-form .search-filter-section .checkbox-group .custom-control-label:active {
+  box-shadow:none !important;
+  outline:0px !important;
+}
+
+.search-filters-form .search-filter-section .checkbox-group .custom-control-input~.custom-control-label::before {
+  border-color: #000;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.red .custom-control-input:indeterminate~.custom-control-label::before,
+.search-filters-form .search-filter-section .checkbox-group.red .custom-control-input:checked~.custom-control-label::before {
+  background-color: #E2445C;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.orange .custom-control-input:indeterminate~.custom-control-label::before,
+.search-filters-form .search-filter-section .checkbox-group.orange .custom-control-input:checked~.custom-control-label::before {
+  background-color: #FDAB3D;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.yellow .custom-control-input:indeterminate~.custom-control-label::before,
+.search-filters-form .search-filter-section .checkbox-group.yellow .custom-control-input:checked~.custom-control-label::before {
+  background-color: #F8C500;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.green .custom-control-input:indeterminate~.custom-control-label::before,
+.search-filters-form .search-filter-section .checkbox-group.green .custom-control-input:checked~.custom-control-label::before {
+  background-color: #2ED47A;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.blue .custom-control-input:indeterminate~.custom-control-label::before,
+.search-filters-form .search-filter-section .checkbox-group.blue .custom-control-input:checked~.custom-control-label::before {
+  background-color: #579BFC;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.indigo .custom-control-input:indeterminate~.custom-control-label::before,
+.search-filters-form .search-filter-section .checkbox-group.indigo .custom-control-input:checked~.custom-control-label::before {
+  background-color: #7E3B8A;
+}
+
+.search-filters-form .search-filter-section .checkbox-group.violet .custom-control-input:indeterminate~.custom-control-label::before,
+.search-filters-form .search-filter-section .checkbox-group.violet .custom-control-input:checked~.custom-control-label::before {
+  background-color: #A25DDC;
+}

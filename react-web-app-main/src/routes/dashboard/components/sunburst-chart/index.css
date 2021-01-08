@@ -1,0 +1,35 @@
+.sunburst-chart-container {
+  margin-left: 5px;
+}
+
+.sunburst-chart-container .chart-title {
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #323338;
+  height: 32px;
+  background: #F5F6F8;
+  margin-bottom: 50px;
+}
+
+.sunburst-chart-container .chart {
+  height: 600px;
+}
+
+.sunburst-chart-container .overlay {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9)
+}
+
+.sunburst-chart-container .overlay .sk-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: #fff;
+}
