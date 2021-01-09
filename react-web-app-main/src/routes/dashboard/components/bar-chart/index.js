@@ -80,7 +80,7 @@ const PrismBarChart = (props) => {
         tickRotation: 0,
         legend: props.yAxisLabel,
         legendPosition: 'middle',
-        legendOffset: -40
+        legendOffset: -100
     })
   }, [props.yAxisLabel])
 

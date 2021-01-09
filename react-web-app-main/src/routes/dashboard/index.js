@@ -269,6 +269,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   var type_set = new Set();
   var randomization_set = new Set();
   var masking_set = new Set();
+
   //POPULATIONS SETS
   var ageGroups_set = new Set();
   var healthyVolunteers_set = new Set();
@@ -613,13 +614,15 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   const [trialStatusPieChartData, setTrialStatusPieChartData] = useState([])
   const [trialPurposePieChartData, setTrialPurposePieChartData] = useState([])
+  const [trialRandomizationPieChartData, setTrialRandomizationPieChartData] = useState([])
+  const [trialMaskingPieChartData, setTrialMaskingPieChartData] = useState([])
   const [trialTypePieChartData, setTrialTypePieChartData] = useState([])
   const [trialAgeGroupsPieChartData, setTrialAgeGroupsPieChartData] = useState([])
   const [cumulativeTrialsLineChartData, setCumulativeTrialsLineChartData] = useState([])
 
   const [landscapeChartData, setLandscapeChartData] = useState([])
 
-  const [technologyComponentsPieChartData, setTechnologyComponentsPieChartData] = useState([])
+  const [singleMultiSitePieChartData, setSingleMultiSitePieChartData] = useState([])
   const [bodyLocationsComponentsPieChartData, setBodyLocationsComponentsPieChartData] = useState([])
   const [top10TechnologiesAsInterventionBarChartData, setTop10TechnologiesAsInterventionBarChartData] = useState({data: [], group_keys: []})
   const [top10TechnologiesAsOutcomesBarChartData, setTop10TechnologiesAsOutcomesBarChartData] = useState({data: [], group_keys: []})
@@ -842,6 +845,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   var purpose_pie = [];
   var type_pie_dict = {}
   var type_pie = [];
+  var randomization_pie_dict = {}
+  var randomization_pie = [];
+  var masking_pie_dict = {}
+  var masking_pie = [];
   var status_pie_dict = {}
   var status_pie = [];
   var trials_line_dict = {}
@@ -869,8 +876,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             pie_collection(type_pie_dict, record.get('Study_Type'))
             pie_collection(status_pie_dict, record.get('Status'))
             pie_collection(trials_line_dict, record.get('Start_Year'))
-
-
+            pie_collection(randomization_pie_dict, record.get('Randomization'))
+            pie_collection(masking_pie_dict, record.get('Masking_Clean'))
 
           });
 
@@ -890,6 +897,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           pie_formatting(purpose_pie_dict, purpose_pie)
           pie_formatting(type_pie_dict, type_pie)
           pie_formatting(status_pie_dict, status_pie)
+          pie_formatting(randomization_pie_dict, randomization_pie)
+          pie_formatting(masking_pie_dict, masking_pie)
           line_formatting(trials_line_dict, trials_line, trials_line_formatted)
 
 
@@ -897,6 +906,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           trials_result["purpose_pie"] = purpose_pie;
           trials_result["type_pie"] = type_pie
           trials_result["status_pie"] = status_pie
+          trials_result["randomization_pie"] = randomization_pie
+          trials_result["masking_pie"] = masking_pie
           trials_result["trials_line"] = [trials_line_formatted]
           //console.log('RESULT OF PIE DATA IS; ', trials_result)
           // here is where we'll run pie formatting
@@ -918,6 +929,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setTrialTypePieChartData(result.type_pie);
     setTrialAgeGroupsPieChartData(result.age_pie);
     setCumulativeTrialsLineChartData(result.trials_line);
+    setTrialRandomizationPieChartData(result.randomization_pie);
+    setTrialMaskingPieChartData(result.masking_pie);
 
     setLoadingTrialsData(false)
   }
@@ -1011,7 +1024,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     const result = await getPopulationsChartsData()
 
 
-    setTechnologyComponentsPieChartData(result.sites_pie);
+    setSingleMultiSitePieChartData(result.sites_pie);
     // setBodyLocationsComponentsPieChartData(result.data.technologies_body_locations_pie);
     setTop10TechnologiesAsInterventionBarChartData(result.enrollment_bar)
     // setTop10TechnologiesAsOutcomesBarChartData(result.data.technologies_top_10_as_outcomes_bar)
@@ -1765,16 +1778,16 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                     <Col lg={{span: 6}}>
                       <PrismPieChart
                         colors="rainbow"
-                        title="Trial Type"
-                        chartData={trialTypePieChartData}
+                        title="Randomization"
+                        chartData={trialRandomizationPieChartData}
                         loading={loadingTrialsData}
                       />
                     </Col>
                     <Col lg={{span: 6}}>
                       <PrismPieChart
                         colors="rainbow"
-                        title="Age Groups"
-                        chartData={trialAgeGroupsPieChartData}
+                        title="Masking"
+                        chartData={trialMaskingPieChartData}
                         loading={loadingTrialsData}
                       />
                     </Col>
@@ -1798,11 +1811,19 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                     </Col>
                   </Row>
                   <Row>
-                    <Col>
+                    <Col lg={{span: 6}}>
+                      <PrismPieChart
+                        colors="rainbow"
+                        title="Age Groups"
+                        chartData={trialAgeGroupsPieChartData}
+                        loading={loadingTrialsData}
+                      />
+                    </Col>
+                    <Col lg={{span: 6}}>
                       <PrismPieChart
                         colors="rainbow"
                         title="Site Types"
-                        chartData={technologyComponentsPieChartData}
+                        chartData={singleMultiSitePieChartData}
                         loading={loadingTrialsData}
                       />
                     </Col>
@@ -1812,11 +1833,11 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       <PrismBarChart
                         color="orange"
                         layout="horizontal"
-                        title="Typical Enrollment Sizes"
+                        title="Target Enrollment"
                         chartData={top10TechnologiesAsInterventionBarChartData.data}
                         groupKeys={top10TechnologiesAsInterventionBarChartData.group_keys}
                         indexKey="enrollment"
-                        xAxisLabel="Enrollment Category"
+                        xAxisLabel="Number of Trials"
                         yAxisLabel=""
                         loading={loadingTechnologyData}
                       />

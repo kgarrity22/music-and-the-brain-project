@@ -8,7 +8,6 @@ function SectionTitle(props) {
   return (
     <div className={"section-title-container " + props.color}>
       <p className="title">{props.title}</p>
-      <div className="divider"></div>
     </div>
   )
 }
