@@ -29,15 +29,18 @@ const initialStats = [
   {
     color: 'red',
     stats: [
-      { title: 'Trials', metric: '--' },
-      { title: 'Sites', metric: '--' },
-      { title: 'Participants', metric: '--' }
+      { title: 'Trials', metric: '--' }
     ]
   },
   {
     color: 'orange',
     stats: [
-      { title: 'Technologies', metric: '--' },
+      { title: 'Participants', metric: '--' }
+    ]
+  },
+  {
+    color: 'yellow',
+    stats: [
       { title: 'Interventions', metric: '--' }
     ]
   },
@@ -50,19 +53,13 @@ const initialStats = [
   {
     color: 'blue',
     stats: [
-      { title: 'Manufacturers', metric: '--' }
-    ]
-  },
-  {
-    color: 'indigo',
-    stats: [
       { title: 'Sponsors', metric: '--' }
     ]
   },
   {
     color: 'violet',
     stats: [
-      { title: 'Publications', metric:'--' }
+      { title: 'Sites', metric:'--' }
     ]
   }
 ]
@@ -692,7 +689,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   var single_metric_participants = []
   var single_metric_sponsors = new Set()
   var single_metric_outcomes = new Set()
-  var single_metric_interventions = []
+  var single_metric_interventions = 0
+  var single_metric_sites = new Set()
 
   function sum(list1){
     const total = list1.reduce(
@@ -722,6 +720,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             }
             single_metric_sponsors.add(record.get('Sponsor'))
 
+            // intervention_set
+
+            var intervention = record.get('Interventions_Rollup')
+            single_metric_interventions += intervention.length
 
             // outcomes
             var outcome = record.get('Outcome_Concepts')
@@ -740,6 +742,23 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
               single_metric_outcomes.add(outcome)
             }
 
+            // sites
+            var facility_ids = record.get('Facilities_Links')
+            if (typeof(facility_ids)==='object'){
+              for (var item of facility_ids){
+                if (item === null){
+                  single_metric_sites.add(null)
+                } else {
+                  var itemlist = item.split(", ")
+                  for (var j of itemlist){
+                    single_metric_sites.add(j)
+                  }
+                }
+              }
+            } else {
+              single_metric_sites.add(facility_ids)
+            }
+
           });
 
           fetchNextPage();
@@ -751,21 +770,18 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           }
 
           // console.log("is this broken: ", single_metric_sponsors.size)
-          single_metrics_result["sites"] = 0;
           single_metrics_result["trials"] = sum(single_metric_trials);
           single_metrics_result["participants"] = sum(single_metric_participants);
-          single_metrics_result["manufacturers"] = 0;
-          single_metrics_result["sponsors"] = single_metric_sponsors.size;
-          single_metrics_result["publications"] = 0;
+          single_metrics_result["interventions"] = single_metric_interventions;
           single_metrics_result["outcomes"] = single_metric_outcomes.size;
-          single_metrics_result["technologies"] = 0;
-          single_metrics_result["interventions"] = 0;
+          single_metrics_result["sponsors"] = single_metric_sponsors.size;
+          single_metrics_result["sites"] = single_metric_sites.size;
 
           resolve(single_metrics_result)
 
       })
     })
-}// end of get trialStatusPieChartData
+}
 
 
 
@@ -780,12 +796,21 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       {
         color: 'red',
         stats: [
-          { title: 'Trials', metric: result.trials },
-
+          { title: 'Trials', metric: result.trials }
+        ]
+      },
+      {
+        color: 'orange',
+        stats: [
           { title: 'Participants', metric: result.participants }
         ]
       },
-
+      {
+        color: 'yellow',
+        stats: [
+          { title: 'Interventions', metric: result.interventions }
+        ]
+      },
       {
         color: 'green',
         stats: [
@@ -794,9 +819,16 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       },
 
       {
-        color: 'indigo',
+        color: 'blue',
         stats: [
           { title: 'Sponsors', metric: result.sponsors }
+        ]
+      },
+
+      {
+        color: 'violet',
+        stats: [
+          { title: 'Sites', metric: result.sites }
         ]
       },
 
@@ -1121,7 +1153,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             console.error(err);
             return reject({});
           }
-          console.log("Inteerventions DICT: ", interventions_dict)
+          console.log("Interventions DICT: ", interventions_dict)
 
           var items = Object.keys(interventions_dict).map(function(key) {
             return [key, interventions_dict[key]];
@@ -1622,7 +1654,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     'Interventions': 'yellow',
     'Outcomes': 'green',
     'Sponsors': 'blue',
-    'Geography': 'indigo',
+    'Geography': 'violet',
   }
 
   return (
