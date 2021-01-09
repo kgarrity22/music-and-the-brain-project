@@ -264,7 +264,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
   var Airtable = require('airtable');
-  var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appmh47tLfNhe7i80');
+  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
   //TRIALS SETS
   var phases_set = new Set();
   var status_set = new Set();
@@ -799,7 +799,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           { title: 'Sponsors', metric: result.sponsors }
         ]
       },
-      
+
     ])
     setLoadingStatsData(false)
   }
