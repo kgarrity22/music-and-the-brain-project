@@ -1582,14 +1582,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
               setActiveChildFilterSections({})
             }
             break;
-        case 'Outcomes':
-            setOutcomesFilters(filters => updateFilters(filters, section, filter))
-            setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
-            if ((filter || outcomesFilters[section][filter] === false) && shouldSelect === true){
-              setActiveParentFilter(filter)
-              setActiveChildFilterSections({})
-            }
-            break;
         case 'Interventions':
                 setInterventionsFilters(filters => updateFilters(filters, section, filter))
                 setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
@@ -1598,13 +1590,20 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                   setActiveChildFilterSections({})
                 }
             break;
-
+        case 'Outcomes':
+            setOutcomesFilters(filters => updateFilters(filters, section, filter))
+            setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
+            if ((filter || outcomesFilters[section][filter] === false) && shouldSelect === true){
+              setActiveParentFilter(filter)
+              setActiveChildFilterSections({})
+            }
+            break;
         case 'Sponsors':
           setSponsorsFilters(filters => updateFilters(filters, section, filter))
           setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
           if ((filter || sponsorsFilters[section][filter] === false) && shouldSelect === true){
             setActiveParentFilter(filter)
-            setActiveChildFilterSections({[filter]: sponsorsFilters['Children'][filter]})
+            setActiveChildFilterSections({})
           }
           break;
         case 'Geography':
@@ -1612,7 +1611,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
           if ((filter || geographyFilters[section][filter] === false) && shouldSelect === true){
             setActiveParentFilter(filter)
-            setActiveChildFilterSections({[filter]: geographyFilters['Children'][filter]})
+            setActiveChildFilterSections({})
           }
           break;
         default:
@@ -1666,7 +1665,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
   }
 
-  const showDoubleSideBar = (activeParentFilter || hoveredParentFilter) && ['Conditions', 'Sponsors', 'Geography'].includes(activeCategoryFilter)
+  const showDoubleSideBar = (activeParentFilter || hoveredParentFilter) && [].includes(activeCategoryFilter)
 
   const colors = {
     'Trials': 'red',
