@@ -231,13 +231,13 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
     for (var item of filter_list){
 
-      // Any fields that are lists of tags should go in this array
+      // Any fields that are lists of tags should go in this array to get filtered correctly
       var listFields = ['Geography_Countries','Age_Groups','Outcome_Concepts']
 
       var key = Object.keys(item)[0]
       var val = Object.values(item)[0]
       if (listFields.includes(key)){
-        console.log('Searching for geography or age groups! ', val)
+
         if (filter_list.indexOf(item) !== (filter_list.length-1)) {
           var substr = "FIND('" + val + "', {"+ key + "} & ''), "
           str += substr
