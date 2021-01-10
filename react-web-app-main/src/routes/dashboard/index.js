@@ -455,8 +455,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
           });
-          //console.log("pahses: ", phases_set)
-
 
           // To fetch the next page of records, call `fetchNextPage`.
           // If there are more records, `page` will get called again.
@@ -519,38 +517,32 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
           // GEOGRAPHY
 
-          for (var region of regions_list){
-            var country_ind = regions_list.indexOf(region)
-            //console.log("region is: ", region)
-            if (typeof(region)==='object'){
-              for (var i of region){
-                //console.log("i is: ", i)
-                var countries = countries_list[country_ind]
+          for (var trial_regions of regions_list){
+            var region_list_index = regions_list.indexOf(trial_regions)
+            var country_names = countries_list[region_list_index]
 
-                if (typeof(countries)==='object'){
-                  //console.log("countries: ", countries)
+            if (typeof(trial_regions) === 'object'){
 
-                  for (var country of countries){
-                    //console.log("single country: ", country)
-                  //  console.log("i check: ", i)
-                    //console.log("KEYS: ", Object.keys(unique_regions))
-                    if (Object.keys(unique_regions).indexOf(i)!==-1){
-                    //  console.log("new i: ", i)
-                      unique_regions[i][country] = true;
-                    } else {
+              for (var region of trial_regions){
+
+                if (Object.keys(unique_regions).indexOf(region)!==-1){
+
+                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
+
+                } else {
                       // var country = countries_list[country_ind]
 
-                      unique_regions[i] = {[country]: true}
-                    }
-                  }
+                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
+
                 }
               }
+
             }
           }
 
 
           geography_filts["Regions"] = unique_regions
-          //console.log("UNIQUE regions: ", unique_regions)
+          console.log("UNIQUE regions: ", unique_regions)
 
 
           var result = {}
