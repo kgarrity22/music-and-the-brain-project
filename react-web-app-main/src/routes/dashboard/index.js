@@ -180,6 +180,9 @@ function DashboardRoute(props) {
               } else if (sub_section === "Age Groups"){
                 var new_dict = {"Age_Groups": key}
                 store.push(new_dict)
+              } else if (sub_section === "Masking"){
+                var new_dict = {"Masking_Clean": key}
+                store.push(new_dict)
               } else if (sub_section === "Healthy Volunteers"){
                 var new_dict = {"Healthy_Volunteers": key}
                 store.push(new_dict)
