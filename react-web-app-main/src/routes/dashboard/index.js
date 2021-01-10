@@ -229,12 +229,23 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     for (var item of filter_list){
       var key = Object.keys(item)[0]
       var val = Object.values(item)[0]
-      if (filter_list.indexOf(item) !== (filter_list.length-1)) {
-        var substr = "{" + key + "} = '" + val + "', "
-        str += substr
+      if (key === 'Geography_Countries'){
+        //console.log('Searching for geography! ', val)
+        if (filter_list.indexOf(item) !== (filter_list.length-1)) {
+          var substr = "FIND('" + val + "', {"+ key + "} & ''), "
+          str += substr
+        } else {
+          var substr = "FIND('" + val + "', {"+ key + "} & '')"
+          str += substr
+        }
       } else {
-        var substr = "{" + key + "} = '" + val + "'"
-        str += substr
+        if (filter_list.indexOf(item) !== (filter_list.length-1)) {
+          var substr = "{" + key + "} = '" + val + "', "
+          str += substr
+        } else {
+          var substr = "{" + key + "} = '" + val + "'"
+          str += substr
+        }
       }
     }
     str += closestr
@@ -1303,7 +1314,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
               records.forEach(function(record) {
                 // countries_list.push(record.get('Geography_Countries'))
                 var country = record.get('Geography_Countries')
-                //console.log("COUNTry: ", country)
+                var trial_NCT = record.get('NCT')
+                console.log("NCT: ", trial_NCT, " Country: ", country)
               //  console.log("country 0: ", country[0])
                 if (typeof(country)==='object'){
                   for (var item of country){
