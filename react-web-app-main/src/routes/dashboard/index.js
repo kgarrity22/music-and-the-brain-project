@@ -150,7 +150,7 @@ function DashboardRoute(props) {
     closeSidebar()
     console.log("Filters?", generateFiltersPostBody())
     var filters_list = getAirtableFilters()
-    var filts_final = formatFilersForAirtable(filters_list)
+    var filts_final = formatFiltersForAirtable(filters_list)
 
     setAirtableFilters(filts_final)
 
@@ -161,6 +161,7 @@ function DashboardRoute(props) {
     var filter_dict = generateFiltersPostBody()
     var store = []
     var sections = Object.keys(filter_dict)
+    console.log('Filter Dictionary: ', filter_dict)
     for (var section of sections){
       //console.log("sub_section (should be 'Populations' or 'Trials'): ", section)
       var section_keys = Object.keys(filter_dict[section])
@@ -200,8 +201,8 @@ function DashboardRoute(props) {
               } else if (sub_section === "Sponsors"){
                 var new_dict = {"Sponsor_Type": key}
                 store.push(new_dict)
-              } else if (sub_section === "Region"){
-                var new_dict = {"Geography_Regions": key}
+              } else if (section === "Geography"){
+                var new_dict = {"Geography_Countries": key}
                 store.push(new_dict)
               } else {
                 var new_dict = {[sub_section]: key}
@@ -218,7 +219,7 @@ function DashboardRoute(props) {
   }
 var filters = "NOT(OR({Phase} = 'Phase 1'))"
 // formats the filter string to give airtable the filterbyformula
-  function formatFilersForAirtable(filter_list){
+  function formatFiltersForAirtable(filter_list){
     // basic string
     var openstr = "NOT(OR("
     var closestr = "))"
