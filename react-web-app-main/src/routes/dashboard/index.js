@@ -66,7 +66,7 @@ const initialStats = [
 
 
 // setting the initial filters
-// here we want to set each of the big numbers and sub numbers to empty
+
 const initialTrialFilters = {
   Status: {},
   Purpose: {},
@@ -80,10 +80,11 @@ const initialTrialFilters = {
 
 const initialPopulationFilters = {
   Age_Groups: {},
-  Healthy_Volunteers: {},
-  Single_Multi_Site: {},
   Enrollment_Target: {},
-  Facility_Settings: {}
+  Facility_Settings: {},
+  Healthy_Volunteers: {},
+  Single_Multi_Site: {}
+
 }
 
 const initialInterventionsFilters = {
@@ -343,6 +344,19 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   var sponsor_filts = {};
   var geography_filts = {}
 
+  // takes a full dictionary and an empty dictionary and sorts the full one into the empty one
+  function sortDictionary(dictionary, new_dict){
+    var items = Object.keys(dictionary).map(function(key) {
+      return [key, dictionary[key]];
+    });
+
+    items.sort();
+
+    for (var item of items){
+      new_dict[item[0]] = item[1]
+    }
+  }
+
   function create_filter_dict(set, unique_dict){
     for (var i of set) {
 
@@ -450,12 +464,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
           // TRIALS
-          create_filter_dict(phases_set, unique_phases)
-          create_filter_dict(status_set, unique_status)
-          create_filter_dict(purpose_set, unique_purpose)
-          create_filter_dict(type_set, unique_type)
-          create_filter_dict(randomization_set, unique_random)
-          create_filter_dict(masking_set, unique_masking)
+          create_filter_dict([...phases_set].sort(), unique_phases)
+          create_filter_dict([...status_set].sort(), unique_status)
+          create_filter_dict([...purpose_set].sort(), unique_purpose)
+          create_filter_dict([...type_set].sort(), unique_type)
+          create_filter_dict([...randomization_set].sort(), unique_random)
+          create_filter_dict([...masking_set].sort(), unique_masking)
 
 
           trials_filts["Type"] = unique_type;
@@ -466,11 +480,11 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           trials_filts["Phase"] = unique_phases;
 
           // POPULATIONS
-          create_filter_dict(ageGroups_set, unique_ageGroups)
-          create_filter_dict(healthyVolunteers_set, unique_healthyVolunteers)
-          create_filter_dict(singleMultiSite_set, unique_singleMultiSite)
-          create_filter_dict(targEnrollment_set, unique_targEnrollment)
-          create_filter_dict(settings_set, unique_settings)
+          create_filter_dict([...ageGroups_set].sort(), unique_ageGroups)
+          create_filter_dict([...healthyVolunteers_set].sort(), unique_healthyVolunteers)
+          create_filter_dict([...singleMultiSite_set].sort(), unique_singleMultiSite)
+          create_filter_dict([...targEnrollment_set].sort(), unique_targEnrollment)
+          create_filter_dict([...settings_set].sort(), unique_settings)
 
 
           populations_filts["Age Groups"] = unique_ageGroups;
@@ -481,18 +495,18 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
           // INTERVENTIONS
-          create_filter_dict(intervention_set, unique_interventions)
+          create_filter_dict([...intervention_set].sort(), unique_interventions)
           interventions_filts["Interventions"] = unique_interventions
 
 
           // OUTCOMES
-          create_filter_dict(outcomes_set, unique_outcomes)
+          create_filter_dict([...outcomes_set].sort(), unique_outcomes)
           outcome_filts["Outcomes"] = unique_outcomes
 
 
           // SPONSORS
 
-          create_filter_dict(sponsors_set, unique_sponsors)
+          create_filter_dict([...sponsors_set].sort(), unique_sponsors)
           sponsor_filts["Sponsors"] = unique_sponsors
 
 
@@ -511,19 +525,27 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
 
                 } else {
-                      // var country = countries_list[country_ind]
 
                       unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
-
                 }
               }
-
             }
           }
 
 
-          geography_filts["Regions"] = unique_regions
-          console.log("UNIQUE regions: ", unique_regions)
+
+
+          var sorted_regions = {}
+
+          for (var region of Object.keys(unique_regions)){
+            var sorted_countries = {}
+            sortDictionary(unique_regions[region], sorted_countries)
+            unique_regions[region] = sorted_countries
+          }
+          sortDictionary(unique_regions, sorted_regions)
+
+          geography_filts["Regions"] = sorted_regions
+
 
 
           var result = {}
@@ -542,7 +564,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     })
 
 
-  }// end of promise
+}// end of promise
 
   const fetchFilters = async () => {
 
@@ -576,6 +598,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
   }
 
+  // Filters
   const [sidebarIsVisible, setSidebarIsVisible] = useState(false)
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("")
   const [activeParentFilter, setActiveParentFilter] = useState("")
@@ -583,51 +606,45 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [hoveredParentFilter, setHoveredParentFilter] = useState("")
   const [activeChildFilterSections, setActiveChildFilterSections] = useState({})
 
+  // stats original variables
   const [stats, setStats] = useState(initialStats)
 
+  // trials charts original vars
   const [trialStatusPieChartData, setTrialStatusPieChartData] = useState([])
   const [trialPurposePieChartData, setTrialPurposePieChartData] = useState([])
   const [trialRandomizationPieChartData, setTrialRandomizationPieChartData] = useState([])
   const [trialMaskingPieChartData, setTrialMaskingPieChartData] = useState([])
   const [trialTypePieChartData, setTrialTypePieChartData] = useState([])
   const [cumulativeTrialsLineChartData, setCumulativeTrialsLineChartData] = useState([])
-
-  //const [landscapeChartData, setLandscapeChartData] = useState([])
-
   const [singleMultiSitePieChartData, setSingleMultiSitePieChartData] = useState([])
   const [trialAgeGroupsPieChartData, setTrialAgeGroupsPieChartData] = useState([])
+
+  // populations charts original variables
   const [populationVolunteersPieChartData, setPopulationVolunteersPieChartData] = useState([])
   const [populationEnrollmentPieChartData, setPopulationEnrollmentPieChartData] = useState([])
-  const [bodyLocationsComponentsPieChartData, setBodyLocationsComponentsPieChartData] = useState([])
-  const [top10TechnologiesAsInterventionBarChartData, setTop10TechnologiesAsInterventionBarChartData] = useState({data: [], group_keys: []})
-  const [top10TechnologiesAsOutcomesBarChartData, setTop10TechnologiesAsOutcomesBarChartData] = useState({data: [], group_keys: []})
-  const [newTechnologiesPerYearBarChartData, setNewTechnologiesPerYearBarChartData] = useState({data: [], group_keys: []})
 
+  // outcomes charts original varible
   const [outcomesTop10ParentBarChartData, setOutcomesTop10ParentBarChartData] = useState({data: [], group_keys: []})
-  // const [conditionsTop10ChildBarChartData, setConditionsTop10ChildBarChartData] = useState({data: [], group_keys: []})
-  // const [conditionsBreakdownSunburstChartData, setConditionsBreakdownSunburstChartData] = useState([])
 
+  // intervention charts original variables
   const [interventionsTop10BarChartData, setInterventionsTop10BarChartData] = useState({data: [], group_keys: []})
-  // const [measuresOverTimeLineChart, setInterventionsOverTimeLineChart] = useState([])
 
-  //const [manufacturersTop10ByTrialsBarChartData, setManufacturersTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
-  //const [manufacturersTop10ByProductsBarChartData, setManufacturersTop10ByProductsBarChartData] = useState({data: [], group_keys: []})
-
+  // sponsors charts original variables
   const [sponsorsTop10ByTrialsBarChartData, setSponsorsTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
   const [sponsorsTop10ByEnrollmentBarChartData, setSponsorsTop10ByEnrollmentBarChartData] = useState({data: [], group_keys: []})
   const [sponsorsBreakdownChartData, setSponsorsBreakdownChartData] = useState([])
 
+  // geography charts original variables
   const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
 
 
-  const [loadingStatsData, setLoadingStatsData] = useState(true)
-  const [loadingLandscapeData, setLoadingLandscapeData] = useState(true)
-  const [loadingOutcomesData, setLoadingOutcomesData] = useState(true)
-  const [loadingInterventionsData, setLoadingInterventionsData] = useState(true)
-  //const [loadingManufacturersData, setLoadingManufacturersData] = useState(true)
 
+  // loading variables - set the loading icons until the data has fully loaded
+  const [loadingStatsData, setLoadingStatsData] = useState(true)
   const [loadingTrialsData, setLoadingTrialsData] = useState(true)
   const [loadingPopulationData, setLoadingPopulationData] = useState(true)
+  const [loadingInterventionsData, setLoadingInterventionsData] = useState(true)
+  const [loadingOutcomesData, setLoadingOutcomesData] = useState(true)
   const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
   const [loadingGeographyData, setLoadingGeographyData] = useState(true)
 
@@ -857,11 +874,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
     return new Promise((resolve, reject) => {
       base('Trials').select({
-          // Selecting the first 3 records in Raw View:
+
           filterByFormula: airtableFilters,
           view: "Raw View"
       }).eachPage(function page(records, fetchNextPage) {
-          // This function (`page`) will get called for each page of records.
 
 
           records.forEach(function(record) {
@@ -885,10 +901,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             console.error(err);
             return reject({});
           }
-          //console.log("age groups pre-list: ", age_groups_pie_dict)
-          //console.log("purpose pre-list: ", purpose_pie_dict)
-          //console.log("type pre-list: ", type_pie_dict)
-          //console.log("status pre-list: ", status_pie_dict)
 
           pie_formatting(age_groups_pie_dict, age_groups_pie)
           pie_formatting(purpose_pie_dict, purpose_pie)
@@ -908,8 +920,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           trials_result["masking_pie"] = masking_pie
           trials_result["trials_line"] = [trials_line_formatted]
           console.log(trials_line_formatted)
-          //console.log('RESULT OF PIE DATA IS; ', trials_result)
-          // here is where we'll run pie formatting
 
           resolve(trials_result)
 
@@ -1166,30 +1176,13 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setLoadingInterventionsData(false)
   }
 
-  // const fetchManufacturersData = async () => {
-  //   const result = await axios.post(
-  //     'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/manufacturers',
-  //     {
-  //       filters: generateFiltersPostBody()
-  //     },
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     }
-  //   );
-  //
-  //   setManufacturersTop10ByTrialsBarChartData(result.data.manufacturers_top_10_by_trials);
-  //   setManufacturersTop10ByProductsBarChartData(result.data.manufacturers_top_10_by_products);
-  //
-  //   setLoadingManufacturersData(false)
-  // }
 
-
+  // Sponsors variables for airtable
   var sponsors_dict = {}
   var sponsors_bar = []
   var sponsors_bar_formatted = {}
   var sponsors_result = {}
+  // Get Sponsors data from airtable
   function getSponsorsChartsData() {
 
     return new Promise((resolve, reject) => {
@@ -1394,16 +1387,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       fetchSingleStatMetrics();
       setLoadingTrialsData(true)
       fetchTrialsMetricData();
-
       setLoadingPopulationData(true)
       fetchPopulationData();
       setLoadingOutcomesData(true)
       fetchOutcomesData();
-
       setLoadingInterventionsData(true)
       fetchInterventionsData();
-      //setLoadingManufacturersData(true)
-      //fetchManufacturersData();
       setLoadingSponsorsData(true)
       fetchSponsorsData();
       setLoadingGeographyData(true)
@@ -1481,14 +1470,14 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           break;
 
         case 'Sponsors':
-          const sponsorParentFilterSections = { ...sponsorsFilters};
-          delete sponsorParentFilterSections.Children
-          setActiveParentFilterSections(sponsorParentFilterSections)
+          // const sponsorParentFilterSections = { ...sponsorsFilters};
+          // delete sponsorParentFilterSections.Children
+          setActiveParentFilterSections(sponsorsFilters)
           break;
         case 'Geography':
-          const geographyParentFilterSections = { ...geographyFilters};
-          delete geographyParentFilterSections.Children
-          setActiveParentFilterSections(geographyParentFilterSections)
+          // const geographyParentFilterSections = { ...geographyFilters};
+          // delete geographyParentFilterSections.Children
+          setActiveParentFilterSections(geographyFilters)
           break;
         default:
           setActiveParentFilterSections({})
@@ -1907,7 +1896,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                   sections={activeParentFilterSections}
                   onFilterClicked={onParentFilterClicked}
                   onFilterLabelClicked={onParentFilterLabelClicked}
-
                   onFilterUnHover={onFilterUnHover}
                 />
               </div>
