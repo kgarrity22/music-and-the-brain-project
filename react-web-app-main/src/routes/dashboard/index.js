@@ -87,38 +87,16 @@ const initialPopulationFilters = {
 }
 
 const initialInterventionsFilters = {
-  // Drugs: {},
-  // Devices: {},
-  // Biological_Vaccines: {},
-  // Procedures_Surgeries: {},
-  // Radiation: {},
-  // Behavioral: {},
-  // Genetic: {},
-  // Dietary_Supplements: {},
-  // Combination_Products: {},
-  // Diagnostic_Tests: {},
-  // Other: {}
+
 }
 
 const initialOutcomesFilters = {
-  // Clinical: {},
-  // Safety: {},
-  // Biological: {},
-  // Pharmacological: {},
-  // Survey_Questionnaire: {},
-  // Other: {}
+
 }
 
 
 const initialSponsorsFilters = {
-  // Academia: {},
-  // Research_Hospital: {},
-  // Industry: {},
-  // Government: {},
-  // Ngo: {},
-  // Self_sponsored: {},
-  // Healthcare_System: {},
-  // Other: {}
+
 }
 
 const initialGeographyFilters = {
@@ -126,7 +104,7 @@ const initialGeographyFilters = {
 }
 
 function DashboardRoute(props) {
-  // console.log("whaT are prOPS: ", props)
+
   const [currentUser, setCurrentUser] = useState("")
 
   useEffect((props) => {
@@ -144,6 +122,7 @@ function DashboardRoute(props) {
   const [airtableFilters, setAirtableFilters] = useState("")
 
   const [updateRequested, setUpdatedRequested] = useState("")
+  // sets filters
   const onUpdateButtonClicked = (e) => {
     console.log(e)
     setUpdatedRequested(Date())
@@ -154,7 +133,7 @@ function DashboardRoute(props) {
 
     setAirtableFilters(filts_final)
 
-    // want to set the airtable filter here
+
   }
 
   function getAirtableFilters(){
@@ -163,17 +142,16 @@ function DashboardRoute(props) {
     var sections = Object.keys(filter_dict)
     console.log('Filter Dictionary: ', filter_dict)
     for (var section of sections){
-      //console.log("sub_section (should be 'Populations' or 'Trials'): ", section)
+
       var section_keys = Object.keys(filter_dict[section])
-      //var sub_section_vals = Object.values(filter_dict[section])
+
       for (var sub_section of section_keys){
-        //console.log("key: (should be 'Phase' or 'status'): ", sub_section)
-        //console.log("filter_dict[section][sub_section]: ", filter_dict[section][sub_section])
+
         var sub_section_keys = Object.keys(filter_dict[section][sub_section])
           for (var key of sub_section_keys){
-            //console.log("key: ", key)
+
             if (filter_dict[section][sub_section][key] === false) {
-              //console.log("key that is false: ", key)
+
               if (sub_section === "Type") {
                 var new_dict = {"Study_Type": key}
                 store.push(new_dict)
@@ -268,15 +246,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [geographyFilters, setGeographyFilters] = useState(initialGeographyFilters)
   const [initialFilterLoadComplete, setInitialFilterLoadComplete] = useState(false)
 
-  var filters = "NOT(OR({Phase} = 'Phase 1'))"
-  // see which filters are set to false
-  // for each subset create a or filter
-  // if something is unchecked, we want no trials with that attribute
-  /*
-  we want only sites with the items that are checked
-  */
-  // on update clicked
-  // that's when we set filters
+
 
 
   var Airtable = require('airtable');
@@ -317,15 +287,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   var outcomes_set = new Set();
 
   //SPONSORS SETS
-  // ****Looks like this is just one level? - check on this
   var sponsors_set = new Set();
 
   //GEOGRAPHY SETS
   var regions_set = new Set();
   var regions_list = []
   var countries_list = []
-
-
 
   //TRIALS DICTIONARIES
   var unique_phases = {};
@@ -367,7 +334,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   // GEOGRAPHY DICTIONARIES
   var unique_regions = {};
-
 
 
   var trials_filts = {};
@@ -430,12 +396,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             }
 
 
-
-
             // INTERVENTIONS FILTERS
-            // this one will take more figuring out
-            // var inter = record.get('Intervention_Types')
-            // console.log("one intervention: ", inter.split(", "))
+
             var interventions = record.get('Intervention_Types').split(", ")
             for (var item of interventions){
               intervention_set.add(item)
@@ -485,7 +447,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             console.error(err);
             return reject({});
           }
-          //console.log("DID we ever make it here?")
+
 
           // TRIALS
           create_filter_dict(phases_set, unique_phases)
@@ -585,7 +547,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const fetchFilters = async () => {
 
     const result = await getairtable()
-    console.log("***FILTERS****: ", result)
+    // console.log("***FILTERS****: ", result)
 
 
     setTrialsFilters(result.trials)
@@ -630,7 +592,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [trialTypePieChartData, setTrialTypePieChartData] = useState([])
   const [cumulativeTrialsLineChartData, setCumulativeTrialsLineChartData] = useState([])
 
-  const [landscapeChartData, setLandscapeChartData] = useState([])
+  //const [landscapeChartData, setLandscapeChartData] = useState([])
 
   const [singleMultiSitePieChartData, setSingleMultiSitePieChartData] = useState([])
   const [trialAgeGroupsPieChartData, setTrialAgeGroupsPieChartData] = useState([])
@@ -641,15 +603,15 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [top10TechnologiesAsOutcomesBarChartData, setTop10TechnologiesAsOutcomesBarChartData] = useState({data: [], group_keys: []})
   const [newTechnologiesPerYearBarChartData, setNewTechnologiesPerYearBarChartData] = useState({data: [], group_keys: []})
 
-  const [conditionsTop10ParentBarChartData, setConditionsTop10ParentBarChartData] = useState({data: [], group_keys: []})
-  const [conditionsTop10ChildBarChartData, setConditionsTop10ChildBarChartData] = useState({data: [], group_keys: []})
-  const [conditionsBreakdownSunburstChartData, setConditionsBreakdownSunburstChartData] = useState([])
+  const [outcomesTop10ParentBarChartData, setOutcomesTop10ParentBarChartData] = useState({data: [], group_keys: []})
+  // const [conditionsTop10ChildBarChartData, setConditionsTop10ChildBarChartData] = useState({data: [], group_keys: []})
+  // const [conditionsBreakdownSunburstChartData, setConditionsBreakdownSunburstChartData] = useState([])
 
-  const [measuresTop10BarChartData, setMeasuresTop10BarChartData] = useState({data: [], group_keys: []})
-  const [measuresOverTimeLineChart, setMeasuresOverTimeLineChart] = useState([])
+  const [interventionsTop10BarChartData, setInterventionsTop10BarChartData] = useState({data: [], group_keys: []})
+  // const [measuresOverTimeLineChart, setInterventionsOverTimeLineChart] = useState([])
 
-  const [manufacturersTop10ByTrialsBarChartData, setManufacturersTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
-  const [manufacturersTop10ByProductsBarChartData, setManufacturersTop10ByProductsBarChartData] = useState({data: [], group_keys: []})
+  //const [manufacturersTop10ByTrialsBarChartData, setManufacturersTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
+  //const [manufacturersTop10ByProductsBarChartData, setManufacturersTop10ByProductsBarChartData] = useState({data: [], group_keys: []})
 
   const [sponsorsTop10ByTrialsBarChartData, setSponsorsTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
   const [sponsorsTop10ByEnrollmentBarChartData, setSponsorsTop10ByEnrollmentBarChartData] = useState({data: [], group_keys: []})
@@ -657,16 +619,22 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
 
+
   const [loadingStatsData, setLoadingStatsData] = useState(true)
-  const [loadingTrialsData, setLoadingTrialsData] = useState(true)
   const [loadingLandscapeData, setLoadingLandscapeData] = useState(true)
-  const [loadingTechnologyData, setLoadingTechnologyData] = useState(true)
-  const [loadingConditionsData, setLoadingConditionsData] = useState(true)
-  const [loadingMeasuresData, setLoadingMeasuresData] = useState(true)
-  const [loadingManufacturersData, setLoadingManufacturersData] = useState(true)
+  const [loadingOutcomesData, setLoadingOutcomesData] = useState(true)
+  const [loadingInterventionsData, setLoadingInterventionsData] = useState(true)
+  //const [loadingManufacturersData, setLoadingManufacturersData] = useState(true)
+
+  const [loadingTrialsData, setLoadingTrialsData] = useState(true)
+  const [loadingPopulationData, setLoadingPopulationData] = useState(true)
   const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
   const [loadingGeographyData, setLoadingGeographyData] = useState(true)
 
+  /*
+  This function creates a dictionary where the key is and items name and the value
+  is the occurences of that key
+  */
   function pie_collection(dictionary, key){
     if(key in dictionary){
       dictionary[key]+=1;
@@ -674,7 +642,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       dictionary[key] = 1
     }
   }
-  // var pie_data = []
+
+  /*
+  Takes a dictionary formated {key: Occurences of key}
+  and an empty list and formats the data for a nivo part chart
+  in that list
+  */
   function pie_formatting(dictionary, pie_data){
     var keys = Object.keys(dictionary);
     var value = Object.values(dictionary);
@@ -687,6 +660,11 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
   }
 
+  /*
+  takes a dictionary with {key: #value(num of key occurences)}
+  and two empty lists
+  - at the end, the second list is properly formatted for a nivo line graph
+  */
   function line_formatting(dictionary, line_data, line_formatted){
     var keys = Object.keys(dictionary);
     var value = Object.values(dictionary);
@@ -700,6 +678,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     line_formatted["data"] = line_data;
   }
 
+  // Single Metrics Vars
   var single_metrics_result = {}
   var single_metric_trials = []
   var single_metric_participants = []
@@ -708,6 +687,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   var single_metric_interventions = 0
   var single_metric_sites = new Set()
 
+  // funtion that sums the values of a list
   function sum(list1){
     const total = list1.reduce(
         (previousScore, currentScore, index)=>previousScore+currentScore,
@@ -716,6 +696,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       return total;
   }
 
+  // GET SINGLE METRICS  from airtable
   function getSingleMetrics() {
 
     return new Promise((resolve, reject) => {
@@ -801,7 +782,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
 
-// console.log("what is generate filters post body returning: ", generateFiltersPostBody())
+
   const fetchSingleStatMetrics = async () => {
 
     const result = await getSingleMetrics()
@@ -851,6 +832,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     ])
     setLoadingStatsData(false)
   }
+
 
   var purpose_pie_dict = {}
   var purpose_pie = [];
@@ -962,10 +944,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       new_dict[[keys[i]]] = value[i];
       bar_data.push(new_dict)
     }
-    //line_formatted["id"] = 0;
+
     bar_formatted["data"] = bar_data;
     bar_formatted["group_keys"] = keys
   }
+
+
 
   var single_multi_site_dict = {}
   var single_multi_site_pie = [];
@@ -1014,63 +998,28 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
       })
     })
-}// end of get trialStatusPieChartData
+}// end of get PopulationsData
 
 
-  const fetchLandscapeChartData = async () => {
-    console.log("generateFiltersPostBody inside fetch landscape data: ", generateFiltersPostBody())
-    const result = await axios.post(
-      'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/landscape',
-      {
-        filters: generateFiltersPostBody(),
-        x_axis: '',
-        y_axis: '',
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    setLandscapeChartData(result.data);
-    setLoadingLandscapeData(false)
-  }
-
-
-
-// for populations
-  const fetchTechnologyMetricData = async () => {
+  const fetchPopulationData = async () => {
 
     const result = await getPopulationsChartsData()
-
 
     setSingleMultiSitePieChartData(result.sites_pie);
     setPopulationVolunteersPieChartData(result.volunteers_pie);
     setPopulationEnrollmentPieChartData(result.enrollment_pie)
-    setLoadingTechnologyData(false)
+    setLoadingPopulationData(false)
   }
 
-  function sort_object(obj) {
-      var items = Object.keys(obj).map(function(key) {
-          return [key, obj[key]];
-      });
-      items.sort(function(first, second) {
-          return second[1] - first[1];
-      });
-      var sorted_obj={}
-      items.forEach(function(k, v) {
-          var use_key = v[0]
-          var use_value = v[1]
-          sorted_obj[use_key] = use_value
-      })
-      return(sorted_obj)
-  }
 
+
+  // Outcomes Variables for airtable
   var outcomes_dict = {}
   var outcomes_bar = []
   var outcomes_bar_formatted = {}
   var outcomes_result = {}
+
+  // Get Outcomes data from airtable
   function getOutcomesChartsData() {
 
     return new Promise((resolve, reject) => {
@@ -1091,16 +1040,16 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                 } else {
                   var itemlist = item.split(", ")
                   for (var j of itemlist){
-                    //console.log("j: ", j)
+
                     pie_collection(outcomes_dict, j)
                   }
                 }
               }
             } else {
-              //console.log("outcome: ", outcome)
+
               pie_collection(outcomes_dict, outcome)
             }
-          //  console.log("what is outcomes_dict now: ", outcomes_dict)
+
 
 
           });
@@ -1113,10 +1062,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             return reject({});
           }
           console.log("OUTCOMES DICT: ", outcomes_dict)
-          // sort the outcomes dict
-          // grab the top 10
-          // feed those into bar formatting
-          // Create items array
+
           var items = Object.keys(outcomes_dict).map(function(key) {
             return [key, outcomes_dict[key]];
           });
@@ -1143,21 +1089,22 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   }// end
 
 
-  // use this for outcomes
-  const fetchConditionsMetricData = async () => {
+  // Fetch and set outcomes data
+  const fetchOutcomesData = async () => {
 
     const result = await getOutcomesChartsData()
 
-
-    setConditionsTop10ParentBarChartData(result.outcome_bar);
-
-    setLoadingConditionsData(false)
+    setOutcomesTop10ParentBarChartData(result.outcome_bar);
+    setLoadingOutcomesData(false)
   }
 
+
+  // Interventions variables for airtable data
   var interventions_dict = {}
   var interventions_bar = []
   var interventions_bar_formatted = {}
   var interventions_result = {}
+  // Get Intervention data from airtable
   function getInterventionsChartsData() {
 
     return new Promise((resolve, reject) => {
@@ -1168,7 +1115,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
-            // OUTCOMES FILTERS
+
             var interventions = record.get('Intervention_Types').split(", ")
             for (var item of interventions){
               pie_collection(interventions_dict, item)
@@ -1209,35 +1156,34 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
       })
     })
-  }// end
+  }// end Interventions get function
 
-  const fetchMeasuresMetricData = async () => {
+  const fetchInterventionsData = async () => {
 
     const result = await getInterventionsChartsData()
-    setMeasuresTop10BarChartData(result.interventions_bar);
-    // setMeasuresOverTimeLineChart(result.data.measures_over_time_line);
+    setInterventionsTop10BarChartData(result.interventions_bar);
 
-    setLoadingMeasuresData(false)
+    setLoadingInterventionsData(false)
   }
 
-  const fetchManufacturersData = async () => {
-    const result = await axios.post(
-      'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/manufacturers',
-      {
-        filters: generateFiltersPostBody()
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    setManufacturersTop10ByTrialsBarChartData(result.data.manufacturers_top_10_by_trials);
-    setManufacturersTop10ByProductsBarChartData(result.data.manufacturers_top_10_by_products);
-
-    setLoadingManufacturersData(false)
-  }
+  // const fetchManufacturersData = async () => {
+  //   const result = await axios.post(
+  //     'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/manufacturers',
+  //     {
+  //       filters: generateFiltersPostBody()
+  //     },
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     }
+  //   );
+  //
+  //   setManufacturersTop10ByTrialsBarChartData(result.data.manufacturers_top_10_by_trials);
+  //   setManufacturersTop10ByProductsBarChartData(result.data.manufacturers_top_10_by_products);
+  //
+  //   setLoadingManufacturersData(false)
+  // }
 
 
   var sponsors_dict = {}
@@ -1448,16 +1394,16 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       fetchSingleStatMetrics();
       setLoadingTrialsData(true)
       fetchTrialsMetricData();
-      setLoadingLandscapeData(true)
-      fetchLandscapeChartData();
-      setLoadingTechnologyData(true)
-      fetchTechnologyMetricData();
-      setLoadingConditionsData(true)
-      fetchConditionsMetricData();
-      setLoadingMeasuresData(true)
-      fetchMeasuresMetricData();
-      setLoadingManufacturersData(true)
-      fetchManufacturersData();
+
+      setLoadingPopulationData(true)
+      fetchPopulationData();
+      setLoadingOutcomesData(true)
+      fetchOutcomesData();
+
+      setLoadingInterventionsData(true)
+      fetchInterventionsData();
+      //setLoadingManufacturersData(true)
+      //fetchManufacturersData();
       setLoadingSponsorsData(true)
       fetchSponsorsData();
       setLoadingGeographyData(true)
@@ -1478,26 +1424,26 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setActiveParentFilterSections({})
   }
 
-  // this is the extra piece for the layered side nav
-  const onFilterHover = (filter) => {
-    setHoveredParentFilter(filter)
-    if (!activeParentFilter) {
-      switch (activeCategoryFilter) {
-        case 'Conditions':
-          //setActiveChildFilterSections({[filter]: conditionsFilters['Children'][filter]})
-          break;
-        case 'Sponsors':
-          // setActiveChildFilterSections({[filter]: sponsorsFilters['Children'][filter]})
-          break;
-        case 'Geography':
-          // setActiveChildFilterSections({[filter]: geographyFilters['Children'][filter]})
-          break;
-        default:
-          setActiveChildFilterSections({})
-          break;
-      }
-    }
-  }
+  // // this is the extra piece for the layered side nav
+  // const onFilterHover = (filter) => {
+  //   setHoveredParentFilter(filter)
+  //   if (!activeParentFilter) {
+  //     switch (activeCategoryFilter) {
+  //       case 'Conditions':
+  //         //setActiveChildFilterSections({[filter]: conditionsFilters['Children'][filter]})
+  //         break;
+  //       case 'Sponsors':
+  //         // setActiveChildFilterSections({[filter]: sponsorsFilters['Children'][filter]})
+  //         break;
+  //       case 'Geography':
+  //         // setActiveChildFilterSections({[filter]: geographyFilters['Children'][filter]})
+  //         break;
+  //       default:
+  //         setActiveChildFilterSections({})
+  //         break;
+  //     }
+  //   }
+  // }
 
   const onFilterUnHover = (filter) => {
     setHoveredParentFilter(null)
@@ -1529,9 +1475,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           break;
         case 'Interventions':
           setActiveParentFilterSections(interventionsFilters)
-          // const conditionsParentFilterSections = { ...conditionsFilters};
-          // delete conditionsParentFilterSections.Children
-          // setActiveParentFilterSections(conditionsParentFilterSections)
           break;
         case 'Outcomes':
           setActiveParentFilterSections(outcomesFilters)
@@ -1638,44 +1581,44 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       setActiveChildFilterSections({})
     } else {
       setActiveParentFilter(filter)
-      switch (activeCategoryFilter) {
-        case 'Conditions':
-          //setActiveChildFilterSections({[filter]: conditionsFilters['Children'][filter]})
-          break;
-        case 'Sponsors':
-          // setActiveChildFilterSections({[filter]: sponsorsFilters['Children'][filter]})
-          break;
-        case 'Geography':
-          // setActiveChildFilterSections({[filter]: geographyFilters['Children'][filter]})
-          break;
-        default:
-          setActiveChildFilterSections({})
-          break;
-      }
+      // switch (activeCategoryFilter) {
+      //   case 'Conditions':
+      //     //setActiveChildFilterSections({[filter]: conditionsFilters['Children'][filter]})
+      //     break;
+      //   case 'Sponsors':
+      //     // setActiveChildFilterSections({[filter]: sponsorsFilters['Children'][filter]})
+      //     break;
+      //   case 'Geography':
+      //     // setActiveChildFilterSections({[filter]: geographyFilters['Children'][filter]})
+      //     break;
+      //   default:
+      //     setActiveChildFilterSections({})
+      //     break;
+      // }
     }
   }
 
-  const onChildFilterClicked = (section, filter) => {
-    if (filter) {
-
-      switch (activeCategoryFilter) {
-        case 'Conditions':
-          // setConditionsFilters(filters => updateChildFilters(filters, section, filter))
-          // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
-          break;
-        case 'Sponsors':
-          // setSponsorsFilters(filters => updateChildFilters(filters, section, filter))
-          // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
-          break;
-        case 'Geography':
-          // setGeographyFilters(filters => updateChildFilters(filters, section, filter))
-          // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
-          break;
-        default:
-          break;
-      }
-    }
-  }
+  // const onChildFilterClicked = (section, filter) => {
+  //   if (filter) {
+  //
+  //     switch (activeCategoryFilter) {
+  //       case 'Conditions':
+  //         // setConditionsFilters(filters => updateChildFilters(filters, section, filter))
+  //         // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
+  //         break;
+  //       case 'Sponsors':
+  //         // setSponsorsFilters(filters => updateChildFilters(filters, section, filter))
+  //         // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
+  //         break;
+  //       case 'Geography':
+  //         // setGeographyFilters(filters => updateChildFilters(filters, section, filter))
+  //         // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   }
+  // }
 
   const showDoubleSideBar = (activeParentFilter || hoveredParentFilter) && [].includes(activeCategoryFilter)
 
@@ -1835,7 +1778,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                         colors="orange"
                         title="Age Groups"
                         chartData={trialAgeGroupsPieChartData}
-                        loading={loadingTechnologyData}
+                        loading={loadingPopulationData}
                       />
                     </Col>
                     <Col lg={{span: 6}}>
@@ -1843,7 +1786,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                         colors="orange"
                         title="Site Types"
                         chartData={singleMultiSitePieChartData}
-                        loading={loadingTechnologyData}
+                        loading={loadingPopulationData}
                       />
                     </Col>
                   </Row>
@@ -1853,7 +1796,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       colors="orange"
                       title="Healthy Volunteers"
                       chartData={populationVolunteersPieChartData}
-                      loading={loadingTechnologyData}
+                      loading={loadingPopulationData}
                     />
                   </Col>
                   <Col lg={{span: 6}}>
@@ -1861,7 +1804,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       colors="orange"
                       title="Target Enrollment"
                       chartData={populationEnrollmentPieChartData}
-                      loading={loadingTechnologyData}
+                      loading={loadingPopulationData}
                     />
                   </Col>
                   </Row>
@@ -1876,12 +1819,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                         color="yellow"
                         layout="horizontal"
                         title="Intervention Types"
-                        chartData={measuresTop10BarChartData.data}
-                        groupKeys={measuresTop10BarChartData.group_keys}
+                        chartData={interventionsTop10BarChartData.data}
+                        groupKeys={interventionsTop10BarChartData.group_keys}
                         indexKey="intervention"
                         xAxisLabel=""
                         yAxisLabel=""
-                        loading={loadingMeasuresData}
+                        loading={loadingInterventionsData}
                       />
                     </Col>
                   </Row>
@@ -1896,12 +1839,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                         color="green"
                         layout="horizontal"
                         title="Top 10 Outcomes"
-                        chartData={conditionsTop10ParentBarChartData.data}
-                        groupKeys={conditionsTop10ParentBarChartData.group_keys}
+                        chartData={outcomesTop10ParentBarChartData.data}
+                        groupKeys={outcomesTop10ParentBarChartData.group_keys}
                         indexKey="outcome"
                         xAxisLabel=""
                         yAxisLabel=""
-                        loading={loadingConditionsData}
+                        loading={loadingOutcomesData}
                       />
                     </Col>
 
@@ -1964,7 +1907,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                   sections={activeParentFilterSections}
                   onFilterClicked={onParentFilterClicked}
                   onFilterLabelClicked={onParentFilterLabelClicked}
-                  onFilterHover={onFilterHover}
+
                   onFilterUnHover={onFilterUnHover}
                 />
               </div>
