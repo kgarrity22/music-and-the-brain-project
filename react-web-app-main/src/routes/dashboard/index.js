@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Redirect, withRouter } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap'
-import axios from 'axios';
+// import axios from 'axios';
 import { Auth } from 'aws-amplify';
+
+import { ReactTabulator } from 'react-tabulator'
+import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React 15.x
+
+// import { AddBox, ArrowDownward } from "@material-ui/icons";
+import MaterialTable from "material-table";
+// import TableViewer from 'react-js-table-with-csv-dl';
+
+import CsvDownloader from 'react-csv-downloader';
+
+
+
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -19,10 +31,12 @@ import PrismBarChart from './components/bar-chart'
 import PrismSunburst from './components/sunburst-chart'
 import PrismScatterplot from './components/scatterplot'
 import PrismChoropleth from './components/choropleth'
+// import TabulatorTable from './components/tabulator'
 
 import './index.css'
-
-
+import 'react-tabulator/lib/styles.css';
+import 'react-tabulator/css/bootstrap/tabulator_bootstrap.min.css';
+import 'react-tabulator/lib/styles.css';
 
 
 const initialStats = [
@@ -125,7 +139,7 @@ function DashboardRoute(props) {
   const [updateRequested, setUpdatedRequested] = useState("")
   // sets filters
   const onUpdateButtonClicked = (e) => {
-    console.log(e)
+    //console.log(e)
     setUpdatedRequested(Date())
     closeSidebar()
     console.log("Filters?", generateFiltersPostBody())
@@ -141,7 +155,7 @@ function DashboardRoute(props) {
     var filter_dict = generateFiltersPostBody()
     var store = []
     var sections = Object.keys(filter_dict)
-    console.log('Filter Dictionary: ', filter_dict)
+    //console.log('Filter Dictionary: ', filter_dict)
     for (var section of sections){
 
       var section_keys = Object.keys(filter_dict[section])
@@ -313,18 +327,18 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   //INTERVENTIONS DICTIONARIES
   var unique_interventions = {};
 
-  var unique_drugs = {};
-  var unique_devices = {};
-  var unique_drugs = {};
-  var unique_biological = {};
-  var unique_procedures = {};
-  var unique_radiation = {};
-  var unique_behavioral = {};
-  var unique_genetic = {};
-  var unique_dietarySupplements = {};
-  var unique_combProds = {};
-  var unique_diagnostic = {};
-  var unique_otherInt = {};
+  // var unique_drugs = {};
+  // var unique_devices = {};
+  // var unique_drugs = {};
+  // var unique_biological = {};
+  // var unique_procedures = {};
+  // var unique_radiation = {};
+  // var unique_behavioral = {};
+  // var unique_genetic = {};
+  // var unique_dietarySupplements = {};
+  // var unique_combProds = {};
+  // var unique_diagnostic = {};
+  // var unique_otherInt = {};
 
   // OUTCOMES DICTIONARIES
   var unique_outcomes = {};
@@ -425,7 +439,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             if (typeof(outcome)==='object'){
               for (var item of outcome){
                 if (item === null){
-                  console.log("null")
+                  // console.log("null")
                 } else {
                   var itemlist = item.split(", ")
                   for (var j of itemlist){
@@ -639,6 +653,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
 
+
   // loading variables - set the loading icons until the data has fully loaded
   const [loadingStatsData, setLoadingStatsData] = useState(true)
   const [loadingTrialsData, setLoadingTrialsData] = useState(true)
@@ -647,6 +662,9 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [loadingOutcomesData, setLoadingOutcomesData] = useState(true)
   const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
   const [loadingGeographyData, setLoadingGeographyData] = useState(true)
+
+  const [loadingAllTableData, setLoadingAllTableData] = useState(true)
+  const [allTableData, setAllTableData] = useState([])
 
   /*
   This function creates a dictionary where the key is and items name and the value
@@ -709,7 +727,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     const total = list1.reduce(
         (previousScore, currentScore, index)=>previousScore+currentScore,
         0);
-        console.log(total);
+        //console.log(total);
       return total;
   }
 
@@ -803,7 +821,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const fetchSingleStatMetrics = async () => {
 
     const result = await getSingleMetrics()
-    console.log("result for single metric: ", result)
+    //console.log("result for single metric: ", result)
 
 
     setStats([
@@ -919,7 +937,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           trials_result["randomization_pie"] = randomization_pie
           trials_result["masking_pie"] = masking_pie
           trials_result["trials_line"] = [trials_line_formatted]
-          console.log(trials_line_formatted)
+          //console.log(trials_line_formatted)
 
           resolve(trials_result)
 
@@ -931,10 +949,11 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
     const result = await getTrialsChartsData();
-    console.log("result: ", result)
+    //console.log("result: ", result)
 
     setTrialStatusPieChartData(result.status_pie);
     setTrialPurposePieChartData(result.purpose_pie);
+    // extra pie here if we want it
     setTrialTypePieChartData(result.type_pie);
     setTrialAgeGroupsPieChartData(result.age_pie);
     setCumulativeTrialsLineChartData(result.trials_line);
@@ -1071,7 +1090,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             console.error(err);
             return reject({});
           }
-          console.log("OUTCOMES DICT: ", outcomes_dict)
+          //console.log("OUTCOMES DICT: ", outcomes_dict)
 
           var items = Object.keys(outcomes_dict).map(function(key) {
             return [key, outcomes_dict[key]];
@@ -1090,7 +1109,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
           bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
           outcomes_result["outcome_bar"] = outcomes_bar_formatted
-          console.log("OUTCOME data: ", outcomes_bar_formatted)
+          //console.log("OUTCOME data: ", outcomes_bar_formatted)
 
           resolve(outcomes_result)
 
@@ -1141,7 +1160,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             console.error(err);
             return reject({});
           }
-          console.log("Interventions DICT: ", interventions_dict)
+          //console.log("Interventions DICT: ", interventions_dict)
 
           var items = Object.keys(interventions_dict).map(function(key) {
             return [key, interventions_dict[key]];
@@ -1160,7 +1179,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
           bar_formatting(updated_interventions_dict, interventions_bar, interventions_bar_formatted, "intervention")
           interventions_result["interventions_bar"] = interventions_bar_formatted
-          console.log("InTERVENtION data: ", interventions_bar_formatted)
+          //console.log("InTERVENtION data: ", interventions_bar_formatted)
 
           resolve(interventions_result)
 
@@ -1212,7 +1231,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
           bar_formatting(sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
           sponsors_result["sponsors_bar"] = sponsors_bar_formatted
-          console.log("SPONSOR data: ", sponsors_bar_formatted)
+          //console.log("SPONSOR data: ", sponsors_bar_formatted)
 
           resolve(sponsors_result)
 
@@ -1363,7 +1382,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                 return reject({});
               }
 
-              console.log("geog data; ", geography_country_dict)
+              //console.log("geog data; ", geography_country_dict)
               geog_formatting(geography_country_dict, geography_result)
               resolve(geography_result)
 
@@ -1379,6 +1398,51 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setGeographyFacilitiesChartData(result);
 
     setLoadingGeographyData(false)
+  }
+
+  var tab_ind = 0
+  var table_data = []
+  function getTableData() {
+
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+          records.forEach(function(record) {
+
+            // console.log("Record: ", record)
+            record.fields["id"] = tab_ind
+            tab_ind = tab_ind + 1;
+            table_data.push(record.fields)
+
+          });
+          fetchNextPage();
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          var all_table = {}
+          all_table["table_data"] = table_data
+
+          resolve(all_table)
+      })
+    })
+}// end of get trialStatusPieChartData
+
+
+
+
+  const fetchTableData = async () => {
+    const result = await getTableData()
+    //console.log("RESULT of tabledata: ", result.table_data)
+    setAllTableData(result.table_data)
+    //console.log("all_table: ", allTableData)
+    setLoadingAllTableData(false)
+
   }
 
   useEffect(() => {
@@ -1397,6 +1461,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       fetchSponsorsData();
       setLoadingGeographyData(true)
       fetchGeographyData();
+      setLoadingAllTableData(true)
+      fetchTableData();
       // console.log("What does fetchTrialsMetricData LOOK LIKE: ", fetchTrialsMetricData())
     }
     // eslint-disable-next-line
@@ -1505,10 +1571,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   }
 
   const onParentFilterClicked = (section, filter, shouldSelect=true) => {
-    console.log("FILTER: ", filter)
-    console.log("section: ", section)
+    //console.log("FILTER: ", filter)
+    //console.log("section: ", section)
     if (filter) {
-      console.log('inside PFC and filter is: ', filter)
+      //console.log('inside PFC and filter is: ', filter)
       switch (activeCategoryFilter) {
         case 'Trials':
           setTrialsFilters(filters => updateFilters(filters, section, filter))
@@ -1587,27 +1653,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
   }
 
-  // const onChildFilterClicked = (section, filter) => {
-  //   if (filter) {
-  //
-  //     switch (activeCategoryFilter) {
-  //       case 'Conditions':
-  //         // setConditionsFilters(filters => updateChildFilters(filters, section, filter))
-  //         // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
-  //         break;
-  //       case 'Sponsors':
-  //         // setSponsorsFilters(filters => updateChildFilters(filters, section, filter))
-  //         // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
-  //         break;
-  //       case 'Geography':
-  //         // setGeographyFilters(filters => updateChildFilters(filters, section, filter))
-  //         // setActiveChildFilterSections(filters => updateFilters(filters, section, filter))
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   }
-  // }
+
 
   const showDoubleSideBar = (activeParentFilter || hoveredParentFilter) && [].includes(activeCategoryFilter)
 
@@ -1620,6 +1666,72 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     'Geography': 'violet',
   }
 
+  const columns = [
+  { title: "Age Groups", field: "Age_Groups", width: 150 },
+  { title: "Conditions", field: "Conditions", width: 150 },
+  { title: "Countries", field: "Geography_Countries", width: 150  },
+  { title: "Enrollment", field: "Enrollment", width: 150 },
+  { title: "Enrollment Target", field: "Enrollment_Target", width: 150 },
+  { title: "Settings", field: "Facility_Settings", width: 150 },
+  { title: "Regions", field: "Geography_Regions", width: 150 },
+  { title: "Intervention Types", field: "Intervention_Types", width: 150 },
+  { title: "Interventions", field: "Interventions", width: 150 },
+  { title: "NCT", field: "NCT", width: 150 },
+  { title: "Outcomes", field: "Outcome_Concepts", width: 150 },
+  { title: "Phase", field: "Phase", width: 150 },
+  { title: "Purpose", field: "Purpose", width: 150 },
+  { title: "Randomization", field: "Randomization", width: 150 },
+  { title: "Single/Multi Site", field: "Single_Multi_Site", width: 150 },
+  { title: "Sponsor", field: "Sponsor", width: 150 },
+  { title: "Start Year", field: "Start_Year", width: 150 },
+  { title: "Status", field: "Status", width: 150 },
+  { title: "Study Type", field: "Study_Type", width: 150 },
+  { title: "Title", field: "Title", width: 150 }
+  ];
+
+  const columns_download = [
+  { displayName: "Age Groups", id: "Age_Groups"},
+  { displayName: "Conditions", id: "Conditions"},
+  { displayName: "Countries", id: "Geography_Countries"},
+  { displayName: "Enrollment", id: "Enrollment"},
+  { displayName: "Enrollment Target", id: "Enrollment_Target"},
+  { displayName: "Settings", id: "Facility_Settings"},
+  { displayName: "Regions", id: "Geography_Regions"},
+  { displayName: "Intervention Types", id: "Intervention_Types"},
+  { displayName: "Interventions", id: "Interventions"},
+  { displayName: "NCT", id: "NCT"},
+  { displayName: "Outcomes", id: "Outcome_Concepts"},
+  { displayName: "Phase", id: "Phase"},
+  { displayName: "Purpose", id: "Purpose"},
+  { displayName: "Randomization", id: "Randomization"},
+  { displayName: "Single/Multi Site", id: "Single_Multi_Site"},
+  { displayName: "Sponsor", id: "Sponsor"},
+  { displayName: "Start Year", id: "Start_Year"},
+  { displayName: "Status", id: "Status"},
+  { displayName: "Study Type", id: "Study_Type"},
+  { displayName: "Title", id: "Title"}
+  ];
+
+//   var table = new ReactTabulator("#", {
+//     height:"311px",
+//     columns:columns,
+//
+// });
+// console.log("TABLE; ", table)
+
+  const options = {
+
+      // height: "500px",
+      width: "90%",
+      // virtualDomBuffer:"1000px",
+      layoutColumnsOnNewData:true,
+      responsiveLayout:"hide",
+      placeholder:"Data Loading...",
+      layout:"fitData",
+
+  };
+
+
   return (
     <div>
       <Navbar
@@ -1627,11 +1739,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
         activeTab={activeCategoryFilter}
         onUpdateButtonClicked={onUpdateButtonClicked}
       />
-
       <Container fluid className='dashboard-route'>
-
-
-
         <div className="full-width">
           <Row className="no-gutters">
             <Col className="searchbar-container">
@@ -1698,7 +1806,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                   </div>
                 </Col>
               </Row>
-
               <Row className="dashboard-charts-container">
                 <Col>
                   <Row>
@@ -1836,9 +1943,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                         loading={loadingOutcomesData}
                       />
                     </Col>
-
                   </Row>
-
                   <Row>
                     <Col>
                       <SectionTitle title="Sponsors" color="blue" />
@@ -1875,11 +1980,20 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       />
                     </Col>
                   </Row>
+                  <CsvDownloader
+                  filename="myfile"
+                  datas={allTableData}
+                  columns={columns_download}
+                  text="DOWNLOAD" />
+                  <ReactTabulator
+                    data={allTableData}
+                    columns={columns}
+                    options={options}
+                  />
                 </Col>
               </Row>
           </div>
         </div>
-
         { activeCategoryFilter &&
           <SlidingPane
             isOpen={sidebarIsVisible}
@@ -1905,6 +2019,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
         }
       </Container>
     </div>
+
   )
 }
 
