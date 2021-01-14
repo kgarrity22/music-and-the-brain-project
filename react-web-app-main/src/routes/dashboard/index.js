@@ -5,15 +5,15 @@ import { Container, Row, Col } from 'react-bootstrap'
 import { Auth } from 'aws-amplify';
 
 import { ReactTabulator } from 'react-tabulator'
-import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React 15.x
+// import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React 15.x
 
 // import { AddBox, ArrowDownward } from "@material-ui/icons";
-import MaterialTable from "material-table";
+// import MaterialTable from "material-table";
 // import TableViewer from 'react-js-table-with-csv-dl';
 
 import CsvDownloader from 'react-csv-downloader';
 
-
+import MainTable from './components/tabulator'
 
 
 import SlidingPane from "react-sliding-pane";
@@ -31,7 +31,8 @@ import PrismBarChart from './components/bar-chart'
 import PrismSunburst from './components/sunburst-chart'
 import PrismScatterplot from './components/scatterplot'
 import PrismChoropleth from './components/choropleth'
-// import TabulatorTable from './components/tabulator'
+
+// import MainTable from './components/tabulator'
 
 import './index.css'
 import 'react-tabulator/lib/styles.css';
@@ -135,6 +136,9 @@ function DashboardRoute(props) {
   }, [currentUser])
 
   const [airtableFilters, setAirtableFilters] = useState("")
+  const [options, setOptions] = useState({placeholder:"Data Loading...",})
+
+
 
   const [updateRequested, setUpdatedRequested] = useState("")
   // sets filters
@@ -652,6 +656,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
 
 
+  // landscapes
+  const [landscapeChartData, setLandscapeChartData] = useState([])
+  const [landscapeXAxis, setLandscapeXAxis] = useState("Trial Start Date")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Technology as Intervention")
+  const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
+
 
 
   // loading variables - set the loading icons until the data has fully loaded
@@ -662,7 +672,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [loadingOutcomesData, setLoadingOutcomesData] = useState(true)
   const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
   const [loadingGeographyData, setLoadingGeographyData] = useState(true)
-
+  const [loadingLandscapeData, setLoadingLandscapeData] = useState(true)
   const [loadingAllTableData, setLoadingAllTableData] = useState(true)
   const [allTableData, setAllTableData] = useState([])
 
@@ -962,6 +972,27 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
     setLoadingTrialsData(false)
   }
+
+// convert this to add the landscape chart
+  // const fetchLandscapeChartData = async () => {
+  //   const result = await axios.post(
+  //     'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/landscape',
+  //     {
+  //       filters: generateFiltersPostBody(),
+  //       x_axis: landscapeXAxis,
+  //       y_axis: landscapeYAxis,
+  //       z_axis: landscapeZAxis,
+  //     },
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     }
+  //   );
+  //
+  //   setLandscapeChartData(result.data);
+  //   setLoadingLandscapeData(false)
+  // }
 
   // this creates the data for a bar chart given a dictionary of name and number
   function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
@@ -1425,10 +1456,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             console.error(err);
             return reject({});
           }
-          var all_table = {}
-          all_table["table_data"] = table_data
 
-          resolve(all_table)
+          var alltable = {}
+          alltable["tabledata"] = table_data
+          resolve(alltable)
       })
     })
 }// end of get trialStatusPieChartData
@@ -1438,10 +1469,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   const fetchTableData = async () => {
     const result = await getTableData()
-    //console.log("RESULT of tabledata: ", result.table_data)
-    setAllTableData(result.table_data)
-    //console.log("all_table: ", allTableData)
+
+    setAllTableData(result.tabledata)
+    console.log("all_table: ", allTableData)
+    console.log("alltable: ", setAllTableData(result.tabledata))
     setLoadingAllTableData(false)
+
 
   }
 
@@ -1463,6 +1496,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       fetchGeographyData();
       setLoadingAllTableData(true)
       fetchTableData();
+      // console.log("table data post fetch: ", allTableData)
+      // console.log("options post: ", options)
       // console.log("What does fetchTrialsMetricData LOOK LIKE: ", fetchTrialsMetricData())
     }
     // eslint-disable-next-line
@@ -1472,33 +1507,29 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     return <Redirect to="/login" />
   }
 
+  const setLandscapeAxis = (axis, value) => {
+    console.log(axis, value)
+    switch (axis) {
+      case "x":
+        setLandscapeXAxis(value)
+        break;
+      case "y":
+        setLandscapeYAxis(value)
+        break;
+      case "z":
+        setLandscapeZAxis(value)
+        break;
+      default:
+        break;
+    }
+  }
+
   // closes the sidebar when you click away
   const closeSidebar = () => {
     setSidebarIsVisible(false)
     setActiveCategoryFilter("")
     setActiveParentFilterSections({})
   }
-
-  // // this is the extra piece for the layered side nav
-  // const onFilterHover = (filter) => {
-  //   setHoveredParentFilter(filter)
-  //   if (!activeParentFilter) {
-  //     switch (activeCategoryFilter) {
-  //       case 'Conditions':
-  //         //setActiveChildFilterSections({[filter]: conditionsFilters['Children'][filter]})
-  //         break;
-  //       case 'Sponsors':
-  //         // setActiveChildFilterSections({[filter]: sponsorsFilters['Children'][filter]})
-  //         break;
-  //       case 'Geography':
-  //         // setActiveChildFilterSections({[filter]: geographyFilters['Children'][filter]})
-  //         break;
-  //       default:
-  //         setActiveChildFilterSections({})
-  //         break;
-  //     }
-  //   }
-  // }
 
   const onFilterUnHover = (filter) => {
     setHoveredParentFilter(null)
@@ -1636,20 +1667,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       setActiveChildFilterSections({})
     } else {
       setActiveParentFilter(filter)
-      // switch (activeCategoryFilter) {
-      //   case 'Conditions':
-      //     //setActiveChildFilterSections({[filter]: conditionsFilters['Children'][filter]})
-      //     break;
-      //   case 'Sponsors':
-      //     // setActiveChildFilterSections({[filter]: sponsorsFilters['Children'][filter]})
-      //     break;
-      //   case 'Geography':
-      //     // setActiveChildFilterSections({[filter]: geographyFilters['Children'][filter]})
-      //     break;
-      //   default:
-      //     setActiveChildFilterSections({})
-      //     break;
-      // }
+
     }
   }
 
@@ -1668,25 +1686,25 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   const columns = [
   { title: "Age Groups", field: "Age_Groups", width: 150 },
-  { title: "Conditions", field: "Conditions", width: 150 },
-  { title: "Countries", field: "Geography_Countries", width: 150  },
-  { title: "Enrollment", field: "Enrollment", width: 150 },
-  { title: "Enrollment Target", field: "Enrollment_Target", width: 150 },
-  { title: "Settings", field: "Facility_Settings", width: 150 },
-  { title: "Regions", field: "Geography_Regions", width: 150 },
-  { title: "Intervention Types", field: "Intervention_Types", width: 150 },
-  { title: "Interventions", field: "Interventions", width: 150 },
-  { title: "NCT", field: "NCT", width: 150 },
-  { title: "Outcomes", field: "Outcome_Concepts", width: 150 },
-  { title: "Phase", field: "Phase", width: 150 },
-  { title: "Purpose", field: "Purpose", width: 150 },
-  { title: "Randomization", field: "Randomization", width: 150 },
-  { title: "Single/Multi Site", field: "Single_Multi_Site", width: 150 },
-  { title: "Sponsor", field: "Sponsor", width: 150 },
-  { title: "Start Year", field: "Start_Year", width: 150 },
-  { title: "Status", field: "Status", width: 150 },
-  { title: "Study Type", field: "Study_Type", width: 150 },
-  { title: "Title", field: "Title", width: 150 }
+  { title: "Conditions", field: "Conditions", hozAlign: "left", width: 150 },
+  { title: "Countries", field: "Geography_Countries", hozAlign: "left", width: 150  },
+  { title: "Enrollment", field: "Enrollment", hozAlign: "left", width: 150 },
+  { title: "Enrollment Target", field: "Enrollment_Target", hozAlign: "left", width: 150 },
+  { title: "Settings", field: "Facility_Settings", hozAlign: "left", width: 150 },
+  { title: "Regions", field: "Geography_Regions", hozAlign: "left", width: 150 },
+  { title: "Intervention Types", field: "Intervention_Types", hozAlign: "left", width: 150 },
+  { title: "Interventions", field: "Interventions", hozAlign: "left", width: 150 },
+  { title: "NCT", field: "NCT", hozAlign: "left", width: 150 },
+  { title: "Outcomes", field: "Outcome_Concepts", hozAlign: "left", width: 150 },
+  { title: "Phase", field: "Phase", hozAlign: "left", width: 150 },
+  { title: "Purpose", field: "Purpose", hozAlign: "left", width: 150 },
+  { title: "Randomization", field: "Randomization", hozAlign: "left", width: 150 },
+  { title: "Single/Multi Site", field: "Single_Multi_Site", hozAlign: "left", width: 150 },
+  { title: "Sponsor", field: "Sponsor", hozAlign: "left", width: 150 },
+  { title: "Start Year", field: "Start_Year", hozAlign: "left", width: 150 },
+  { title: "Status", field: "Status", hozAlign: "left", width: 150 },
+  { title: "Study Type", field: "Study_Type", hozAlign: "left", width: 150 },
+  { title: "Title", field: "Title", hozAlign: "left", width: 150 }
   ];
 
   const columns_download = [
@@ -1719,17 +1737,25 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 // });
 // console.log("TABLE; ", table)
 
-  const options = {
-
-      // height: "500px",
-      width: "90%",
-      // virtualDomBuffer:"1000px",
-      layoutColumnsOnNewData:true,
-      responsiveLayout:"hide",
-      placeholder:"Data Loading...",
-      layout:"fitData",
-
-  };
+  // setOptions({placeholder:"Data Loading...",})
+  // const options = {
+  //
+  //
+  //     // height: "500px",
+  //     // width: "200px",
+  //     layoutColumnsOnNewData:true,
+  //     // responsiveLayout:"hide",
+  //     // placeholder:"Data Loading...",
+  //     // scrollToRow:false,
+  //     // pagination: 'local',
+  //     //       paginationSize:20,
+  //     //       paginationSizeSelector:[20, 50, 100],
+  //     //       layout:'fitDataFill',
+  //     //       movableColumns: true,
+  //     //       selectable:true,
+  //     //       scrollToColumnIfVisible: false,
+  //     redraw: true,
+  // };
 
 
   return (
@@ -1863,6 +1889,24 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       />
                     </Col>
                   </Row>
+
+
+                  <Row>
+                    <Col>
+                      <PrismScatterplot
+                        title="Landscape"
+                        colors="rainbow"
+                        chartData={landscapeChartData}
+                        xAxisLabel={landscapeXAxis}
+                        yAxisLabel={landscapeYAxis}
+                        zAxisLabel={landscapeZAxis}
+                        setLandscapeAxis={setLandscapeAxis}
+                        loading={loadingLandscapeData}
+                      />
+                    </Col>
+                  </Row>
+
+
                   <Row>
                     <Col>
                       <SectionTitle title="Populations" color="orange" />
@@ -1981,15 +2025,15 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                     </Col>
                   </Row>
                   <CsvDownloader
-                  filename="myfile"
+                  filename="data"
                   datas={allTableData}
                   columns={columns_download}
-                  text="DOWNLOAD" />
-                  <ReactTabulator
-                    data={allTableData}
-                    columns={columns}
-                    options={options}
+                  text="Download the Data"
                   />
+                  <MainTable />
+
+
+
                 </Col>
               </Row>
           </div>

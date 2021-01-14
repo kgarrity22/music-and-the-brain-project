@@ -18,6 +18,13 @@
   margin-bottom: 0px;
 }
 
+.scatterplot-chart-container .no-data-label {
+  color: #323338;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
 .scatterplot-chart-container .dropdown-filters-container {
   display: flex;
   margin-right: 50px;
