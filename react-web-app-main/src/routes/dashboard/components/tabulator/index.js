@@ -15,6 +15,7 @@ import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React
 import { ReactTabulator } from 'react-tabulator'
 
 
+
 let data = [];
 
 
@@ -49,6 +50,16 @@ function getTableData(){
               return reject({});
             }
 
+            for (var record of table_data){
+              //console.log("record: ", record)
+              for (var key of Object.keys(record)){
+                //console.log("val: ", record[[key]])
+                if (typeof(record[key] !== "String")){
+                  record[key] = record[key].toString()
+                }
+              }
+            }
+
             var tabledata = {}
             tabledata["tabledata"] = table_data
             resolve(tabledata)
@@ -59,6 +70,9 @@ function getTableData(){
   let options = {
     height: 500,
     placeholder: "Loading Data...",
+    downloadDataFormatter: (data) => data,
+    downloadReady: (fileContents, blob) => blob,
+
 
   };
 
@@ -96,10 +110,8 @@ function getTableData(){
 
       // console.log('this2', this.ref)
 
-      options = {height: 500, placeholder:"Loading Data..."}
+
       data = new_data
-
-
     }
 
     setData()
@@ -113,7 +125,11 @@ class MainTable extends React.Component {
   // };
   ref = null;
 
+  downloadData = () => {
+    console.log("This first one: ", this.ref.table.modules.download)
+      this.ref.table.download("csv", "data.csv");
 
+    };
 
 
   render() {
@@ -121,11 +137,13 @@ class MainTable extends React.Component {
 
     return (
       <div>
+        <button onClick={this.downloadData}>Download</button>
         <ReactTabulator
-
+          ref={ref => (this.ref = ref)}
           columns={columns}
           data={data}
           options={options}
+
 
 
         />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Redirect, withRouter } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap'
-// import axios from 'axios';
+import axios from 'axios';
 import { Auth } from 'aws-amplify';
 
 import { ReactTabulator } from 'react-tabulator'
@@ -11,9 +11,14 @@ import { ReactTabulator } from 'react-tabulator'
 // import MaterialTable from "material-table";
 // import TableViewer from 'react-js-table-with-csv-dl';
 
-import CsvDownloader from 'react-csv-downloader';
 
+import CsvDownloader from 'react-csv-downloader';
+// import { CSVLink, CSVDownload } from "react-csv";
+import TabulatorTable  from './components/tabulator/index-test.js'
 import MainTable from './components/tabulator'
+
+import { CSVLink } from "react-csv";
+
 
 
 import SlidingPane from "react-sliding-pane";
@@ -658,8 +663,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   // landscapes
   const [landscapeChartData, setLandscapeChartData] = useState([])
-  const [landscapeXAxis, setLandscapeXAxis] = useState("Trial Start Date")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Technology as Intervention")
+  const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Sponsor")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
 
 
@@ -973,26 +978,76 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setLoadingTrialsData(false)
   }
 
+  function getLandscapeChartData() {
+    // data list
+    var data_list = []
+    var statuses = new Set()
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+
+          records.forEach(function(record) {
+            statuses.add(record.get('Status'))
+            // get all status
+            let point = {}
+            point["Status"] = record.get('Status')
+            point["x"] = String(record.get(landscapeXAxis))
+            point["y"] = String(record.get([landscapeYAxis]))
+            point["z"] = record.get(landscapeZAxis)
+
+            data_list.push(point)
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          // console.log("data list: ", data_list)
+          let clean_data = {}
+          for (var i of data_list){
+            if (i.Status in clean_data){
+              var val = clean_data[i.Status]
+              val.push({"x": i.x, "y": i.y, "z": i.z})
+            } else {
+              // console.log("I for else: ", i)
+              clean_data[i.Status] = [{"x": i.x, "y": i.y, "z": i.z}]
+            }
+          } // end for
+          console.log("clean data: ", clean_data)
+          var all_data=[]
+          for (var item of Object.keys(clean_data)){
+            var cleaned = {}
+            cleaned["id"] = item
+            cleaned["data"] = clean_data[item]
+            all_data.push(cleaned)
+          }
+
+          var landscape_result={}
+          landscape_result["data"] = all_data
+          resolve(landscape_result)
+
+        })
+      })
+  }// end of get trialStatusPieChartData
+
+
 // convert this to add the landscape chart
-  // const fetchLandscapeChartData = async () => {
-  //   const result = await axios.post(
-  //     'https://7x2xibe2wl.execute-api.us-east-1.amazonaws.com/metrics/landscape',
-  //     {
-  //       filters: generateFiltersPostBody(),
-  //       x_axis: landscapeXAxis,
-  //       y_axis: landscapeYAxis,
-  //       z_axis: landscapeZAxis,
-  //     },
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     }
-  //   );
-  //
-  //   setLandscapeChartData(result.data);
-  //   setLoadingLandscapeData(false)
-  // }
+  const fetchLandscapeChartData = async () => {
+
+    const result = await getLandscapeChartData()
+    console.log("LANDSCAPE result: ", result)
+
+    setLandscapeChartData(result);
+    setLoadingLandscapeData(false)
+  }
 
   // this creates the data for a bar chart given a dictionary of name and number
   function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
@@ -1433,6 +1488,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   var tab_ind = 0
   var table_data = []
+  var csv_list = []
   function getTableData() {
 
     return new Promise((resolve, reject) => {
@@ -1445,9 +1501,14 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
           records.forEach(function(record) {
 
             // console.log("Record: ", record)
+
             record.fields["id"] = tab_ind
+
             tab_ind = tab_ind + 1;
             table_data.push(record.fields)
+            // csv_list.push(String(record.fields))
+
+
 
           });
           fetchNextPage();
@@ -1457,8 +1518,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             return reject({});
           }
 
+          
+          console.log("table: ", table_data)
           var alltable = {}
           alltable["tabledata"] = table_data
+
+
           resolve(alltable)
       })
     })
@@ -1471,8 +1536,9 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     const result = await getTableData()
 
     setAllTableData(result.tabledata)
-    console.log("all_table: ", allTableData)
-    console.log("alltable: ", setAllTableData(result.tabledata))
+    console.log("table data: ", result.tabledata)
+    console.log("first 4 table data: ", result.tabledata.slice(0, 4))
+
     setLoadingAllTableData(false)
 
 
@@ -1496,6 +1562,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       fetchGeographyData();
       setLoadingAllTableData(true)
       fetchTableData();
+      setLoadingLandscapeData(true)
+      fetchLandscapeChartData();
       // console.log("table data post fetch: ", allTableData)
       // console.log("options post: ", options)
       // console.log("What does fetchTrialsMetricData LOOK LIKE: ", fetchTrialsMetricData())
@@ -1508,7 +1576,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   }
 
   const setLandscapeAxis = (axis, value) => {
-    console.log(axis, value)
+    console.log("landscape axis: ", axis, value)
     switch (axis) {
       case "x":
         setLandscapeXAxis(value)
@@ -1707,27 +1775,34 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   { title: "Title", field: "Title", hozAlign: "left", width: 150 }
   ];
 
+  const headers = [
+    { label: "Age Groups", key: "Age_Groups" },
+    { label: "Start Year", key: "Start_Year" },
+    { label: "Enrollment", key: "Enrollment" }
+  ];
+
+
   const columns_download = [
-  { displayName: "Age Groups", id: "Age_Groups"},
-  { displayName: "Conditions", id: "Conditions"},
-  { displayName: "Countries", id: "Geography_Countries"},
-  { displayName: "Enrollment", id: "Enrollment"},
-  { displayName: "Enrollment Target", id: "Enrollment_Target"},
-  { displayName: "Settings", id: "Facility_Settings"},
-  { displayName: "Regions", id: "Geography_Regions"},
-  { displayName: "Intervention Types", id: "Intervention_Types"},
-  { displayName: "Interventions", id: "Interventions"},
-  { displayName: "NCT", id: "NCT"},
-  { displayName: "Outcomes", id: "Outcome_Concepts"},
-  { displayName: "Phase", id: "Phase"},
-  { displayName: "Purpose", id: "Purpose"},
-  { displayName: "Randomization", id: "Randomization"},
-  { displayName: "Single/Multi Site", id: "Single_Multi_Site"},
-  { displayName: "Sponsor", id: "Sponsor"},
-  { displayName: "Start Year", id: "Start_Year"},
-  { displayName: "Status", id: "Status"},
-  { displayName: "Study Type", id: "Study_Type"},
-  { displayName: "Title", id: "Title"}
+  { id: "Age_Groups", displayName: "Age Groups"},
+  { id: "Conditions", displayName: "Conditions"},
+  { id: "Geography_Countries", displayName: "Countries"},
+  { id: "Enrollment", displayName: "Enrollment"},
+  { id: "Enrollment_Target", displayName: "Enrollment Target"},
+  { id: "Facility_Settings", displayName: "Settings"},
+  { id: "Geography_Regions", displayName: "Regions"},
+  { id: "Intervention_Types", displayName: "Intervention Types"},
+  { id: "Interventions", displayName: "Interventions"},
+  { id: "NCT", displayName: "NCT"},
+  { id: "Outcome_Concepts", displayName: "Outcomes"},
+  { id: "Phase", displayName: "Phase"},
+  { id: "Purpose", displayName: "Purpose"},
+  { id: "Randomization", displayName: "Randomization"},
+  { id: "Single_Multi_Site", displayName: "Single/Multi Site"},
+  { id: "Sponsor", displayName: "Sponsor"},
+  { id: "Start_Year", displayName: "Start Year"},
+  { id: "Status", displayName: "Status"},
+  { id: "Study_Type", displayName: "Study Type"},
+  { id: "Title", displayName: "Title"}
   ];
 
 //   var table = new ReactTabulator("#", {
@@ -2024,12 +2099,9 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       />
                     </Col>
                   </Row>
-                  <CsvDownloader
-                  filename="data"
-                  datas={allTableData}
-                  columns={columns_download}
-                  text="Download the Data"
-                  />
+
+
+
                   <MainTable />
 
 

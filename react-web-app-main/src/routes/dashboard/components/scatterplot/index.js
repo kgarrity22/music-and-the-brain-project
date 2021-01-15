@@ -77,6 +77,7 @@ const PrismScatterplot = (props) => {
   return (
     <div className="scatterplot-chart-container">
       <div className="chart-title-container">
+
         <p className="chart-title">{props.title}</p>
         <div className="dropdown-filters-container">
           <div className="dropdown-container">
@@ -84,12 +85,10 @@ const PrismScatterplot = (props) => {
             <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("x", evt.target.text)}>
               <Dropdown.Toggle variant="success" id="dropdown-basic">{props.xAxisLabel}</Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item>Trial Start Date</Dropdown.Item>
-                <Dropdown.Item>Technology as Intervention</Dropdown.Item>
-                <Dropdown.Item>Technology as Outcome</Dropdown.Item>
-                <Dropdown.Item>Age Group</Dropdown.Item>
+                <Dropdown.Item>Start_Year</Dropdown.Item>
+                <Dropdown.Item>Age_Groups</Dropdown.Item>
                 <Dropdown.Item>Sponsor</Dropdown.Item>
-                <Dropdown.Item>Sponsor Type</Dropdown.Item>
+                <Dropdown.Item>Sponsor_Type</Dropdown.Item>
                 <Dropdown.Item>Condition</Dropdown.Item>
                 <Dropdown.Item>Country</Dropdown.Item>
                 <Dropdown.Item>Region</Dropdown.Item>
@@ -103,12 +102,10 @@ const PrismScatterplot = (props) => {
             <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("y", evt.target.text)}>
               <Dropdown.Toggle variant="success" id="dropdown-basic">{props.yAxisLabel}</Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item>Trial Start Date</Dropdown.Item>
-                <Dropdown.Item>Technology as Intervention</Dropdown.Item>
-                <Dropdown.Item>Technology as Outcome</Dropdown.Item>
-                <Dropdown.Item>Age Group</Dropdown.Item>
+                <Dropdown.Item>Start_Year</Dropdown.Item>
+                <Dropdown.Item>Age_Groups</Dropdown.Item>
                 <Dropdown.Item>Sponsor</Dropdown.Item>
-                <Dropdown.Item>Sponsor Type</Dropdown.Item>
+                <Dropdown.Item>Sponsor_Type</Dropdown.Item>
                 <Dropdown.Item>Condition</Dropdown.Item>
                 <Dropdown.Item>Country</Dropdown.Item>
                 <Dropdown.Item>Region</Dropdown.Item>
@@ -123,10 +120,27 @@ const PrismScatterplot = (props) => {
               <Dropdown.Toggle variant="success" id="dropdown-basic">{props.zAxisLabel}</Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item>Enrollment</Dropdown.Item>
-                <Dropdown.Item>Trial Volume</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
+          <div className="chart">
+            <ResponsiveScatterPlot
+              data={ props.chartData }
+              margin={ margins }
+              xScale={ scale }
+              yScale={ scale }
+              blendMode="multiply"
+              colors={ colors }
+              nodeSize={ nodeSize }
+              tooltip={ generateTooltip }
+              animate={ false }
+              axisTop={ null }
+              axisRight={ null }
+              axisBottom={ axisBottom }
+              axisLeft={ axisLeft }
+              legends={ legends }
+            />
+            </div>
         </div>
       </div>
       {
