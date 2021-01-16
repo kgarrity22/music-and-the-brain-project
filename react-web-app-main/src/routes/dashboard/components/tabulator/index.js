@@ -1,25 +1,13 @@
 
 import React from "react";
-
-
-import DateEditor from "react-tabulator/lib/editors/DateEditor";
-import MultiValueFormatter from "react-tabulator/lib/formatters/MultiValueFormatter";
-// import MultiSelectEditor from "react-tabulator/lib/editors/MultiSelectEditor";
+import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React 15.x
+import { ReactTabulator } from 'react-tabulator'
 
 import "react-tabulator/lib/styles.css"; // default theme
 import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme(s)
 
 
-import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React 15.x
-
-import { ReactTabulator } from 'react-tabulator'
-
-
-
 let data = [];
-
-
-
 
 function getTableData(){
       var Airtable = require('airtable');
@@ -37,7 +25,6 @@ function getTableData(){
 
             records.forEach(function(record) {
 
-              // console.log("Record: ", record)
               record.fields["id"] = tab_ind
               tab_ind = tab_ind + 1;
               table_data.push(record.fields)
@@ -51,15 +38,12 @@ function getTableData(){
             }
 
             for (var record of table_data){
-              //console.log("record: ", record)
               for (var key of Object.keys(record)){
-                //console.log("val: ", record[[key]])
                 if (typeof(record[key] !== "String")){
                   record[key] = record[key].toString()
                 }
               }
             }
-
             var tabledata = {}
             tabledata["tabledata"] = table_data
             resolve(tabledata)
@@ -72,8 +56,6 @@ function getTableData(){
     placeholder: "Loading Data...",
     downloadDataFormatter: (data) => data,
     downloadReady: (fileContents, blob) => blob,
-
-
   };
 
   let columns = [
@@ -100,29 +82,16 @@ function getTableData(){
       ];
 
 
-
-
-
     async function setData() {
       const res = await getTableData()
       console.log("RES: ", res.tabledata)
       const new_data = res.tabledata
-
-      // console.log('this2', this.ref)
-
-
       data = new_data
     }
-
     setData()
 
 
-
-
 class MainTable extends React.Component {
-  // state = {
-  //   data: [],
-  // };
   ref = null;
 
   downloadData = () => {
@@ -143,11 +112,7 @@ class MainTable extends React.Component {
           columns={columns}
           data={data}
           options={options}
-
-
-
         />
-
       </div>
     );
   }

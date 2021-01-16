@@ -4,26 +4,10 @@ import { Container, Row, Col } from 'react-bootstrap'
 import axios from 'axios';
 import { Auth } from 'aws-amplify';
 
-import { ReactTabulator } from 'react-tabulator'
-// import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React 15.x
-
-// import { AddBox, ArrowDownward } from "@material-ui/icons";
-// import MaterialTable from "material-table";
-// import TableViewer from 'react-js-table-with-csv-dl';
-
-
 import CsvDownloader from 'react-csv-downloader';
-// import { CSVLink, CSVDownload } from "react-csv";
-import TabulatorTable  from './components/tabulator/index-test.js'
-import MainTable from './components/tabulator'
-
-import { CSVLink } from "react-csv";
-
-
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
-
 
 import Navbar from './components/navbar'
 import Searchbar from './components/searchbar'
@@ -36,8 +20,8 @@ import PrismBarChart from './components/bar-chart'
 import PrismSunburst from './components/sunburst-chart'
 import PrismScatterplot from './components/scatterplot'
 import PrismChoropleth from './components/choropleth'
+import MainTable from './components/tabulator'
 
-// import MainTable from './components/tabulator'
 
 import './index.css'
 import 'react-tabulator/lib/styles.css';
@@ -84,46 +68,6 @@ const initialStats = [
   }
 ]
 
-
-// setting the initial filters
-
-const initialTrialFilters = {
-  Status: {},
-  Purpose: {},
-  Type: {},
-  Randomization: {},
-  Masking: {},
-  Phase: {}
-
-}
-
-
-const initialPopulationFilters = {
-  Age_Groups: {},
-  Enrollment_Target: {},
-  Facility_Settings: {},
-  Healthy_Volunteers: {},
-  Single_Multi_Site: {}
-
-}
-
-const initialInterventionsFilters = {
-
-}
-
-const initialOutcomesFilters = {
-
-}
-
-
-const initialSponsorsFilters = {
-
-}
-
-const initialGeographyFilters = {
-  Regions: {}
-}
-
 function DashboardRoute(props) {
 
   const [currentUser, setCurrentUser] = useState("")
@@ -141,7 +85,7 @@ function DashboardRoute(props) {
   }, [currentUser])
 
   const [airtableFilters, setAirtableFilters] = useState("")
-  const [options, setOptions] = useState({placeholder:"Data Loading...",})
+
 
 
 
@@ -215,7 +159,6 @@ function DashboardRoute(props) {
               }
             }
           }
-
       }
     }
 
@@ -262,12 +205,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     return str
   }
 
-  const [trialsFilters, setTrialsFilters] = useState(initialTrialFilters)
-  const [populationFilters, setPopulationFilters] = useState(initialPopulationFilters)
-  const [interventionsFilters, setInterventionsFilters] = useState(initialInterventionsFilters)
-  const [outcomesFilters, setOutcomesFilters] = useState(initialOutcomesFilters)
-  const [sponsorsFilters, setSponsorsFilters] = useState(initialSponsorsFilters)
-  const [geographyFilters, setGeographyFilters] = useState(initialGeographyFilters)
+  const [trialsFilters, setTrialsFilters] = useState({})
+  const [populationFilters, setPopulationFilters] = useState({})
+  const [interventionsFilters, setInterventionsFilters] = useState({})
+  const [outcomesFilters, setOutcomesFilters] = useState({})
+  const [sponsorsFilters, setSponsorsFilters] = useState({})
+  const [geographyFilters, setGeographyFilters] = useState({})
   const [initialFilterLoadComplete, setInitialFilterLoadComplete] = useState(false)
 
 
@@ -661,7 +604,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
 
 
-  // landscapes
+  //
+  /*/////////////////////////////////////////////////////////
+
+  *//////////////////////////////////////////////////////////
   const [landscapeChartData, setLandscapeChartData] = useState([])
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
   const [landscapeYAxis, setLandscapeYAxis] = useState("Sponsor")
@@ -678,13 +624,14 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
   const [loadingGeographyData, setLoadingGeographyData] = useState(true)
   const [loadingLandscapeData, setLoadingLandscapeData] = useState(true)
-  const [loadingAllTableData, setLoadingAllTableData] = useState(true)
-  const [allTableData, setAllTableData] = useState([])
+
+
 
   /*
   This function creates a dictionary where the key is and items name and the value
   is the occurences of that key
   */
+
   function pie_collection(dictionary, key){
     if(key in dictionary){
       dictionary[key]+=1;
@@ -708,6 +655,21 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       new_dict["value"] = value[i];
       pie_data.push(new_dict)
     }
+  }
+
+  // this creates the data for a bar chart given a dictionary of name and number
+  function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict[[bar_type]] = keys[i];
+      new_dict[[keys[i]]] = value[i];
+      bar_data.push(new_dict)
+    }
+
+    bar_formatted["data"] = bar_data;
+    bar_formatted["group_keys"] = keys
   }
 
   /*
@@ -816,7 +778,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             return reject({});
           }
 
-          // console.log("is this broken: ", single_metric_sponsors.size)
+
           single_metrics_result["trials"] = sum(single_metric_trials);
           single_metrics_result["participants"] = sum(single_metric_participants);
           single_metrics_result["interventions"] = single_metric_interventions;
@@ -1049,20 +1011,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     setLoadingLandscapeData(false)
   }
 
-  // this creates the data for a bar chart given a dictionary of name and number
-  function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
-    var keys = Object.keys(dictionary);
-    var value = Object.values(dictionary);
-    for (var i=0; i<keys.length; i++){
-      var new_dict = {};
-      new_dict[[bar_type]] = keys[i];
-      new_dict[[keys[i]]] = value[i];
-      bar_data.push(new_dict)
-    }
 
-    bar_formatted["data"] = bar_data;
-    bar_formatted["group_keys"] = keys
-  }
 
 
 
@@ -1350,7 +1299,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       }
 
 
-
+      const cc = require('@genyus/country-code');
       function getGeographyData() {
 
         return new Promise((resolve, reject) => {
@@ -1365,96 +1314,16 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
               records.forEach(function(record) {
                 // countries_list.push(record.get('Geography_Countries'))
                 var country = record.get('Geography_Countries')
-                var trial_NCT = record.get('NCT')
-                //console.log("NCT: ", trial_NCT, " Country: ", country)
-              //  console.log("country 0: ", country[0])
+
                 if (typeof(country)==='object'){
                   for (var item of country){
-                    // console.log("iTEM: ", item)
-                    if (item === "Argentina") {
-                      pie_collection(geography_country_dict, "ARG")
-                    } else if (item === "Australia") {
-                      pie_collection(geography_country_dict, "AUS")
-                    } else if (item === "Belgium") {
-                      pie_collection(geography_country_dict, "BEL")
-                    } else if (item === "Brazil") {
-                      pie_collection(geography_country_dict, "BRA")
-                    } else if (item === "Canada") {
-                      pie_collection(geography_country_dict, "CAN")
-                    } else if (item === "China") {
-                      pie_collection(geography_country_dict, "CHN")
-                    } else if (item === "Czechia") {
+                    // this if statement is just because the library isn't able to convert it
+                    if (item === "Czechia") {
                       pie_collection(geography_country_dict, "CZE")
-                    } else if (item === "Denmark") {
-                      pie_collection(geography_country_dict, "DNK")
-                    } else if (item === "Egypt") {
-                      pie_collection(geography_country_dict, "EGY")
-                    } else if (item === "Finland") {
-                      pie_collection(geography_country_dict, "FIN")
-                    } else if (item === "France") {
-                      pie_collection(geography_country_dict, "FRA")
-                    } else if (item === "Germany") {
-                      pie_collection(geography_country_dict, "DEU")
-                    } else if (item === "Greece") {
-                      pie_collection(geography_country_dict, "GRC")
-                    } else if (item === "Hong Kong") {
-                      pie_collection(geography_country_dict, "HKG")
-                    } else if (item === "Hungary") {
-                      pie_collection(geography_country_dict, "HUN")
-                    } else if (item === "Ireland") {
-                      pie_collection(geography_country_dict, "IRL")
-                    } else if (item === "Israel") {
-                      pie_collection(geography_country_dict, "ISR")
-                    } else if (item === "Italy") {
-                      pie_collection(geography_country_dict, "ITA")
-                    } else if (item === "Japan") {
-                      pie_collection(geography_country_dict, "JPN")
-                    } else if (item === "Mexico") {
-                      pie_collection(geography_country_dict, "MEX")
-                    } else if (item === "Netherlands") {
-                      pie_collection(geography_country_dict, "NLD")
-                    } else if (item === "Nigeria") {
-                      pie_collection(geography_country_dict, "NGA")
-                    } else if (item === "Norway") {
-                      pie_collection(geography_country_dict, "NOR")
-                    } else if (item === "Pakistan") {
-                      pie_collection(geography_country_dict, "PAK")
-                    } else if (item === "Poland") {
-                      pie_collection(geography_country_dict, "POL")
-                    } else if (item === "Portugal") {
-                      pie_collection(geography_country_dict, "PRT")
-                    } else if (item === "Romainia") {
-                      pie_collection(geography_country_dict, "ROU")
-                    } else if (item === "Singapore") {
-                      pie_collection(geography_country_dict, "SGP")
-                    } else if (item === "Slovakia") {
-                      pie_collection(geography_country_dict, "SVK")
-                    } else if (item === "South Korea") {
-                      pie_collection(geography_country_dict, "KOR")
-                    } else if (item === "Spain") {
-                      pie_collection(geography_country_dict, "ESP")
-                    } else if (item === "Sweden") {
-                      pie_collection(geography_country_dict, "AR")
-                    } else if (item === "Switzerland") {
-                      pie_collection(geography_country_dict, "CHE")
-                    } else if (item === "Taiwan") {
-                      pie_collection(geography_country_dict, "TWN")
-                    } else if (item === "Tanzania") {
-                      pie_collection(geography_country_dict, "AR")
-                    } else if (item === "Thailand") {
-                      pie_collection(geography_country_dict, "THA")
-                    } else if (item === "Turkey") {
-                      pie_collection(geography_country_dict, "TZA")
-                    } else if (item === "United Arab Emirates") {
-                      pie_collection(geography_country_dict, "ARE")
-                    } else if (item === "United Kingdom") {
-                      pie_collection(geography_country_dict, "GBR")
-                    } else if (item === "United States") {
-                      pie_collection(geography_country_dict, "USA")
-                    } else if (item === "Vietnam") {
-                      pie_collection(geography_country_dict, "VNM")
+                    } else {
+                      var code = cc.nameIncludes(item)[0].alpha3
+                      pie_collection(geography_country_dict, code)
                     }
-                    //pie_collection(geography_country_dict, item)
                   }
                 }
 
@@ -1468,7 +1337,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                 return reject({});
               }
 
-              //console.log("geog data; ", geography_country_dict)
+              console.log("geog data; ", geography_country_dict)
               geog_formatting(geography_country_dict, geography_result)
               resolve(geography_result)
 
@@ -1480,69 +1349,11 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const fetchGeographyData = async () => {
 
     const result = await getGeographyData()
-
     setGeographyFacilitiesChartData(result);
-
     setLoadingGeographyData(false)
   }
 
-  var tab_ind = 0
-  var table_data = []
-  var csv_list = []
-  function getTableData() {
 
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-          records.forEach(function(record) {
-
-            // console.log("Record: ", record)
-
-            record.fields["id"] = tab_ind
-
-            tab_ind = tab_ind + 1;
-            table_data.push(record.fields)
-            // csv_list.push(String(record.fields))
-
-
-
-          });
-          fetchNextPage();
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-          
-          console.log("table: ", table_data)
-          var alltable = {}
-          alltable["tabledata"] = table_data
-
-
-          resolve(alltable)
-      })
-    })
-}// end of get trialStatusPieChartData
-
-
-
-
-  const fetchTableData = async () => {
-    const result = await getTableData()
-
-    setAllTableData(result.tabledata)
-    console.log("table data: ", result.tabledata)
-    console.log("first 4 table data: ", result.tabledata.slice(0, 4))
-
-    setLoadingAllTableData(false)
-
-
-  }
 
   useEffect(() => {
     if (initialFilterLoadComplete) {
@@ -1560,13 +1371,11 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       fetchSponsorsData();
       setLoadingGeographyData(true)
       fetchGeographyData();
-      setLoadingAllTableData(true)
-      fetchTableData();
+      // setLoadingAllTableData(true)
+      // fetchTableData();
       setLoadingLandscapeData(true)
       fetchLandscapeChartData();
-      // console.log("table data post fetch: ", allTableData)
-      // console.log("options post: ", options)
-      // console.log("What does fetchTrialsMetricData LOOK LIKE: ", fetchTrialsMetricData())
+
     }
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
@@ -1752,85 +1561,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     'Geography': 'violet',
   }
 
-  const columns = [
-  { title: "Age Groups", field: "Age_Groups", width: 150 },
-  { title: "Conditions", field: "Conditions", hozAlign: "left", width: 150 },
-  { title: "Countries", field: "Geography_Countries", hozAlign: "left", width: 150  },
-  { title: "Enrollment", field: "Enrollment", hozAlign: "left", width: 150 },
-  { title: "Enrollment Target", field: "Enrollment_Target", hozAlign: "left", width: 150 },
-  { title: "Settings", field: "Facility_Settings", hozAlign: "left", width: 150 },
-  { title: "Regions", field: "Geography_Regions", hozAlign: "left", width: 150 },
-  { title: "Intervention Types", field: "Intervention_Types", hozAlign: "left", width: 150 },
-  { title: "Interventions", field: "Interventions", hozAlign: "left", width: 150 },
-  { title: "NCT", field: "NCT", hozAlign: "left", width: 150 },
-  { title: "Outcomes", field: "Outcome_Concepts", hozAlign: "left", width: 150 },
-  { title: "Phase", field: "Phase", hozAlign: "left", width: 150 },
-  { title: "Purpose", field: "Purpose", hozAlign: "left", width: 150 },
-  { title: "Randomization", field: "Randomization", hozAlign: "left", width: 150 },
-  { title: "Single/Multi Site", field: "Single_Multi_Site", hozAlign: "left", width: 150 },
-  { title: "Sponsor", field: "Sponsor", hozAlign: "left", width: 150 },
-  { title: "Start Year", field: "Start_Year", hozAlign: "left", width: 150 },
-  { title: "Status", field: "Status", hozAlign: "left", width: 150 },
-  { title: "Study Type", field: "Study_Type", hozAlign: "left", width: 150 },
-  { title: "Title", field: "Title", hozAlign: "left", width: 150 }
-  ];
-
-  const headers = [
-    { label: "Age Groups", key: "Age_Groups" },
-    { label: "Start Year", key: "Start_Year" },
-    { label: "Enrollment", key: "Enrollment" }
-  ];
-
-
-  const columns_download = [
-  { id: "Age_Groups", displayName: "Age Groups"},
-  { id: "Conditions", displayName: "Conditions"},
-  { id: "Geography_Countries", displayName: "Countries"},
-  { id: "Enrollment", displayName: "Enrollment"},
-  { id: "Enrollment_Target", displayName: "Enrollment Target"},
-  { id: "Facility_Settings", displayName: "Settings"},
-  { id: "Geography_Regions", displayName: "Regions"},
-  { id: "Intervention_Types", displayName: "Intervention Types"},
-  { id: "Interventions", displayName: "Interventions"},
-  { id: "NCT", displayName: "NCT"},
-  { id: "Outcome_Concepts", displayName: "Outcomes"},
-  { id: "Phase", displayName: "Phase"},
-  { id: "Purpose", displayName: "Purpose"},
-  { id: "Randomization", displayName: "Randomization"},
-  { id: "Single_Multi_Site", displayName: "Single/Multi Site"},
-  { id: "Sponsor", displayName: "Sponsor"},
-  { id: "Start_Year", displayName: "Start Year"},
-  { id: "Status", displayName: "Status"},
-  { id: "Study_Type", displayName: "Study Type"},
-  { id: "Title", displayName: "Title"}
-  ];
-
-//   var table = new ReactTabulator("#", {
-//     height:"311px",
-//     columns:columns,
-//
-// });
-// console.log("TABLE; ", table)
-
-  // setOptions({placeholder:"Data Loading...",})
-  // const options = {
-  //
-  //
-  //     // height: "500px",
-  //     // width: "200px",
-  //     layoutColumnsOnNewData:true,
-  //     // responsiveLayout:"hide",
-  //     // placeholder:"Data Loading...",
-  //     // scrollToRow:false,
-  //     // pagination: 'local',
-  //     //       paginationSize:20,
-  //     //       paginationSizeSelector:[20, 50, 100],
-  //     //       layout:'fitDataFill',
-  //     //       movableColumns: true,
-  //     //       selectable:true,
-  //     //       scrollToColumnIfVisible: false,
-  //     redraw: true,
-  // };
 
 
   return (
