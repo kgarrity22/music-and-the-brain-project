@@ -1518,7 +1518,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             return reject({});
           }
 
-          
+
           console.log("table: ", table_data)
           var alltable = {}
           alltable["tabledata"] = table_data
@@ -2093,17 +2093,21 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                     <Col>
                       <PrismChoropleth
                         colors="rainbow"
-                        title="Site Volume"
+                        title="Trial Volume By Country"
                         chartData={geographyFacilitiesChartData}
                         loading={loadingGeographyData}
                       />
                     </Col>
                   </Row>
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Data" color="blue" />
+                    </Col>
+                  </Row>
 
-
-
+                  <div className="table-container">
                   <MainTable />
-
+                  </div>
 
 
                 </Col>
