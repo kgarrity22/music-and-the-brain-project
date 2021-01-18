@@ -183,7 +183,7 @@ function DashboardRoute(props) {
     for (var item of filter_list){
 
       // Any fields that are lists of tags should go in this array to get filtered correctly
-      var listFields = ['Geography_Countries','Age_Groups','Outcome_Concepts']
+      var listFields = ['Geography_Countries','Age_Groups','Outcome_Concepts','Intervention_Types']
 
       var key = Object.keys(item)[0]
       var val = Object.values(item)[0]
@@ -1483,7 +1483,11 @@ function DashboardRoute(props) {
 
               records.forEach(function(record) {
                 // countries_list.push(record.get('Geography_Countries'))
-                var country = record.get('Geography_Countries')
+
+                var country = record.get('Countries_Rollup_Unique')
+                var trial_NCT = record.get('NCT')
+                //console.log("NCT: ", trial_NCT, " Country: ", country)
+              //  console.log("country 0: ", country[0])
 
                 if (typeof(country)==='object'){
                   for (var item of country){
@@ -1493,6 +1497,7 @@ function DashboardRoute(props) {
                     } else {
                       var code = cc.nameIncludes(item)[0].alpha3
                       pie_collection(geography_country_dict, code)
+
                     }
                   }
                 }
@@ -1522,7 +1527,6 @@ function DashboardRoute(props) {
     setGeographyFacilitiesChartData(result);
     setLoadingGeographyData(false)
   }
-
 
 
   useEffect(() => {
@@ -1987,7 +1991,7 @@ function DashboardRoute(props) {
                       <PrismBarChart
                         color="blue"
                         layout="vertical"
-                        title="Sponsor Types"
+                        title="Sponsor Breakdown"
                         chartData={sponsorsTop10ByTrialsBarChartData.data}
                         groupKeys={sponsorsTop10ByTrialsBarChartData.group_keys}
                         indexKey="sponsor"
@@ -1999,6 +2003,16 @@ function DashboardRoute(props) {
                     </Col>
                   </Row>
                   <Row>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="blue"
+                      title="Sponsor Types"
+                      chartData={populationVolunteersPieChartData}
+                      loading={loadingPopulationData}
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
                     <Col>
                       <SectionTitle title="Geography" color="indigo" />
                     </Col>
@@ -2007,17 +2021,26 @@ function DashboardRoute(props) {
                     <Col>
                       <PrismChoropleth
                         colors="rainbow"
-                        title="Site Volume"
+                        title="Trial Volume By Country"
                         chartData={geographyFacilitiesChartData}
                         loading={loadingGeographyData}
                       />
                     </Col>
                   </Row>
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Data" color="blue" />
+                    </Col>
+                  </Row>
+
+                  <div className="table-container">
                   <MainTable
                     tabledata={allTableData}
                     updateData={allTableData}
                   />
-                </Col>
+                  </div>
+                
               </Row>
           </div>
         </div>
