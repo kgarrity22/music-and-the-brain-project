@@ -495,10 +495,6 @@ function DashboardRoute(props) {
               }
             }
           }
-
-
-
-
           var sorted_regions = {}
 
           for (var region of Object.keys(unique_regions)){
@@ -540,7 +536,7 @@ function DashboardRoute(props) {
     "Interventions": ["Intervention_Types"],
     "Outcomes": ['Outcome_Concepts'],
     "Sponsors": ['Sponsor_Type'],
-    // "Geography": [/* in here should be the exact names from airtable*/]
+    "Geography": [/* in here should be the exact names from airtable*/]
   }
 
   // creating a single function to help make creating dynamic filters much simpler
@@ -554,11 +550,44 @@ function DashboardRoute(props) {
       // the subfilter will be like Type or Age Group or Status
       for (var subfilter of all_filters[filter_header]) {
         // create a set for the subfilter to get the unique ones
+
         var unique_subfilters = {}
         var subfilter_set = new Set()
         // now we need to go through the alltabledata and get the values that of the subfilter key
+
+        if (subfilter === "Geography") {
+          // create a country list and a region list
+          // create a set of unique regions
+          for (var trial_regions of regions_list){
+            var region_list_index = regions_list.indexOf(trial_regions)
+            var country_names = countries_list[region_list_index]
+            if (typeof(trial_regions) === 'object'){
+              for (var region of trial_regions){
+                if (Object.keys(unique_regions).indexOf(region)!==-1){
+                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
+                } else {
+                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
+                }
+              }
+            }
+          }
+          var sorted_regions = {}
+          for (var region of Object.keys(unique_regions)){
+            var sorted_countries = {}
+            sortDictionary(unique_regions[region], sorted_countries)
+            unique_regions[region] = sorted_countries
+          }
+          sortDictionary(unique_regions, sorted_regions)
+          geography_filts["Regions"] = sorted_regions
+        }
+
+        else {
+
+        }
+
+
         for (var item of allTableData){
-          // find the key in the dictionary
+
           Object.keys(item).forEach(key => {
             if (key === subfilter){
               // now need to check what item[key] is
