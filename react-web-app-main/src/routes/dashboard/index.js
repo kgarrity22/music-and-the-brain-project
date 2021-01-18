@@ -4,26 +4,10 @@ import { Container, Row, Col } from 'react-bootstrap'
 import axios from 'axios';
 import { Auth } from 'aws-amplify';
 
-import { ReactTabulator } from 'react-tabulator'
-// import { React15Tabulator, reactFormatter } from "react-tabulator"; // for React 15.x
-
-// import { AddBox, ArrowDownward } from "@material-ui/icons";
-// import MaterialTable from "material-table";
-// import TableViewer from 'react-js-table-with-csv-dl';
-
-
 import CsvDownloader from 'react-csv-downloader';
-// import { CSVLink, CSVDownload } from "react-csv";
-import TabulatorTable  from './components/tabulator/index-test.js'
-import MainTable from './components/tabulator'
-
-import { CSVLink } from "react-csv";
-
-
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
-
 
 import Navbar from './components/navbar'
 import Searchbar from './components/searchbar'
@@ -36,13 +20,15 @@ import PrismBarChart from './components/bar-chart'
 import PrismSunburst from './components/sunburst-chart'
 import PrismScatterplot from './components/scatterplot'
 import PrismChoropleth from './components/choropleth'
+import MainTable from './components/tabulator'
 
-// import MainTable from './components/tabulator'
 
 import './index.css'
 import 'react-tabulator/lib/styles.css';
 import 'react-tabulator/css/bootstrap/tabulator_bootstrap.min.css';
 import 'react-tabulator/lib/styles.css';
+
+
 
 
 const initialStats = [
@@ -85,44 +71,9 @@ const initialStats = [
 ]
 
 
-// setting the initial filters
-
-const initialTrialFilters = {
-  Status: {},
-  Purpose: {},
-  Type: {},
-  Randomization: {},
-  Masking: {},
-  Phase: {}
-
-}
 
 
-const initialPopulationFilters = {
-  Age_Groups: {},
-  Enrollment_Target: {},
-  Facility_Settings: {},
-  Healthy_Volunteers: {},
-  Single_Multi_Site: {}
 
-}
-
-const initialInterventionsFilters = {
-
-}
-
-const initialOutcomesFilters = {
-
-}
-
-
-const initialSponsorsFilters = {
-
-}
-
-const initialGeographyFilters = {
-  Regions: {}
-}
 
 function DashboardRoute(props) {
 
@@ -141,8 +92,6 @@ function DashboardRoute(props) {
   }, [currentUser])
 
   const [airtableFilters, setAirtableFilters] = useState("")
-  const [options, setOptions] = useState({placeholder:"Data Loading...",})
-
 
 
   const [updateRequested, setUpdatedRequested] = useState("")
@@ -159,6 +108,7 @@ function DashboardRoute(props) {
 
 
   }
+
 
   function getAirtableFilters(){
     var filter_dict = generateFiltersPostBody()
@@ -215,14 +165,13 @@ function DashboardRoute(props) {
               }
             }
           }
-
       }
     }
 
     console.log("filters that have been stored: ", store)
     return store
   }
-var filters = "NOT(OR({Phase} = 'Phase 1'))"
+//var filters = "NOT(OR({Phase} = 'Phase 1'))"
 // formats the filter string to give airtable the filterbyformula
   function formatFiltersForAirtable(filter_list){
     // basic string
@@ -259,18 +208,19 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
     str += closestr
     console.log("FILTER STRING: ", str)
+
     return str
   }
 
-  const [trialsFilters, setTrialsFilters] = useState(initialTrialFilters)
-  const [populationFilters, setPopulationFilters] = useState(initialPopulationFilters)
-  const [interventionsFilters, setInterventionsFilters] = useState(initialInterventionsFilters)
-  const [outcomesFilters, setOutcomesFilters] = useState(initialOutcomesFilters)
-  const [sponsorsFilters, setSponsorsFilters] = useState(initialSponsorsFilters)
-  const [geographyFilters, setGeographyFilters] = useState(initialGeographyFilters)
+
+
+  const [trialsFilters, setTrialsFilters] = useState({})
+  const [populationFilters, setPopulationFilters] = useState({})
+  const [interventionsFilters, setInterventionsFilters] = useState({})
+  const [outcomesFilters, setOutcomesFilters] = useState({})
+  const [sponsorsFilters, setSponsorsFilters] = useState({})
+  const [geographyFilters, setGeographyFilters] = useState({})
   const [initialFilterLoadComplete, setInitialFilterLoadComplete] = useState(false)
-
-
 
 
   var Airtable = require('airtable');
@@ -294,18 +244,18 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   //INTERVENTIONS SETS
   var intervention_set = new Set();
 
-  var drugs_set = new Set();
-  var devices_set = new Set();
-  var drugs_set = new Set();
-  var biological_set = new Set();
-  var procedures_set = new Set();
-  var radiation_set = new Set();
-  var behavioral_set = new Set();
-  var genetic_set = new Set();
-  var dietarySupplements_set = new Set();
-  var combProds_set = new Set();
-  var diagnostic_set = new Set();
-  var otherInt_set = new Set();
+  // var drugs_set = new Set();
+  // var devices_set = new Set();
+  // var drugs_set = new Set();
+  // var biological_set = new Set();
+  // var procedures_set = new Set();
+  // var radiation_set = new Set();
+  // var behavioral_set = new Set();
+  // var genetic_set = new Set();
+  // var dietarySupplements_set = new Set();
+  // var combProds_set = new Set();
+  // var diagnostic_set = new Set();
+  // var otherInt_set = new Set();
 
   // OUTCOMES SETS
   var outcomes_set = new Set();
@@ -335,19 +285,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   //INTERVENTIONS DICTIONARIES
   var unique_interventions = {};
-
-  // var unique_drugs = {};
-  // var unique_devices = {};
-  // var unique_drugs = {};
-  // var unique_biological = {};
-  // var unique_procedures = {};
-  // var unique_radiation = {};
-  // var unique_behavioral = {};
-  // var unique_genetic = {};
-  // var unique_dietarySupplements = {};
-  // var unique_combProds = {};
-  // var unique_diagnostic = {};
-  // var unique_otherInt = {};
 
   // OUTCOMES DICTIONARIES
   var unique_outcomes = {};
@@ -380,6 +317,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
   }
 
+
+
   function create_filter_dict(set, unique_dict){
     for (var i of set) {
 
@@ -388,6 +327,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
     }
   }
+
+
 
   function getairtable() {
 
@@ -554,10 +495,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
               }
             }
           }
-
-
-
-
           var sorted_regions = {}
 
           for (var region of Object.keys(unique_regions)){
@@ -588,6 +525,105 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
 }// end of promise
+
+
+
+
+
+  var all_filters = {
+    "Trials": ['Phase', 'Status', 'Purpose', 'Study_Type', 'Randomization', 'Masking_Clean'],
+    "Populations": ['Age_Groups', 'Healthy_Volunteers', 'Single_Multi_Site', "Enrollment_Target", "Facility_Settings"],
+    "Interventions": ["Intervention_Types"],
+    "Outcomes": ['Outcome_Concepts'],
+    "Sponsors": ['Sponsor_Type'],
+    "Geography": [/* in here should be the exact names from airtable*/]
+  }
+
+  // creating a single function to help make creating dynamic filters much simpler
+  // TODO: need to put in conditions to handle geography
+  function newgetfilters(allTableData){
+    var result = {}
+    for (var filter_header of Object.keys(all_filters)){
+      // a filter header will be the big title i.e. Trials or Geography
+      // want to create a dictionary for each of these
+      var mainfilters = {}
+      // the subfilter will be like Type or Age Group or Status
+      for (var subfilter of all_filters[filter_header]) {
+        // create a set for the subfilter to get the unique ones
+
+        var unique_subfilters = {}
+        var subfilter_set = new Set()
+        // now we need to go through the alltabledata and get the values that of the subfilter key
+
+        if (subfilter === "Geography") {
+          // create a country list and a region list
+          // create a set of unique regions
+          for (var trial_regions of regions_list){
+            var region_list_index = regions_list.indexOf(trial_regions)
+            var country_names = countries_list[region_list_index]
+            if (typeof(trial_regions) === 'object'){
+              for (var region of trial_regions){
+                if (Object.keys(unique_regions).indexOf(region)!==-1){
+                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
+                } else {
+                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
+                }
+              }
+            }
+          }
+          var sorted_regions = {}
+          for (var region of Object.keys(unique_regions)){
+            var sorted_countries = {}
+            sortDictionary(unique_regions[region], sorted_countries)
+            unique_regions[region] = sorted_countries
+          }
+          sortDictionary(unique_regions, sorted_regions)
+          geography_filts["Regions"] = sorted_regions
+        }
+
+        else {
+
+        }
+
+
+        for (var item of allTableData){
+
+          Object.keys(item).forEach(key => {
+            if (key === subfilter){
+              // now need to check what item[key] is
+              //console.log("key is: ", key)
+              if (typeof(item[key])==='object'){
+                for (var i of item[key]){
+                  if (i === null){
+                  } else {
+                    var itemlist = i.split(", ")
+                    for (var j of itemlist){
+                      subfilter_set.add(j)
+                    }
+                  }
+                }
+              } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
+                var itemlist = item[key].split(", ")
+                for (var j of itemlist){
+                  subfilter_set.add(j)
+                }
+              } else {
+                subfilter_set.add(item[key])
+              }
+            }
+          })
+        }
+        // now when we get here, we will have created the set for one subfilter
+        // need to pass this subfilter to the create filter dictionary function
+        create_filter_dict([...subfilter_set].sort(), unique_subfilters)
+        mainfilters[subfilter] = unique_subfilters
+      }
+      result[filter_header] = mainfilters
+    }
+    console.log("NEW RESULT: ", result)
+  }
+
+
 
   const fetchFilters = async () => {
 
@@ -661,11 +697,20 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
 
 
-  // landscapes
+  //
+  /*/////////////////////////////////////////////////////////
+
+  *//////////////////////////////////////////////////////////
   const [landscapeChartData, setLandscapeChartData] = useState([])
+  const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
+  const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Sponsor")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
+
+  const [allTableData, setAllTableData] = useState([])
+  const [loadingAllTableData, setLoadingAllTableData] = useState(true)
+
 
 
 
@@ -678,13 +723,14 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
   const [loadingGeographyData, setLoadingGeographyData] = useState(true)
   const [loadingLandscapeData, setLoadingLandscapeData] = useState(true)
-  const [loadingAllTableData, setLoadingAllTableData] = useState(true)
-  const [allTableData, setAllTableData] = useState([])
+
+
 
   /*
   This function creates a dictionary where the key is and items name and the value
   is the occurences of that key
   */
+
   function pie_collection(dictionary, key){
     if(key in dictionary){
       dictionary[key]+=1;
@@ -708,6 +754,21 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       new_dict["value"] = value[i];
       pie_data.push(new_dict)
     }
+  }
+
+  // this creates the data for a bar chart given a dictionary of name and number
+  function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict[[bar_type]] = keys[i];
+      new_dict[[keys[i]]] = value[i];
+      bar_data.push(new_dict)
+    }
+
+    bar_formatted["data"] = bar_data;
+    bar_formatted["group_keys"] = keys
   }
 
   /*
@@ -745,6 +806,75 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
         //console.log(total);
       return total;
   }
+
+  var alldata = []
+
+  function getTableData(){
+        var Airtable = require('airtable');
+        var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+
+          var tab_ind = 0
+          var table_data = []
+
+        return new Promise((resolve, reject) => {
+          base('Trials').select({
+
+              filterByFormula: airtableFilters,
+              view: "Raw View"
+          }).eachPage(function page(records, fetchNextPage) {
+
+              records.forEach(function(record) {
+
+                record.fields["id"] = tab_ind
+                tab_ind = tab_ind + 1;
+                table_data.push(record.fields)
+                alldata.push(record.fields)
+
+              });
+              fetchNextPage();
+          }, function done(err) {
+              if (err) {
+                console.error(err);
+                return reject({});
+              }
+
+              // alldata = table_data
+              console.log("ALL data: ", alldata)
+
+
+              var tabledata = {}
+              // for (var record of table_data){
+              //   for (var key of Object.keys(record)){
+              //     if (typeof(record[key] !== "String")){
+              //       record[key] = record[key].toString()
+              //     }
+              //   }
+              // }
+              tabledata["tabledata"] = table_data
+              resolve(tabledata)
+          })
+        })
+    }
+
+
+
+    const fetchAllTableData = async () => {
+      const res = await getTableData()
+      newgetfilters(alldata)
+      //console.log("RES: ", res.tabledata)
+      for (var record of res.tabledata){
+        for (var key of Object.keys(record)){
+          if (typeof(record[key] !== "String")){
+            record[key] = record[key].toString()
+          }
+        }
+      }
+      setAllTableData(res.tabledata)
+      setLoadingAllTableData(false)
+      //console.log("all data as input: ", alldata)
+
+
+    }
 
   // GET SINGLE METRICS  from airtable
   function getSingleMetrics() {
@@ -816,7 +946,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
             return reject({});
           }
 
-          // console.log("is this broken: ", single_metric_sponsors.size)
+
           single_metrics_result["trials"] = sum(single_metric_trials);
           single_metrics_result["participants"] = sum(single_metric_participants);
           single_metrics_result["interventions"] = single_metric_interventions;
@@ -1046,23 +1176,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     console.log("LANDSCAPE result: ", result)
 
     setLandscapeChartData(result);
+    setLandscapeMinNodeSize(0);
+    setLandscapeMaxNodeSize(1000);
     setLoadingLandscapeData(false)
   }
 
-  // this creates the data for a bar chart given a dictionary of name and number
-  function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
-    var keys = Object.keys(dictionary);
-    var value = Object.values(dictionary);
-    for (var i=0; i<keys.length; i++){
-      var new_dict = {};
-      new_dict[[bar_type]] = keys[i];
-      new_dict[[keys[i]]] = value[i];
-      bar_data.push(new_dict)
-    }
 
-    bar_formatted["data"] = bar_data;
-    bar_formatted["group_keys"] = keys
-  }
 
 
 
@@ -1350,7 +1469,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       }
 
 
-
+      const cc = require('@genyus/country-code');
       function getGeographyData() {
 
         return new Promise((resolve, reject) => {
@@ -1364,97 +1483,22 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
               records.forEach(function(record) {
                 // countries_list.push(record.get('Geography_Countries'))
+
                 var country = record.get('Countries_Rollup_Unique')
                 var trial_NCT = record.get('NCT')
                 //console.log("NCT: ", trial_NCT, " Country: ", country)
               //  console.log("country 0: ", country[0])
+
                 if (typeof(country)==='object'){
                   for (var item of country){
-                    // console.log("iTEM: ", item)
-                    if (item === "Argentina") {
-                      pie_collection(geography_country_dict, "ARG")
-                    } else if (item === "Australia") {
-                      pie_collection(geography_country_dict, "AUS")
-                    } else if (item === "Belgium") {
-                      pie_collection(geography_country_dict, "BEL")
-                    } else if (item === "Brazil") {
-                      pie_collection(geography_country_dict, "BRA")
-                    } else if (item === "Canada") {
-                      pie_collection(geography_country_dict, "CAN")
-                    } else if (item === "China") {
-                      pie_collection(geography_country_dict, "CHN")
-                    } else if (item === "Czechia") {
+                    // this if statement is just because the library isn't able to convert it
+                    if (item === "Czechia") {
                       pie_collection(geography_country_dict, "CZE")
-                    } else if (item === "Denmark") {
-                      pie_collection(geography_country_dict, "DNK")
-                    } else if (item === "Egypt") {
-                      pie_collection(geography_country_dict, "EGY")
-                    } else if (item === "Finland") {
-                      pie_collection(geography_country_dict, "FIN")
-                    } else if (item === "France") {
-                      pie_collection(geography_country_dict, "FRA")
-                    } else if (item === "Germany") {
-                      pie_collection(geography_country_dict, "DEU")
-                    } else if (item === "Greece") {
-                      pie_collection(geography_country_dict, "GRC")
-                    } else if (item === "Hong Kong") {
-                      pie_collection(geography_country_dict, "HKG")
-                    } else if (item === "Hungary") {
-                      pie_collection(geography_country_dict, "HUN")
-                    } else if (item === "Ireland") {
-                      pie_collection(geography_country_dict, "IRL")
-                    } else if (item === "Israel") {
-                      pie_collection(geography_country_dict, "ISR")
-                    } else if (item === "Italy") {
-                      pie_collection(geography_country_dict, "ITA")
-                    } else if (item === "Japan") {
-                      pie_collection(geography_country_dict, "JPN")
-                    } else if (item === "Mexico") {
-                      pie_collection(geography_country_dict, "MEX")
-                    } else if (item === "Netherlands") {
-                      pie_collection(geography_country_dict, "NLD")
-                    } else if (item === "Nigeria") {
-                      pie_collection(geography_country_dict, "NGA")
-                    } else if (item === "Norway") {
-                      pie_collection(geography_country_dict, "NOR")
-                    } else if (item === "Pakistan") {
-                      pie_collection(geography_country_dict, "PAK")
-                    } else if (item === "Poland") {
-                      pie_collection(geography_country_dict, "POL")
-                    } else if (item === "Portugal") {
-                      pie_collection(geography_country_dict, "PRT")
-                    } else if (item === "Romainia") {
-                      pie_collection(geography_country_dict, "ROU")
-                    } else if (item === "Singapore") {
-                      pie_collection(geography_country_dict, "SGP")
-                    } else if (item === "Slovakia") {
-                      pie_collection(geography_country_dict, "SVK")
-                    } else if (item === "South Korea") {
-                      pie_collection(geography_country_dict, "KOR")
-                    } else if (item === "Spain") {
-                      pie_collection(geography_country_dict, "ESP")
-                    } else if (item === "Sweden") {
-                      pie_collection(geography_country_dict, "SWE")
-                    } else if (item === "Switzerland") {
-                      pie_collection(geography_country_dict, "CHE")
-                    } else if (item === "Taiwan") {
-                      pie_collection(geography_country_dict, "TWN")
-                    } else if (item === "Tanzania") {
-                      pie_collection(geography_country_dict, "TZA")
-                    } else if (item === "Thailand") {
-                      pie_collection(geography_country_dict, "THA")
-                    } else if (item === "Turkey") {
-                      pie_collection(geography_country_dict, "TUR")
-                    } else if (item === "United Arab Emirates") {
-                      pie_collection(geography_country_dict, "ARE")
-                    } else if (item === "United Kingdom") {
-                      pie_collection(geography_country_dict, "GBR")
-                    } else if (item === "United States") {
-                      pie_collection(geography_country_dict, "USA")
-                    } else if (item === "Vietnam") {
-                      pie_collection(geography_country_dict, "VNM")
+                    } else {
+                      var code = cc.nameIncludes(item)[0].alpha3
+                      pie_collection(geography_country_dict, code)
+
                     }
-                    //pie_collection(geography_country_dict, item)
                   }
                 }
 
@@ -1468,7 +1512,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                 return reject({});
               }
 
-              //console.log("geog data; ", geography_country_dict)
+              console.log("geog data; ", geography_country_dict)
               geog_formatting(geography_country_dict, geography_result)
               resolve(geography_result)
 
@@ -1480,69 +1524,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const fetchGeographyData = async () => {
 
     const result = await getGeographyData()
-
     setGeographyFacilitiesChartData(result);
-
     setLoadingGeographyData(false)
   }
 
-  var tab_ind = 0
-  var table_data = []
-  var csv_list = []
-  function getTableData() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-          records.forEach(function(record) {
-
-            // console.log("Record: ", record)
-
-            record.fields["id"] = tab_ind
-
-            tab_ind = tab_ind + 1;
-            table_data.push(record.fields)
-            // csv_list.push(String(record.fields))
-
-
-
-          });
-          fetchNextPage();
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-
-          console.log("table: ", table_data)
-          var alltable = {}
-          alltable["tabledata"] = table_data
-
-
-          resolve(alltable)
-      })
-    })
-}// end of get trialStatusPieChartData
-
-
-
-
-  const fetchTableData = async () => {
-    const result = await getTableData()
-
-    setAllTableData(result.tabledata)
-    console.log("table data: ", result.tabledata)
-    console.log("first 4 table data: ", result.tabledata.slice(0, 4))
-
-    setLoadingAllTableData(false)
-
-
-  }
 
   useEffect(() => {
     if (initialFilterLoadComplete) {
@@ -1561,15 +1546,25 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       setLoadingGeographyData(true)
       fetchGeographyData();
       setLoadingAllTableData(true)
-      fetchTableData();
-      setLoadingLandscapeData(true)
-      fetchLandscapeChartData();
-      // console.log("table data post fetch: ", allTableData)
-      // console.log("options post: ", options)
-      // console.log("What does fetchTrialsMetricData LOOK LIKE: ", fetchTrialsMetricData())
+      fetchAllTableData();
+      // console.log("tabledata after fetch: ", fetchAllTableData())
+      // setLoadingLandscapeData(true)
+      // fetchLandscapeChartData();
+      // setData();
+
+
     }
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
+
+  useEffect(() => {
+  if (initialFilterLoadComplete) {
+    setLoadingLandscapeData(true)
+    fetchLandscapeChartData();
+  }
+  // eslint-disable-next-line
+}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize])
+
 
   if (currentUser === undefined) {
     return <Redirect to="/login" />
@@ -1752,85 +1747,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     'Geography': 'violet',
   }
 
-  const columns = [
-  { title: "Age Groups", field: "Age_Groups", width: 150 },
-  { title: "Conditions", field: "Conditions", hozAlign: "left", width: 150 },
-  { title: "Countries", field: "Geography_Countries", hozAlign: "left", width: 150  },
-  { title: "Enrollment", field: "Enrollment", hozAlign: "left", width: 150 },
-  { title: "Enrollment Target", field: "Enrollment_Target", hozAlign: "left", width: 150 },
-  { title: "Settings", field: "Facility_Settings", hozAlign: "left", width: 150 },
-  { title: "Regions", field: "Geography_Regions", hozAlign: "left", width: 150 },
-  { title: "Intervention Types", field: "Intervention_Types", hozAlign: "left", width: 150 },
-  { title: "Interventions", field: "Interventions", hozAlign: "left", width: 150 },
-  { title: "NCT", field: "NCT", hozAlign: "left", width: 150 },
-  { title: "Outcomes", field: "Outcome_Concepts", hozAlign: "left", width: 150 },
-  { title: "Phase", field: "Phase", hozAlign: "left", width: 150 },
-  { title: "Purpose", field: "Purpose", hozAlign: "left", width: 150 },
-  { title: "Randomization", field: "Randomization", hozAlign: "left", width: 150 },
-  { title: "Single/Multi Site", field: "Single_Multi_Site", hozAlign: "left", width: 150 },
-  { title: "Sponsor", field: "Sponsor", hozAlign: "left", width: 150 },
-  { title: "Start Year", field: "Start_Year", hozAlign: "left", width: 150 },
-  { title: "Status", field: "Status", hozAlign: "left", width: 150 },
-  { title: "Study Type", field: "Study_Type", hozAlign: "left", width: 150 },
-  { title: "Title", field: "Title", hozAlign: "left", width: 150 }
-  ];
-
-  const headers = [
-    { label: "Age Groups", key: "Age_Groups" },
-    { label: "Start Year", key: "Start_Year" },
-    { label: "Enrollment", key: "Enrollment" }
-  ];
-
-
-  const columns_download = [
-  { id: "Age_Groups", displayName: "Age Groups"},
-  { id: "Conditions", displayName: "Conditions"},
-  { id: "Geography_Countries", displayName: "Countries"},
-  { id: "Enrollment", displayName: "Enrollment"},
-  { id: "Enrollment_Target", displayName: "Enrollment Target"},
-  { id: "Facility_Settings", displayName: "Settings"},
-  { id: "Geography_Regions", displayName: "Regions"},
-  { id: "Intervention_Types", displayName: "Intervention Types"},
-  { id: "Interventions", displayName: "Interventions"},
-  { id: "NCT", displayName: "NCT"},
-  { id: "Outcome_Concepts", displayName: "Outcomes"},
-  { id: "Phase", displayName: "Phase"},
-  { id: "Purpose", displayName: "Purpose"},
-  { id: "Randomization", displayName: "Randomization"},
-  { id: "Single_Multi_Site", displayName: "Single/Multi Site"},
-  { id: "Sponsor", displayName: "Sponsor"},
-  { id: "Start_Year", displayName: "Start Year"},
-  { id: "Status", displayName: "Status"},
-  { id: "Study_Type", displayName: "Study Type"},
-  { id: "Title", displayName: "Title"}
-  ];
-
-//   var table = new ReactTabulator("#", {
-//     height:"311px",
-//     columns:columns,
-//
-// });
-// console.log("TABLE; ", table)
-
-  // setOptions({placeholder:"Data Loading...",})
-  // const options = {
-  //
-  //
-  //     // height: "500px",
-  //     // width: "200px",
-  //     layoutColumnsOnNewData:true,
-  //     // responsiveLayout:"hide",
-  //     // placeholder:"Data Loading...",
-  //     // scrollToRow:false,
-  //     // pagination: 'local',
-  //     //       paginationSize:20,
-  //     //       paginationSizeSelector:[20, 50, 100],
-  //     //       layout:'fitDataFill',
-  //     //       movableColumns: true,
-  //     //       selectable:true,
-  //     //       scrollToColumnIfVisible: false,
-  //     redraw: true,
-  // };
 
 
   return (
@@ -1967,18 +1883,20 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
                   <Row>
-                    <Col>
-                      <PrismScatterplot
-                        title="Landscape"
-                        colors="rainbow"
-                        chartData={landscapeChartData}
-                        xAxisLabel={landscapeXAxis}
-                        yAxisLabel={landscapeYAxis}
-                        zAxisLabel={landscapeZAxis}
-                        setLandscapeAxis={setLandscapeAxis}
-                        loading={loadingLandscapeData}
-                      />
-                    </Col>
+                  <Col>
+                    <PrismScatterplot
+                      title="Landscape"
+                      colors="rainbow"
+                      chartData={landscapeChartData}
+                      minNodeSize={landscapeMinNodeSize}
+                      maxNodeSize={landscapeMaxNodeSize}
+                      xAxisLabel={landscapeXAxis}
+                      yAxisLabel={landscapeYAxis}
+                      zAxisLabel={landscapeZAxis}
+                      setLandscapeAxis={setLandscapeAxis}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
                   </Row>
 
 
@@ -2109,6 +2027,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       />
                     </Col>
                   </Row>
+
                   <Row>
                     <Col>
                       <SectionTitle title="Data" color="blue" />
@@ -2116,11 +2035,12 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                   </Row>
 
                   <div className="table-container">
-                  <MainTable />
+                  <MainTable
+                    tabledata={allTableData}
+                    updateData={allTableData}
+                  />
                   </div>
-
-
-                </Col>
+                
               </Row>
           </div>
         </div>
@@ -2152,6 +2072,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   )
 }
+
 
 
 export default withRouter(DashboardRoute);
