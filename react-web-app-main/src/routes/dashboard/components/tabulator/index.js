@@ -77,7 +77,7 @@ function getTableData(){
   };
 
   let columns = [
-      { title: "NCT", field: "NCT", hozAlign: "left", width: 150 },
+      { title: "NCT", field: "NCT", hozAlign: "left", formatter:"link", formatterParams:{urlField:"CTgov_Link", target:"_blank"}, width: 150 },
       { title: "Start Year", field: "Start_Year", hozAlign: "left", width: 150 },
       { title: "Study Type", field: "Study_Type", hozAlign: "left", width: 150 },
       { title: "Title", field: "Title", hozAlign: "left", width: 150 },
