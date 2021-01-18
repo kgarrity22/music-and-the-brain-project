@@ -544,7 +544,7 @@ function DashboardRoute(props) {
   }
 
   // creating a single function to help make creating dynamic filters much simpler
-  // TODO: need to put in conditions to handle geography 
+  // TODO: need to put in conditions to handle geography
   function newgetfilters(allTableData){
     var result = {}
     for (var filter_header of Object.keys(all_filters)){
@@ -562,7 +562,7 @@ function DashboardRoute(props) {
           Object.keys(item).forEach(key => {
             if (key === subfilter){
               // now need to check what item[key] is
-              //console.log(typeof(item[key]))
+              //console.log("key is: ", key)
               if (typeof(item[key])==='object'){
                 for (var i of item[key]){
                   if (i === null){
@@ -572,6 +572,11 @@ function DashboardRoute(props) {
                       subfilter_set.add(j)
                     }
                   }
+                }
+              } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
+                var itemlist = item[key].split(", ")
+                for (var j of itemlist){
+                  subfilter_set.add(j)
                 }
               } else {
                 subfilter_set.add(item[key])
