@@ -134,3 +134,7 @@
   background: #6c757d;
   border-color: #343a40;
 }
+
+.tabulator-cell{
+  font-family:monospace;
+}
