@@ -244,18 +244,18 @@ function DashboardRoute(props) {
   //INTERVENTIONS SETS
   var intervention_set = new Set();
 
-  var drugs_set = new Set();
-  var devices_set = new Set();
-  var drugs_set = new Set();
-  var biological_set = new Set();
-  var procedures_set = new Set();
-  var radiation_set = new Set();
-  var behavioral_set = new Set();
-  var genetic_set = new Set();
-  var dietarySupplements_set = new Set();
-  var combProds_set = new Set();
-  var diagnostic_set = new Set();
-  var otherInt_set = new Set();
+  // var drugs_set = new Set();
+  // var devices_set = new Set();
+  // var drugs_set = new Set();
+  // var biological_set = new Set();
+  // var procedures_set = new Set();
+  // var radiation_set = new Set();
+  // var behavioral_set = new Set();
+  // var genetic_set = new Set();
+  // var dietarySupplements_set = new Set();
+  // var combProds_set = new Set();
+  // var diagnostic_set = new Set();
+  // var otherInt_set = new Set();
 
   // OUTCOMES SETS
   var outcomes_set = new Set();
@@ -702,12 +702,15 @@ function DashboardRoute(props) {
 
   *//////////////////////////////////////////////////////////
   const [landscapeChartData, setLandscapeChartData] = useState([])
+  const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
+  const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Sponsor")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
 
   const [allTableData, setAllTableData] = useState([])
   const [loadingAllTableData, setLoadingAllTableData] = useState(true)
+
 
 
 
@@ -858,7 +861,7 @@ function DashboardRoute(props) {
     const fetchAllTableData = async () => {
       const res = await getTableData()
       newgetfilters(alldata)
-      console.log("RES: ", res.tabledata)
+      //console.log("RES: ", res.tabledata)
       for (var record of res.tabledata){
         for (var key of Object.keys(record)){
           if (typeof(record[key] !== "String")){
@@ -868,7 +871,7 @@ function DashboardRoute(props) {
       }
       setAllTableData(res.tabledata)
       setLoadingAllTableData(false)
-      console.log("all data as input: ", alldata)
+      //console.log("all data as input: ", alldata)
 
 
     }
@@ -1173,6 +1176,8 @@ function DashboardRoute(props) {
     console.log("LANDSCAPE result: ", result)
 
     setLandscapeChartData(result);
+    setLandscapeMinNodeSize(0);
+    setLandscapeMaxNodeSize(1000);
     setLoadingLandscapeData(false)
   }
 
@@ -1539,14 +1544,23 @@ function DashboardRoute(props) {
       setLoadingAllTableData(true)
       fetchAllTableData();
       // console.log("tabledata after fetch: ", fetchAllTableData())
-      setLoadingLandscapeData(true)
-      fetchLandscapeChartData();
+      // setLoadingLandscapeData(true)
+      // fetchLandscapeChartData();
       // setData();
 
 
     }
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
+
+  useEffect(() => {
+  if (initialFilterLoadComplete) {
+    setLoadingLandscapeData(true)
+    fetchLandscapeChartData();
+  }
+  // eslint-disable-next-line
+}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize])
+
 
   if (currentUser === undefined) {
     return <Redirect to="/login" />
@@ -1865,18 +1879,20 @@ function DashboardRoute(props) {
 
 
                   <Row>
-                    <Col>
-                      <PrismScatterplot
-                        title="Landscape"
-                        colors="rainbow"
-                        chartData={landscapeChartData}
-                        xAxisLabel={landscapeXAxis}
-                        yAxisLabel={landscapeYAxis}
-                        zAxisLabel={landscapeZAxis}
-                        setLandscapeAxis={setLandscapeAxis}
-                        loading={loadingLandscapeData}
-                      />
-                    </Col>
+                  <Col>
+                    <PrismScatterplot
+                      title="Landscape"
+                      colors="rainbow"
+                      chartData={landscapeChartData}
+                      minNodeSize={landscapeMinNodeSize}
+                      maxNodeSize={landscapeMaxNodeSize}
+                      xAxisLabel={landscapeXAxis}
+                      yAxisLabel={landscapeYAxis}
+                      zAxisLabel={landscapeZAxis}
+                      setLandscapeAxis={setLandscapeAxis}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
                   </Row>
 
 

@@ -76,10 +76,6 @@
   color: #ffffff;
 }
 
-.scatterplot-chart-container .chart {
-  height: 40vw;
-}
-
 .scatterplot-chart-container .overlay {
   position: absolute;
   top: 0;
