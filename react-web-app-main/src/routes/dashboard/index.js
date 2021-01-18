@@ -2035,12 +2035,12 @@ function DashboardRoute(props) {
                   </Row>
 
                   <div className="table-container">
-                  <MainTable
-                    tabledata={allTableData}
-                    updateData={allTableData}
-                  />
+                    <MainTable
+                      tabledata={allTableData}
+                      updateData={allTableData}
+                      />
                   </div>
-                
+                </Col>
               </Row>
           </div>
         </div>

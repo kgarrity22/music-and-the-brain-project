@@ -58,7 +58,7 @@ class MainTable extends React.Component {
 
     return (
       <div>
-        <button class="btn btn-primary download-btn" onClick={this.downloadData}>Download</button>
+        <button className="btn btn-primary download-btn" onClick={this.downloadData}>Download</button>
         <ReactTabulator
           ref={ref => (this.ref = ref)}
           columns={columns}
