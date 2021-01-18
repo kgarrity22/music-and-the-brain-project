@@ -536,7 +536,9 @@ function DashboardRoute(props) {
     "Interventions": ["Intervention_Types"],
     "Outcomes": ['Outcome_Concepts'],
     "Sponsors": ['Sponsor_Type'],
-    "Geography": [/* in here should be the exact names from airtable*/]
+    "Geography": [/* in here should be the exact names from airtable
+      this needs work*/
+    ]
   }
 
   // creating a single function to help make creating dynamic filters much simpler
@@ -584,8 +586,6 @@ function DashboardRoute(props) {
         else {
 
         }
-
-
         for (var item of allTableData){
 
           Object.keys(item).forEach(key => {
@@ -620,7 +620,76 @@ function DashboardRoute(props) {
       }
       result[filter_header] = mainfilters
     }
-    console.log("NEW RESULT: ", result)
+    return result
+  }
+
+  // INSTEAD OF FOR LOOP TO FIND KEY IN DICTIONARY
+  function getVal(dictionary, key){
+    return dictionary[key];
+  }
+
+  // CREATE PIE CHART
+  function createPieChart(airtableName, data){
+    let pie_obj = {}
+    for (var record of data){
+      let value = getVal(record, airtableName)
+      countOccurrences(pie_obj, value)
+    }
+    let pie = [];
+    pieFormatting(pie_obj, pie);
+
+    return pie
+  }
+
+  // CREATE LINE CHART
+  function createLineChart(airtable_xAxis, airtable_yAxis, data){
+    var line_obj = {};
+    for (var record of data){
+      let value = getVal(record, airtable_xAxis)
+      countOccurrences(line_obj, value)
+    }
+    let line_list = [];
+    let line_formatted = {};
+    line_formatting(line_obj, line_list, line_formatted)
+    line_formatted.id = airtable_yAxis
+
+    return line_formatted
+  }
+
+  // numbars is if you want top 10 bars or all bars or top 20 bars etc
+  // indexKey - this is bar of the props of the bar charts
+
+  function createBarChart(airtableName, numBars, indexKey, data){
+    let bar_obj = {};
+    for (var record of data){
+      let value = getVal(record, airtableName)
+      // in case of list of items
+      if (typeof(value)==='object'){
+        for (var item of value){
+          if (item !== null){
+            var itemlist = item.split(", ")
+            for (var j of itemlist){
+              countOccurrences(bar_obj, j)
+            }
+          }
+        }
+      } else {
+        countOccurrences(bar_obj, value)
+      }
+    }
+
+    var keys = Object.keys(bar_obj).map(function(key){
+      return [key, bar_obj[key]];
+    });
+    keys.sort(function(first, second){
+      return second[1] - first[1];
+    })
+    let updated_bars = {};
+    for (var i of keys.slice(0, numBars)){
+      updated_bars[i[0]] = i[1]
+    }
+    let bar_formatted = {};
+    bar_formatting(updated_bars, [], bar_formatted, indexKey)
   }
 
 
@@ -629,6 +698,7 @@ function DashboardRoute(props) {
 
     const result = await getairtable()
     // console.log("***FILTERS****: ", result)
+
 
 
     setTrialsFilters(result.trials)
@@ -739,12 +809,31 @@ function DashboardRoute(props) {
     }
   }
 
+  function countOccurrences(dictionary, key){
+    if(key in dictionary){
+      dictionary[key]+=1;
+    } else {
+      dictionary[key] = 1
+    }
+  }
+
   /*
   Takes a dictionary formated {key: Occurences of key}
   and an empty list and formats the data for a nivo part chart
   in that list
   */
   function pie_formatting(dictionary, pie_data){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["id"] = keys[i];
+      new_dict["label"] = keys[i];
+      new_dict["value"] = value[i];
+      pie_data.push(new_dict)
+    }
+  }
+  function pieFormatting(dictionary, pie_data){
     var keys = Object.keys(dictionary);
     var value = Object.values(dictionary);
     for (var i=0; i<keys.length; i++){
@@ -1145,10 +1234,20 @@ function DashboardRoute(props) {
           for (var i of data_list){
             if (i.Status in clean_data){
               var val = clean_data[i.Status]
-              val.push({"x": i.x, "y": i.y, "z": i.z})
+              if (typeof(i.z === 'object')){
+                val.push({"x": i.x, "y": i.y, "z": 0})
+              } else {
+                val.push({"x": i.x, "y": i.y, "z": i.z})
+              }
+
             } else {
               // console.log("I for else: ", i)
-              clean_data[i.Status] = [{"x": i.x, "y": i.y, "z": i.z}]
+              if (typeof(i.z === 'object')){
+                clean_data[i.Status] = [{"x": i.x, "y": i.y, "z": 0}]
+              } else {
+                clean_data[i.Status] = [{"x": i.x, "y": i.y, "z": i.z}]
+              }
+
             }
           } // end for
           console.log("clean data: ", clean_data)
@@ -1175,9 +1274,9 @@ function DashboardRoute(props) {
     const result = await getLandscapeChartData()
     console.log("LANDSCAPE result: ", result)
 
-    setLandscapeChartData(result);
+    setLandscapeChartData(result.data);
     setLandscapeMinNodeSize(0);
-    setLandscapeMaxNodeSize(1000);
+    setLandscapeMaxNodeSize(20);
     setLoadingLandscapeData(false)
   }
 
