@@ -66,6 +66,7 @@ class MainTable extends React.Component {
           ref={ref => (this.ref = ref)}
           columns={columns}
           data={this.props.tabledata}
+          updateData={this.props.updateData}
           options={options}
         />
       </div>

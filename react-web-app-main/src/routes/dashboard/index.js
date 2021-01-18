@@ -816,7 +816,7 @@ function DashboardRoute(props) {
         return new Promise((resolve, reject) => {
           base('Trials').select({
 
-              // filterByFormula: airtableFilters,
+              filterByFormula: airtableFilters,
               view: "Raw View"
           }).eachPage(function page(records, fetchNextPage) {
 
@@ -1999,6 +1999,7 @@ function DashboardRoute(props) {
                   </Row>
                   <MainTable
                     tabledata={allTableData}
+                    updateData={allTableData}
                   />
                 </Col>
               </Row>
