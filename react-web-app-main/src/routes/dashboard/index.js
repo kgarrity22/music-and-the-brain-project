@@ -1364,7 +1364,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
               records.forEach(function(record) {
                 // countries_list.push(record.get('Geography_Countries'))
-                var country = record.get('Geography_Countries')
+                var country = record.get('Countries_Rollup_Unique')
                 var trial_NCT = record.get('NCT')
                 //console.log("NCT: ", trial_NCT, " Country: ", country)
               //  console.log("country 0: ", country[0])
@@ -1434,17 +1434,17 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                     } else if (item === "Spain") {
                       pie_collection(geography_country_dict, "ESP")
                     } else if (item === "Sweden") {
-                      pie_collection(geography_country_dict, "AR")
+                      pie_collection(geography_country_dict, "SWE")
                     } else if (item === "Switzerland") {
                       pie_collection(geography_country_dict, "CHE")
                     } else if (item === "Taiwan") {
                       pie_collection(geography_country_dict, "TWN")
                     } else if (item === "Tanzania") {
-                      pie_collection(geography_country_dict, "AR")
+                      pie_collection(geography_country_dict, "TZA")
                     } else if (item === "Thailand") {
                       pie_collection(geography_country_dict, "THA")
                     } else if (item === "Turkey") {
-                      pie_collection(geography_country_dict, "TZA")
+                      pie_collection(geography_country_dict, "TUR")
                     } else if (item === "United Arab Emirates") {
                       pie_collection(geography_country_dict, "ARE")
                     } else if (item === "United Kingdom") {
@@ -2073,7 +2073,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       <PrismBarChart
                         color="blue"
                         layout="vertical"
-                        title="Sponsor Types"
+                        title="Sponsor Breakdown"
                         chartData={sponsorsTop10ByTrialsBarChartData.data}
                         groupKeys={sponsorsTop10ByTrialsBarChartData.group_keys}
                         indexKey="sponsor"
@@ -2083,6 +2083,16 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                         loading={loadingSponsorsData}
                       />
                     </Col>
+                  </Row>
+                  <Row>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="blue"
+                      title="Sponsor Types"
+                      chartData={populationVolunteersPieChartData}
+                      loading={loadingPopulationData}
+                    />
+                  </Col>
                   </Row>
                   <Row>
                     <Col>
