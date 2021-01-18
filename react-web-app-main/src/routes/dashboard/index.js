@@ -29,6 +29,8 @@ import 'react-tabulator/css/bootstrap/tabulator_bootstrap.min.css';
 import 'react-tabulator/lib/styles.css';
 
 
+
+
 const initialStats = [
   {
     color: 'red',
@@ -68,6 +70,11 @@ const initialStats = [
   }
 ]
 
+
+
+
+
+
 function DashboardRoute(props) {
 
   const [currentUser, setCurrentUser] = useState("")
@@ -87,8 +94,6 @@ function DashboardRoute(props) {
   const [airtableFilters, setAirtableFilters] = useState("")
 
 
-
-
   const [updateRequested, setUpdatedRequested] = useState("")
   // sets filters
   const onUpdateButtonClicked = (e) => {
@@ -103,6 +108,7 @@ function DashboardRoute(props) {
 
 
   }
+
 
   function getAirtableFilters(){
     var filter_dict = generateFiltersPostBody()
@@ -165,7 +171,7 @@ function DashboardRoute(props) {
     console.log("filters that have been stored: ", store)
     return store
   }
-var filters = "NOT(OR({Phase} = 'Phase 1'))"
+//var filters = "NOT(OR({Phase} = 'Phase 1'))"
 // formats the filter string to give airtable the filterbyformula
   function formatFiltersForAirtable(filter_list){
     // basic string
@@ -202,8 +208,11 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
     str += closestr
     console.log("FILTER STRING: ", str)
+
     return str
   }
+
+
 
   const [trialsFilters, setTrialsFilters] = useState({})
   const [populationFilters, setPopulationFilters] = useState({})
@@ -212,8 +221,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   const [sponsorsFilters, setSponsorsFilters] = useState({})
   const [geographyFilters, setGeographyFilters] = useState({})
   const [initialFilterLoadComplete, setInitialFilterLoadComplete] = useState(false)
-
-
 
 
   var Airtable = require('airtable');
@@ -237,18 +244,18 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
   //INTERVENTIONS SETS
   var intervention_set = new Set();
 
-  var drugs_set = new Set();
-  var devices_set = new Set();
-  var drugs_set = new Set();
-  var biological_set = new Set();
-  var procedures_set = new Set();
-  var radiation_set = new Set();
-  var behavioral_set = new Set();
-  var genetic_set = new Set();
-  var dietarySupplements_set = new Set();
-  var combProds_set = new Set();
-  var diagnostic_set = new Set();
-  var otherInt_set = new Set();
+  // var drugs_set = new Set();
+  // var devices_set = new Set();
+  // var drugs_set = new Set();
+  // var biological_set = new Set();
+  // var procedures_set = new Set();
+  // var radiation_set = new Set();
+  // var behavioral_set = new Set();
+  // var genetic_set = new Set();
+  // var dietarySupplements_set = new Set();
+  // var combProds_set = new Set();
+  // var diagnostic_set = new Set();
+  // var otherInt_set = new Set();
 
   // OUTCOMES SETS
   var outcomes_set = new Set();
@@ -278,19 +285,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   //INTERVENTIONS DICTIONARIES
   var unique_interventions = {};
-
-  // var unique_drugs = {};
-  // var unique_devices = {};
-  // var unique_drugs = {};
-  // var unique_biological = {};
-  // var unique_procedures = {};
-  // var unique_radiation = {};
-  // var unique_behavioral = {};
-  // var unique_genetic = {};
-  // var unique_dietarySupplements = {};
-  // var unique_combProds = {};
-  // var unique_diagnostic = {};
-  // var unique_otherInt = {};
 
   // OUTCOMES DICTIONARIES
   var unique_outcomes = {};
@@ -323,6 +317,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     }
   }
 
+
+
   function create_filter_dict(set, unique_dict){
     for (var i of set) {
 
@@ -331,6 +327,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
     }
   }
+
+
 
   function getairtable() {
 
@@ -497,10 +495,6 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
               }
             }
           }
-
-
-
-
           var sorted_regions = {}
 
           for (var region of Object.keys(unique_regions)){
@@ -531,6 +525,105 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
 }// end of promise
+
+
+
+
+
+  var all_filters = {
+    "Trials": ['Phase', 'Status', 'Purpose', 'Study_Type', 'Randomization', 'Masking_Clean'],
+    "Populations": ['Age_Groups', 'Healthy_Volunteers', 'Single_Multi_Site', "Enrollment_Target", "Facility_Settings"],
+    "Interventions": ["Intervention_Types"],
+    "Outcomes": ['Outcome_Concepts'],
+    "Sponsors": ['Sponsor_Type'],
+    "Geography": [/* in here should be the exact names from airtable*/]
+  }
+
+  // creating a single function to help make creating dynamic filters much simpler
+  // TODO: need to put in conditions to handle geography
+  function newgetfilters(allTableData){
+    var result = {}
+    for (var filter_header of Object.keys(all_filters)){
+      // a filter header will be the big title i.e. Trials or Geography
+      // want to create a dictionary for each of these
+      var mainfilters = {}
+      // the subfilter will be like Type or Age Group or Status
+      for (var subfilter of all_filters[filter_header]) {
+        // create a set for the subfilter to get the unique ones
+
+        var unique_subfilters = {}
+        var subfilter_set = new Set()
+        // now we need to go through the alltabledata and get the values that of the subfilter key
+
+        if (subfilter === "Geography") {
+          // create a country list and a region list
+          // create a set of unique regions
+          for (var trial_regions of regions_list){
+            var region_list_index = regions_list.indexOf(trial_regions)
+            var country_names = countries_list[region_list_index]
+            if (typeof(trial_regions) === 'object'){
+              for (var region of trial_regions){
+                if (Object.keys(unique_regions).indexOf(region)!==-1){
+                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
+                } else {
+                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
+                }
+              }
+            }
+          }
+          var sorted_regions = {}
+          for (var region of Object.keys(unique_regions)){
+            var sorted_countries = {}
+            sortDictionary(unique_regions[region], sorted_countries)
+            unique_regions[region] = sorted_countries
+          }
+          sortDictionary(unique_regions, sorted_regions)
+          geography_filts["Regions"] = sorted_regions
+        }
+
+        else {
+
+        }
+
+
+        for (var item of allTableData){
+
+          Object.keys(item).forEach(key => {
+            if (key === subfilter){
+              // now need to check what item[key] is
+              //console.log("key is: ", key)
+              if (typeof(item[key])==='object'){
+                for (var i of item[key]){
+                  if (i === null){
+                  } else {
+                    var itemlist = i.split(", ")
+                    for (var j of itemlist){
+                      subfilter_set.add(j)
+                    }
+                  }
+                }
+              } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
+                var itemlist = item[key].split(", ")
+                for (var j of itemlist){
+                  subfilter_set.add(j)
+                }
+              } else {
+                subfilter_set.add(item[key])
+              }
+            }
+          })
+        }
+        // now when we get here, we will have created the set for one subfilter
+        // need to pass this subfilter to the create filter dictionary function
+        create_filter_dict([...subfilter_set].sort(), unique_subfilters)
+        mainfilters[subfilter] = unique_subfilters
+      }
+      result[filter_header] = mainfilters
+    }
+    console.log("NEW RESULT: ", result)
+  }
+
+
 
   const fetchFilters = async () => {
 
@@ -609,9 +702,15 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   *//////////////////////////////////////////////////////////
   const [landscapeChartData, setLandscapeChartData] = useState([])
+  const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
+  const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Sponsor")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
+
+  const [allTableData, setAllTableData] = useState([])
+  const [loadingAllTableData, setLoadingAllTableData] = useState(true)
+
 
 
 
@@ -707,6 +806,75 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
         //console.log(total);
       return total;
   }
+
+  var alldata = []
+
+  function getTableData(){
+        var Airtable = require('airtable');
+        var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+
+          var tab_ind = 0
+          var table_data = []
+
+        return new Promise((resolve, reject) => {
+          base('Trials').select({
+
+              filterByFormula: airtableFilters,
+              view: "Raw View"
+          }).eachPage(function page(records, fetchNextPage) {
+
+              records.forEach(function(record) {
+
+                record.fields["id"] = tab_ind
+                tab_ind = tab_ind + 1;
+                table_data.push(record.fields)
+                alldata.push(record.fields)
+
+              });
+              fetchNextPage();
+          }, function done(err) {
+              if (err) {
+                console.error(err);
+                return reject({});
+              }
+
+              // alldata = table_data
+              console.log("ALL data: ", alldata)
+
+
+              var tabledata = {}
+              // for (var record of table_data){
+              //   for (var key of Object.keys(record)){
+              //     if (typeof(record[key] !== "String")){
+              //       record[key] = record[key].toString()
+              //     }
+              //   }
+              // }
+              tabledata["tabledata"] = table_data
+              resolve(tabledata)
+          })
+        })
+    }
+
+
+
+    const fetchAllTableData = async () => {
+      const res = await getTableData()
+      newgetfilters(alldata)
+      //console.log("RES: ", res.tabledata)
+      for (var record of res.tabledata){
+        for (var key of Object.keys(record)){
+          if (typeof(record[key] !== "String")){
+            record[key] = record[key].toString()
+          }
+        }
+      }
+      setAllTableData(res.tabledata)
+      setLoadingAllTableData(false)
+      //console.log("all data as input: ", alldata)
+
+
+    }
 
   // GET SINGLE METRICS  from airtable
   function getSingleMetrics() {
@@ -1008,6 +1176,8 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
     console.log("LANDSCAPE result: ", result)
 
     setLandscapeChartData(result);
+    setLandscapeMinNodeSize(0);
+    setLandscapeMaxNodeSize(1000);
     setLoadingLandscapeData(false)
   }
 
@@ -1371,14 +1541,26 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
       fetchSponsorsData();
       setLoadingGeographyData(true)
       fetchGeographyData();
-      // setLoadingAllTableData(true)
-      // fetchTableData();
-      setLoadingLandscapeData(true)
-      fetchLandscapeChartData();
+      setLoadingAllTableData(true)
+      fetchAllTableData();
+      // console.log("tabledata after fetch: ", fetchAllTableData())
+      // setLoadingLandscapeData(true)
+      // fetchLandscapeChartData();
+      // setData();
+
 
     }
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
+
+  useEffect(() => {
+  if (initialFilterLoadComplete) {
+    setLoadingLandscapeData(true)
+    fetchLandscapeChartData();
+  }
+  // eslint-disable-next-line
+}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize])
+
 
   if (currentUser === undefined) {
     return <Redirect to="/login" />
@@ -1697,18 +1879,20 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
 
                   <Row>
-                    <Col>
-                      <PrismScatterplot
-                        title="Landscape"
-                        colors="rainbow"
-                        chartData={landscapeChartData}
-                        xAxisLabel={landscapeXAxis}
-                        yAxisLabel={landscapeYAxis}
-                        zAxisLabel={landscapeZAxis}
-                        setLandscapeAxis={setLandscapeAxis}
-                        loading={loadingLandscapeData}
-                      />
-                    </Col>
+                  <Col>
+                    <PrismScatterplot
+                      title="Landscape"
+                      colors="rainbow"
+                      chartData={landscapeChartData}
+                      minNodeSize={landscapeMinNodeSize}
+                      maxNodeSize={landscapeMaxNodeSize}
+                      xAxisLabel={landscapeXAxis}
+                      yAxisLabel={landscapeYAxis}
+                      zAxisLabel={landscapeZAxis}
+                      setLandscapeAxis={setLandscapeAxis}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
                   </Row>
 
 
@@ -1829,13 +2013,10 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
                       />
                     </Col>
                   </Row>
-
-
-
-                  <MainTable />
-
-
-
+                  <MainTable
+                    tabledata={allTableData}
+                    updateData={allTableData}
+                  />
                 </Col>
               </Row>
           </div>
@@ -1868,6 +2049,7 @@ var filters = "NOT(OR({Phase} = 'Phase 1'))"
 
   )
 }
+
 
 
 export default withRouter(DashboardRoute);
