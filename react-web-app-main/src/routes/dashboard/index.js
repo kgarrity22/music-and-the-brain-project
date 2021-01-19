@@ -1200,7 +1200,7 @@ function DashboardRoute(props) {
   function getLandscapeChartData() {
     // data list
     var data_list = []
-    var statuses = new Set()
+    var uni = new Set()
     return new Promise((resolve, reject) => {
       base('Trials').select({
 
@@ -1210,15 +1210,17 @@ function DashboardRoute(props) {
 
 
           records.forEach(function(record) {
-            statuses.add(record.get('Status'))
+            //statuses.add(record.get('Status'))
             // get all status
-            let point = {}
-            point["Status"] = record.get('Status')
-            point["x"] = String(record.get(landscapeXAxis))
-            point["y"] = String(record.get([landscapeYAxis]))
-            point["z"] = record.get(landscapeZAxis)
+            let status = record.get('Status')
+            let x = String(record.get(landscapeXAxis))
+            let y = String(record.get([landscapeYAxis]))
+            let z = record.get(landscapeZAxis)
 
-            data_list.push(point)
+            data_list.push([status, x, y, z])
+            let as_string = status + "; " + x + "; " + y
+            uni.add(as_string)
+
 
           });
 
@@ -1229,27 +1231,41 @@ function DashboardRoute(props) {
             console.error(err);
             return reject({});
           }
-          // console.log("data list: ", data_list)
+          let new_data_list = []
           let clean_data = {}
-          for (var i of data_list){
-            if (i.Status in clean_data){
-              var val = clean_data[i.Status]
-              if (typeof(i.z === 'object')){
-                val.push({"x": i.x, "y": i.y, "z": 0})
-              } else {
-                val.push({"x": i.x, "y": i.y, "z": i.z})
+          for (var i of uni){
+            
+            var ids = i.split("; ")
+            let z = 0;
+            for (var arr of data_list){
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                z += arr[3]
               }
-
-            } else {
-              // console.log("I for else: ", i)
-              if (typeof(i.z === 'object')){
-                clean_data[i.Status] = [{"x": i.x, "y": i.y, "z": 0}]
-              } else {
-                clean_data[i.Status] = [{"x": i.x, "y": i.y, "z": i.z}]
-              }
-
             }
-          } // end for
+            let item = {}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            new_data_list.push(item)
+          }
+
+          //console.log("data list: ", data_list)
+          console.log("new data: ", new_data_list)
+
+          for (var j of new_data_list){
+            let stat = Object.keys(j)[0]
+            let val = Object.values(j)
+
+            if (isNaN(val[0]["z"])){
+              val[0]["z"] = 0
+            }
+            // console.log("val: ", val[0]["z"])
+            if (stat in clean_data){
+              clean_data[stat].push(val[0])
+            } else {
+              clean_data[stat] = val
+            }
+          }
+
+
           console.log("clean data: ", clean_data)
           var all_data=[]
           for (var item of Object.keys(clean_data)){
@@ -1276,7 +1292,7 @@ function DashboardRoute(props) {
 
     setLandscapeChartData(result.data);
     setLandscapeMinNodeSize(0);
-    setLandscapeMaxNodeSize(20);
+    setLandscapeMaxNodeSize(100000);
     setLoadingLandscapeData(false)
   }
 
