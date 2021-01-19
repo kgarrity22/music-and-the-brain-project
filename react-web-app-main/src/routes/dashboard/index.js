@@ -772,6 +772,8 @@ function DashboardRoute(props) {
 
   *//////////////////////////////////////////////////////////
   const [landscapeChartData, setLandscapeChartData] = useState([])
+  const [landscapeChartHeight, setLandscapeChartHeight] = useState(100)
+
   const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
   const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
@@ -1201,6 +1203,7 @@ function DashboardRoute(props) {
     // data list
     var data_list = []
     var uni = new Set()
+    var ys = new Set()
     return new Promise((resolve, reject) => {
       base('Trials').select({
 
@@ -1220,6 +1223,8 @@ function DashboardRoute(props) {
             data_list.push([status, x, y, z])
             let as_string = status + "; " + x + "; " + y
             uni.add(as_string)
+            ys.add(y)
+
 
 
           });
@@ -1249,6 +1254,7 @@ function DashboardRoute(props) {
 
           //console.log("data list: ", data_list)
           console.log("new data: ", new_data_list)
+          console.log('yS; ', ys)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1274,7 +1280,7 @@ function DashboardRoute(props) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
-
+          setLandscapeChartHeight(ys.size * 30 + 200)
           var landscape_result={}
           landscape_result["data"] = all_data
           resolve(landscape_result)
@@ -1291,6 +1297,7 @@ function DashboardRoute(props) {
     console.log("LANDSCAPE result: ", result)
 
     setLandscapeChartData(result.data);
+    // setLandscapeChartHeight(result.data.length * 100)
     setLandscapeMinNodeSize(0);
     setLandscapeMaxNodeSize(100000);
     setLoadingLandscapeData(false)
@@ -2003,7 +2010,7 @@ function DashboardRoute(props) {
                       title="Landscape"
                       colors="rainbow"
                       chartData={landscapeChartData}
-                      chartHeight={2000}
+                      chartHeight={landscapeChartHeight}
                       minNodeSize={landscapeMinNodeSize}
                       maxNodeSize={landscapeMaxNodeSize}
                       xAxisLabel={landscapeXAxis}
