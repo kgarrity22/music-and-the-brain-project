@@ -899,8 +899,8 @@ function DashboardRoute(props) {
   var alldata = []
 
   function getTableData(){
-        var Airtable = require('airtable');
-        var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+        // var Airtable = require('airtable');
+        // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
 
           var tab_ind = 0
           var table_data = []
@@ -1234,7 +1234,7 @@ function DashboardRoute(props) {
           let new_data_list = []
           let clean_data = {}
           for (var i of uni){
-            
+
             var ids = i.split("; ")
             let z = 0;
             for (var arr of data_list){
@@ -2003,6 +2003,7 @@ function DashboardRoute(props) {
                       title="Landscape"
                       colors="rainbow"
                       chartData={landscapeChartData}
+                      chartHeight={2000}
                       minNodeSize={landscapeMinNodeSize}
                       maxNodeSize={landscapeMaxNodeSize}
                       xAxisLabel={landscapeXAxis}

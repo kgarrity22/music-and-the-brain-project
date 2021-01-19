@@ -35,16 +35,16 @@ const PrismScatterplot = (props) => {
             <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("x", evt.target.text)}>
               <Dropdown.Toggle variant="success" id="dropdown-basic">{props.xAxisLabel}</Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item>Start_Year</Dropdown.Item>
-                <Dropdown.Item>Age_Groups</Dropdown.Item>
-                <Dropdown.Item>Sponsor</Dropdown.Item>
-                <Dropdown.Item>Sponsor_Type</Dropdown.Item>
-                <Dropdown.Item>Disease Area</Dropdown.Item>
-                <Dropdown.Item>Disease Specific</Dropdown.Item>
-                <Dropdown.Item>Country</Dropdown.Item>
-                <Dropdown.Item>Region</Dropdown.Item>
-                <Dropdown.Item>Trial Duration</Dropdown.Item>
-                <Dropdown.Item>Outcome</Dropdown.Item>
+              <Dropdown.Item>Start_Year</Dropdown.Item>
+              <Dropdown.Item>Age_Group</Dropdown.Item>
+              <Dropdown.Item>Sponsor</Dropdown.Item>
+              <Dropdown.Item>Sponsor_Type</Dropdown.Item>
+              <Dropdown.Item>Study_Type</Dropdown.Item>
+              <Dropdown.Item>Outcome_Concepts</Dropdown.Item>
+              <Dropdown.Item>Facility_Settings</Dropdown.Item>
+              <Dropdown.Item>Geography_Countries</Dropdown.Item>
+              <Dropdown.Item>Geography_Regions</Dropdown.Item>
+              <Dropdown.Item>Interventions_Rollup</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -57,12 +57,12 @@ const PrismScatterplot = (props) => {
                 <Dropdown.Item>Age_Group</Dropdown.Item>
                 <Dropdown.Item>Sponsor</Dropdown.Item>
                 <Dropdown.Item>Sponsor_Type</Dropdown.Item>
-                <Dropdown.Item>Disease Area</Dropdown.Item>
-                <Dropdown.Item>Disease Specific</Dropdown.Item>
-                <Dropdown.Item>Country</Dropdown.Item>
-                <Dropdown.Item>Region</Dropdown.Item>
-                <Dropdown.Item>Trial Duration</Dropdown.Item>
-                <Dropdown.Item>Outcome</Dropdown.Item>
+                <Dropdown.Item>Study_Type</Dropdown.Item>
+                <Dropdown.Item>Outcome_Concepts</Dropdown.Item>
+                <Dropdown.Item>Facility_Settings</Dropdown.Item>
+                <Dropdown.Item>Geography_Countries</Dropdown.Item>
+                <Dropdown.Item>Geography_Regions</Dropdown.Item>
+                <Dropdown.Item>Interventions_Rollup</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -84,9 +84,10 @@ const PrismScatterplot = (props) => {
       }
       {
         props.chartData.length > 0 &&
-        <div className="chart" style={{height: `100vh`}}>
+        <div className="chart" style={{height: props.chartHeight}}>
           <ResponsiveScatterPlot
             data={ props.chartData }
+            height={props.chartHeight}
             margin={{ top: 60, right: 140, bottom: 200, left: 200 }}
             xScale={{ type: 'point' }}
             yScale={{ type: 'point' }}
