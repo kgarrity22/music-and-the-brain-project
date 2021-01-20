@@ -1217,9 +1217,10 @@ function DashboardRoute(props) {
 
   function getLandscapeChartData() {
     // data list
-    var data_list = []
-    var uni = new Set()
-    var ys = new Set()
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+
     return new Promise((resolve, reject) => {
       base('Trials').select({
 
@@ -1236,16 +1237,12 @@ function DashboardRoute(props) {
             let ally = String(record.get([landscapeYAxis]))
             let z = record.get(landscapeZAxis)
 
-            // let x = allx.split(",")
-            // let  y = ally.split(",")
-            // console.log("ALL x; ", x)
-            // console.log("ALL y; ", y)
             // TODO :
-            // fix the split at commas
-            // add handling for geography (ugh)
-            // add handling for the names - dictionary with the clean name as the key and the airtable name as the val
-            // once this is set can work on Posty
-            // then personal and res
+
+
+            // get min and max to set node sizes
+
+
 
             // need to do each y with each x
             for (var y of ally.split(",")){
@@ -1276,6 +1273,7 @@ function DashboardRoute(props) {
           }
           let new_data_list = []
           let clean_data = {}
+          let zs = []
           for (var i of uni){
 
             var ids = i.split("; ")
@@ -1287,8 +1285,10 @@ function DashboardRoute(props) {
             }
             let item = {}
             item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+
             new_data_list.push(item)
           }
+
 
           //console.log("data list: ", data_list)
           console.log("new data: ", new_data_list)
@@ -1301,6 +1301,7 @@ function DashboardRoute(props) {
             if (isNaN(val[0]["z"])){
               val[0]["z"] = 0
             }
+            zs.push(val[0]["z"])
             // console.log("val: ", val[0]["z"])
             if (stat in clean_data){
               clean_data[stat].push(val[0])
@@ -1308,7 +1309,7 @@ function DashboardRoute(props) {
               clean_data[stat] = val
             }
           }
-
+          console.log("zs: ", zs)
 
           console.log("clean data: ", clean_data)
           var all_data=[]
@@ -1318,9 +1319,11 @@ function DashboardRoute(props) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
-          setLandscapeChartHeight(ys.size * 30 + 200)
+          setLandscapeChartHeight(ys.size * 30 + 300)
           var landscape_result={}
           landscape_result["data"] = all_data
+          landscape_result["max"] = Math.max(...zs)
+          landscape_result["min"] = Math.min(...zs)
           resolve(landscape_result)
 
         })
@@ -1336,8 +1339,8 @@ function DashboardRoute(props) {
 
     setLandscapeChartData(result.data);
     // setLandscapeChartHeight(result.data.length * 100)
-    setLandscapeMinNodeSize(0);
-    setLandscapeMaxNodeSize(100000);
+    setLandscapeMinNodeSize(result.min);
+    setLandscapeMaxNodeSize(result.max);
     setLoadingLandscapeData(false)
   }
 
