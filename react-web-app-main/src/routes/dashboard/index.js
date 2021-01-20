@@ -1212,7 +1212,7 @@ function DashboardRoute(props) {
     "Outcomes": "Outcome_Concepts",
     "Facilities": "Facility_Settings",
     "Regions": "Geography_Regions",
-    "Interventions": "Interventions_Rollup"
+    "Interventions": "Intervention_Types"
   }
 
   function getLandscapeChartData() {
