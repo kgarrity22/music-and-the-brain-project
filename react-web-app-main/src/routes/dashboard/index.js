@@ -1246,13 +1246,19 @@ function DashboardRoute(props) {
             } else {
               y_list = ally.split(",")
             }
+            let x_list = []
+            if ( landscapeXAxis === "Intervention_Types"){
+              x_list = allx.split(", ")
+            } else {
+              x_list = allx.split(",")
+            }
 
 
 
             // need to do each y with each x
             for (var y of y_list){
               if (y !== ""){
-                for (var x of allx.split(",")){
+                for (var x of x_list){
                   if (x !== "") {
                     data_list.push([status, x, y, z])
                     let as_string = status + "; " + x + "; " + y
