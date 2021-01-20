@@ -1240,10 +1240,17 @@ function DashboardRoute(props) {
               z = 1
             }
 
+            let y_list = []
+            if ( landscapeYAxis === "Intervention_Types"){
+              y_list = ally.split(", ")
+            } else {
+              y_list = ally.split(",")
+            }
+
 
 
             // need to do each y with each x
-            for (var y of ally.split(",")){
+            for (var y of y_list){
               if (y !== ""){
                 for (var x of allx.split(",")){
                   if (x !== "") {
@@ -1272,6 +1279,7 @@ function DashboardRoute(props) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
+          console.log("Ys: ", ys)
           for (var i of uni){
 
             var ids = i.split("; ")
