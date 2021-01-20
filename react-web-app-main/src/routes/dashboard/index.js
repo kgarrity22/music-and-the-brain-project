@@ -692,6 +692,40 @@ function DashboardRoute(props) {
     bar_formatting(updated_bars, [], bar_formatted, indexKey)
   }
 
+  function createSunburst(level1, level2, level3, data) {
+    let whole = {}
+    whole["name"] = "data"
+    // whole["Children"] = []
+    let first_children = {}
+
+    for (var record of data){
+      let lev1 = record[level1].toString()
+      let lev2 = record[level2].toString()
+      let lev3 = record[level3].toString()
+      if (Object.keys(first_children).includes(lev1)){
+        for (var i of lev2.split(", ")){
+          if (first_children[lev1].includes(i)){
+          } else {
+            first_children[lev1].push({i})
+          }
+        }
+      } else {
+        first_children[lev1] = []
+        for (var j of lev2.split(", ")){
+          var dict = {j: j}
+          first_children[lev1].push(dict)
+        }
+      }
+    }
+    console.log("First Children: ", first_children)
+
+    // go through each record
+    // if
+
+
+
+  }
+
 
 
   const fetchFilters = async () => {
@@ -956,6 +990,7 @@ function DashboardRoute(props) {
     const fetchAllTableData = async () => {
       const res = await getTableData()
       newgetfilters(alldata)
+      createSunburst("Sponsor_Type", "Intervention_Types", "Status", alldata)
       //console.log("RES: ", res.tabledata)
       for (var record of res.tabledata){
         for (var key of Object.keys(record)){
@@ -1285,7 +1320,7 @@ function DashboardRoute(props) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
-          console.log("Ys: ", ys)
+          //console.log("Ys: ", ys)
           for (var i of uni){
 
             var ids = i.split("; ")
@@ -1303,7 +1338,7 @@ function DashboardRoute(props) {
 
 
           //console.log("data list: ", data_list)
-          console.log("new data: ", new_data_list)
+          //console.log("new data: ", new_data_list)
           //console.log('yS; ', ys)
 
           for (var j of new_data_list){
@@ -1321,9 +1356,9 @@ function DashboardRoute(props) {
               clean_data[stat] = val
             }
           }
-          console.log("zs: ", zs)
+          //console.log("zs: ", zs)
 
-          console.log("clean data: ", clean_data)
+          //console.log("clean data: ", clean_data)
           var all_data=[]
           for (var item of Object.keys(clean_data)){
             var cleaned = {}
@@ -1844,8 +1879,8 @@ function DashboardRoute(props) {
   }
 
   const onParentFilterClicked = (section, filter, shouldSelect=true) => {
-    //console.log("FILTER: ", filter)
-    //console.log("section: ", section)
+    console.log("first filter: ", filter)
+    console.log("first section: ", section)
     if (filter) {
       //console.log('inside PFC and filter is: ', filter)
       switch (activeCategoryFilter) {
@@ -1853,6 +1888,9 @@ function DashboardRoute(props) {
           setTrialsFilters(filters => updateFilters(filters, section, filter))
           setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
           if ((filter || trialsFilters[section][filter] === false) && shouldSelect === true){
+            //console.log("FILTER: ", filter)
+            //console.log("section: ", section)
+            //console.log("what is this: ", trialsFilters[section])
             setActiveParentFilter(filter)
             setActiveChildFilterSections({})
           }

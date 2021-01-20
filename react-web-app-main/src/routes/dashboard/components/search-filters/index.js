@@ -14,8 +14,10 @@ function SearchFilterSection(props) {
   const onTitleSectionClicked = () => {
 
     setTitleIsChecked(!titleIsChecked)
-
+    // console.log("title is checked: ", titleIsChecked)
     for (let filter in props.filters){
+      //console.log("filter of props.filters; ", filter)
+      //console.log("titleIsChecked: ", titleIsChecked)
       if (props.filters[filter] === titleIsChecked) {
         props.onFilterClicked(props.title, filter, false)
       }
@@ -70,11 +72,16 @@ function SearchFilterSection(props) {
                     type="checkbox"
                     isValid
                     checked={props.filters[filter]}
-                    onClick={(e) => props.onFilterClicked(props.title, filter, props.subCategory)}
-                    id={filter + "-checkbox"}
+                    onClick={
+                      function(e){
+                        //console.log("props.title: ", props.title, filter, props.filters)
+                        return props.onFilterClicked(props.title, filter, props.subCategory)
+                      }
+                    }
+                    id={filter + props.title + "-checkbox"}
                     readOnly
                   />
-                  <Form.Check.Label htmlFor={filter + "-checkbox"}>
+                  <Form.Check.Label htmlFor={filter + props.title + "-checkbox"}>
                     <Button variant="link" onClick={(e) => props.onFilterLabelClicked(props.title, filter, props.subCategory)}>{filter}</Button>
                   </Form.Check.Label>
                 </Form.Check>
@@ -97,11 +104,18 @@ function SearchFilters(props) {
     'Sponsors': 'blue',
     'Geography': 'indigo',
   }
+  // console.log("props.sections: ", Object.keys(props.sections))
+  // Object.keys(props.sections).map((key, index) => (
+  //
+  //     console.log("key: ", key)
+  //     console.log("index: ", index)
+  // ))
 
   return (
     <Form className='search-filters-form '>
       {
         Object.keys(props.sections).map((key, index) => (
+
             <SearchFilterSection
               key={index}
               filters={props.sections[key]}
