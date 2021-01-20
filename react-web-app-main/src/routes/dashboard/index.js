@@ -1236,11 +1236,9 @@ function DashboardRoute(props) {
             let allx = String(record.get(landscapeXAxis))
             let ally = String(record.get([landscapeYAxis]))
             let z = record.get(landscapeZAxis)
-
-            // TODO :
-
-
-            // get min and max to set node sizes
+            if (landscapeZAxis === "Trial Volume") {
+              z = 1
+            }
 
 
 
@@ -1747,7 +1745,7 @@ function DashboardRoute(props) {
         break;
       case "z":
         setLandscapeZAxis(value)
-        setLandscapeVisZAxis(dropdownItems[value])
+        //setLandscapeVisZAxis(dropdownItems[value])
         break;
       default:
         break;
@@ -2060,7 +2058,7 @@ function DashboardRoute(props) {
                       maxNodeSize={landscapeMaxNodeSize}
                       xAxisLabel={landscapeVisXAxis}
                       yAxisLabel={landscapeVisYAxis}
-                      zAxisLabel={landscapeVisZAxis}
+                      zAxisLabel={landscapeZAxis}
                       setLandscapeAxis={setLandscapeAxis}
                       loading={loadingLandscapeData}
                     />
