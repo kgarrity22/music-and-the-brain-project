@@ -25,6 +25,18 @@ const PrismScatterplot = (props) => {
   // }
   // const height = calculateHeight()
 
+  let dropdownItems = {
+    "Start Year": "Start_Year",
+    "Age Groups": "Age_Groups",
+    "Sponsors": "Sponsor",
+    "Sponsor Types": "Sponsor_Type",
+    "Study Types": "Study_Type",
+    "Outcomes": "Outcome_Concepts",
+    "Facilities": "Facility_Settings",
+    "Regions": "Geography_Regions",
+    "Interventions": "Interventions_Rollup"
+  }
+
   return (
     <div className="scatterplot-chart-container">
       <div className="chart-title-container">
@@ -32,19 +44,18 @@ const PrismScatterplot = (props) => {
         <div className="dropdown-filters-container">
           <div className="dropdown-container">
             <p>X</p>
-            <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("x", evt.target.text)}>
+            <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("x", dropdownItems[evt.target.text])}>
               <Dropdown.Toggle variant="success" id="dropdown-basic">{props.xAxisLabel}</Dropdown.Toggle>
               <Dropdown.Menu>
-              <Dropdown.Item>Start_Year</Dropdown.Item>
-              <Dropdown.Item>Age_Group</Dropdown.Item>
-              <Dropdown.Item>Sponsor</Dropdown.Item>
-              <Dropdown.Item>Sponsor_Type</Dropdown.Item>
-              <Dropdown.Item>Study_Type</Dropdown.Item>
-              <Dropdown.Item>Outcome_Concepts</Dropdown.Item>
-              <Dropdown.Item>Facility_Settings</Dropdown.Item>
-              <Dropdown.Item>Geography_Countries</Dropdown.Item>
-              <Dropdown.Item>Geography_Regions</Dropdown.Item>
-              <Dropdown.Item>Interventions_Rollup</Dropdown.Item>
+                <Dropdown.Item>Start Year</Dropdown.Item>
+                <Dropdown.Item>Age Groups</Dropdown.Item>
+                <Dropdown.Item>Sponsors</Dropdown.Item>
+                <Dropdown.Item>Sponsor Types</Dropdown.Item>
+                <Dropdown.Item>Study Types</Dropdown.Item>
+                <Dropdown.Item>Outcomes</Dropdown.Item>
+                <Dropdown.Item>Facilities</Dropdown.Item>
+                <Dropdown.Item>Regions</Dropdown.Item>
+                <Dropdown.Item>Interventions</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -53,16 +64,15 @@ const PrismScatterplot = (props) => {
             <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("y", evt.target.text)}>
               <Dropdown.Toggle variant="success" id="dropdown-basic">{props.yAxisLabel}</Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item>Start_Year</Dropdown.Item>
-                <Dropdown.Item>Age_Group</Dropdown.Item>
-                <Dropdown.Item>Sponsor</Dropdown.Item>
-                <Dropdown.Item>Sponsor_Type</Dropdown.Item>
-                <Dropdown.Item>Study_Type</Dropdown.Item>
-                <Dropdown.Item>Outcome_Concepts</Dropdown.Item>
-                <Dropdown.Item>Facility_Settings</Dropdown.Item>
-                <Dropdown.Item>Geography_Countries</Dropdown.Item>
-                <Dropdown.Item>Geography_Regions</Dropdown.Item>
-                <Dropdown.Item>Interventions_Rollup</Dropdown.Item>
+                <Dropdown.Item>Start Year</Dropdown.Item>
+                <Dropdown.Item>Age Groups</Dropdown.Item>
+                <Dropdown.Item>Sponsors</Dropdown.Item>
+                <Dropdown.Item>Sponsor Types</Dropdown.Item>
+                <Dropdown.Item>Study Types</Dropdown.Item>
+                <Dropdown.Item>Outcomes</Dropdown.Item>
+                <Dropdown.Item>Facilities</Dropdown.Item>
+                <Dropdown.Item>Regions</Dropdown.Item>
+                <Dropdown.Item>Interventions</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>

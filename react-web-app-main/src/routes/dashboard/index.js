@@ -780,6 +780,10 @@ function DashboardRoute(props) {
   const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
 
+  const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
+  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Age Groups")
+  const [landscapeVisZAxis, setLandscapeVisZAxis] = useState("Enrollment")
+
   const [allTableData, setAllTableData] = useState([])
   const [loadingAllTableData, setLoadingAllTableData] = useState(true)
 
@@ -1199,6 +1203,18 @@ function DashboardRoute(props) {
     setLoadingTrialsData(false)
   }
 
+  let dropdownItems = {
+    "Start Year": "Start_Year",
+    "Age Groups": "Age_Groups",
+    "Sponsors": "Sponsor",
+    "Sponsor Types": "Sponsor_Type",
+    "Study Types": "Study_Type",
+    "Outcomes": "Outcome_Concepts",
+    "Facilities": "Facility_Settings",
+    "Regions": "Geography_Regions",
+    "Interventions": "Interventions_Rollup"
+  }
+
   function getLandscapeChartData() {
     // data list
     var data_list = []
@@ -1216,14 +1232,36 @@ function DashboardRoute(props) {
             //statuses.add(record.get('Status'))
             // get all status
             let status = record.get('Status')
-            let x = String(record.get(landscapeXAxis))
-            let y = String(record.get([landscapeYAxis]))
+            let allx = String(record.get(landscapeXAxis))
+            let ally = String(record.get([landscapeYAxis]))
             let z = record.get(landscapeZAxis)
 
-            data_list.push([status, x, y, z])
-            let as_string = status + "; " + x + "; " + y
-            uni.add(as_string)
-            ys.add(y)
+            // let x = allx.split(",")
+            // let  y = ally.split(",")
+            // console.log("ALL x; ", x)
+            // console.log("ALL y; ", y)
+            // TODO :
+            // fix the split at commas
+            // add handling for geography (ugh)
+            // add handling for the names - dictionary with the clean name as the key and the airtable name as the val
+            // once this is set can work on Posty
+            // then personal and res
+
+            // need to do each y with each x
+            for (var y of ally.split(",")){
+              if (y !== ""){
+                for (var x of allx.split(",")){
+                  if (x !== "") {
+                    data_list.push([status, x, y, z])
+                    let as_string = status + "; " + x + "; " + y
+                    uni.add(as_string)
+                  }
+                }
+                ys.add(y)
+              }
+            }
+
+
 
 
 
@@ -1254,7 +1292,7 @@ function DashboardRoute(props) {
 
           //console.log("data list: ", data_list)
           console.log("new data: ", new_data_list)
-          console.log('yS; ', ys)
+          //console.log('yS; ', ys)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1685,7 +1723,7 @@ function DashboardRoute(props) {
     fetchLandscapeChartData();
   }
   // eslint-disable-next-line
-}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize])
+}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize, landscapeVisXAxis, landscapeVisYAxis, landscapeVisZAxis])
 
 
   if (currentUser === undefined) {
@@ -1694,15 +1732,19 @@ function DashboardRoute(props) {
 
   const setLandscapeAxis = (axis, value) => {
     console.log("landscape axis: ", axis, value)
+    console.log("checking this: ", dropdownItems[value])
     switch (axis) {
       case "x":
-        setLandscapeXAxis(value)
+        setLandscapeXAxis(dropdownItems[value])
+        setLandscapeVisXAxis(value)
         break;
       case "y":
-        setLandscapeYAxis(value)
+        setLandscapeYAxis(dropdownItems[value])
+        setLandscapeVisYAxis(value)
         break;
       case "z":
         setLandscapeZAxis(value)
+        setLandscapeVisZAxis(dropdownItems[value])
         break;
       default:
         break;
@@ -2013,9 +2055,9 @@ function DashboardRoute(props) {
                       chartHeight={landscapeChartHeight}
                       minNodeSize={landscapeMinNodeSize}
                       maxNodeSize={landscapeMaxNodeSize}
-                      xAxisLabel={landscapeXAxis}
-                      yAxisLabel={landscapeYAxis}
-                      zAxisLabel={landscapeZAxis}
+                      xAxisLabel={landscapeVisXAxis}
+                      yAxisLabel={landscapeVisYAxis}
+                      zAxisLabel={landscapeVisZAxis}
                       setLandscapeAxis={setLandscapeAxis}
                       loading={loadingLandscapeData}
                     />
