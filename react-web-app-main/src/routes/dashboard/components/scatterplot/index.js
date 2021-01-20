@@ -32,7 +32,7 @@ const PrismScatterplot = (props) => {
     "Sponsor Types": "Sponsor_Type",
     "Study Types": "Study_Type",
     "Outcomes": "Outcome_Concepts",
-    "Facilities": "Facility_Settings",
+    "Settings": "Facility_Settings",
     "Regions": "Geography_Regions",
     "Interventions": "Interventions_Rollup"
   }
@@ -53,7 +53,7 @@ const PrismScatterplot = (props) => {
                 <Dropdown.Item>Sponsor Types</Dropdown.Item>
                 <Dropdown.Item>Study Types</Dropdown.Item>
                 <Dropdown.Item>Outcomes</Dropdown.Item>
-                <Dropdown.Item>Facilities</Dropdown.Item>
+                <Dropdown.Item>Settings</Dropdown.Item>
                 <Dropdown.Item>Regions</Dropdown.Item>
                 <Dropdown.Item>Interventions</Dropdown.Item>
               </Dropdown.Menu>
@@ -70,7 +70,7 @@ const PrismScatterplot = (props) => {
                 <Dropdown.Item>Sponsor Types</Dropdown.Item>
                 <Dropdown.Item>Study Types</Dropdown.Item>
                 <Dropdown.Item>Outcomes</Dropdown.Item>
-                <Dropdown.Item>Facilities</Dropdown.Item>
+                <Dropdown.Item>Settings</Dropdown.Item>
                 <Dropdown.Item>Regions</Dropdown.Item>
                 <Dropdown.Item>Interventions</Dropdown.Item>
               </Dropdown.Menu>
@@ -98,7 +98,7 @@ const PrismScatterplot = (props) => {
           <ResponsiveScatterPlot
             data={ props.chartData }
             height={props.chartHeight}
-            margin={{ top: 60, right: 140, bottom: 200, left: 200 }}
+            margin={{ top: 100, right: 140, bottom: 200, left: 200 }}
             xScale={{ type: 'point' }}
             yScale={{ type: 'point' }}
             blendMode="multiply"
