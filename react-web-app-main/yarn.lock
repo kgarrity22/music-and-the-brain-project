@@ -2468,6 +2468,14 @@
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.15.2.tgz#218cd7276ab4f9ab57cc3d2efa2697e6a579f25d"
   integrity sha512-7l/AX41m609L/EXI9EKH3Vs3v0iA8tKlIOGtw+kgcoanI7p+e4I4GYLqW3UXWiTnjSFymKSmTTPKYrivzbxxqA==
 
+"@genyus/country-code@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@genyus/country-code/-/country-code-1.0.2.tgz#cefa4d7408d8e24590a213df75e3b71b27762484"
+  integrity sha512-pAMll47DGDJ7TOfVRZptNQd+ThdOi+sgwfIxWs95NFmuns4YqZiwgHKbtt5SRw13gbEEXEZjWcsiTZzh7WLe8Q==
+  dependencies:
+    lodash "^4.17.11"
+    quick-score "0.0.3"
+
 "@glideapps/glide-data-grid@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@glideapps/glide-data-grid/-/glide-data-grid-2.0.0.tgz#466c60c22f47eae7280d61a592bae0b88bfdbbf3"
@@ -11844,6 +11852,11 @@ querystringify@^2.1.1:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
   integrity sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==
+
+quick-score@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/quick-score/-/quick-score-0.0.3.tgz#5e290da8917f2934ac236c107ec08953145f9e39"
+  integrity sha512-EC0YBeNR1G4mUzGKhR2RQ/I2UdLQa8RNBjURUB8fRS2xEH1TfKQqJwV8MXsuTGFgBSDt7Tws9lnQ2V7hFzv14A==
 
 r-json@^1.2.1:
   version "1.2.10"
