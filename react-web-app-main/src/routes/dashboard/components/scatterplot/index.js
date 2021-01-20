@@ -44,7 +44,7 @@ const PrismScatterplot = (props) => {
         <div className="dropdown-filters-container">
           <div className="dropdown-container">
             <p>X</p>
-            <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("x", dropdownItems[evt.target.text])}>
+            <Dropdown onSelect={(evtKey, evt) => props.setLandscapeAxis("x", evt.target.text)}>
               <Dropdown.Toggle variant="success" id="dropdown-basic">{props.xAxisLabel}</Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item>Start Year</Dropdown.Item>
