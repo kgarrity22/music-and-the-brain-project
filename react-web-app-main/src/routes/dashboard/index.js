@@ -536,7 +536,9 @@ function DashboardRoute(props) {
     "Interventions": ["Intervention_Types"],
     "Outcomes": ['Outcome_Concepts'],
     "Sponsors": ['Sponsor_Type'],
-    "Geography": [/* in here should be the exact names from airtable*/]
+    "Geography": [/* in here should be the exact names from airtable
+      this needs work*/
+    ]
   }
 
   // creating a single function to help make creating dynamic filters much simpler
@@ -584,8 +586,6 @@ function DashboardRoute(props) {
         else {
 
         }
-
-
         for (var item of allTableData){
 
           Object.keys(item).forEach(key => {
@@ -620,7 +620,76 @@ function DashboardRoute(props) {
       }
       result[filter_header] = mainfilters
     }
-    console.log("NEW RESULT: ", result)
+    return result
+  }
+
+  // INSTEAD OF FOR LOOP TO FIND KEY IN DICTIONARY
+  function getVal(dictionary, key){
+    return dictionary[key];
+  }
+
+  // CREATE PIE CHART
+  function createPieChart(airtableName, data){
+    let pie_obj = {}
+    for (var record of data){
+      let value = getVal(record, airtableName)
+      countOccurrences(pie_obj, value)
+    }
+    let pie = [];
+    pieFormatting(pie_obj, pie);
+
+    return pie
+  }
+
+  // CREATE LINE CHART
+  function createLineChart(airtable_xAxis, airtable_yAxis, data){
+    var line_obj = {};
+    for (var record of data){
+      let value = getVal(record, airtable_xAxis)
+      countOccurrences(line_obj, value)
+    }
+    let line_list = [];
+    let line_formatted = {};
+    line_formatting(line_obj, line_list, line_formatted)
+    line_formatted.id = airtable_yAxis
+
+    return line_formatted
+  }
+
+  // numbars is if you want top 10 bars or all bars or top 20 bars etc
+  // indexKey - this is bar of the props of the bar charts
+
+  function createBarChart(airtableName, numBars, indexKey, data){
+    let bar_obj = {};
+    for (var record of data){
+      let value = getVal(record, airtableName)
+      // in case of list of items
+      if (typeof(value)==='object'){
+        for (var item of value){
+          if (item !== null){
+            var itemlist = item.split(", ")
+            for (var j of itemlist){
+              countOccurrences(bar_obj, j)
+            }
+          }
+        }
+      } else {
+        countOccurrences(bar_obj, value)
+      }
+    }
+
+    var keys = Object.keys(bar_obj).map(function(key){
+      return [key, bar_obj[key]];
+    });
+    keys.sort(function(first, second){
+      return second[1] - first[1];
+    })
+    let updated_bars = {};
+    for (var i of keys.slice(0, numBars)){
+      updated_bars[i[0]] = i[1]
+    }
+    let bar_formatted = {};
+    bar_formatting(updated_bars, [], bar_formatted, indexKey)
   }
 
 
@@ -629,6 +698,7 @@ function DashboardRoute(props) {
 
     const result = await getairtable()
     // console.log("***FILTERS****: ", result)
+
 
 
     setTrialsFilters(result.trials)
@@ -702,11 +772,17 @@ function DashboardRoute(props) {
 
   *//////////////////////////////////////////////////////////
   const [landscapeChartData, setLandscapeChartData] = useState([])
+  const [landscapeChartHeight, setLandscapeChartHeight] = useState(100)
+
   const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
   const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
   const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
+
+  const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
+  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Age Groups")
+  const [landscapeVisZAxis, setLandscapeVisZAxis] = useState("Enrollment")
 
   const [allTableData, setAllTableData] = useState([])
   const [loadingAllTableData, setLoadingAllTableData] = useState(true)
@@ -739,12 +815,31 @@ function DashboardRoute(props) {
     }
   }
 
+  function countOccurrences(dictionary, key){
+    if(key in dictionary){
+      dictionary[key]+=1;
+    } else {
+      dictionary[key] = 1
+    }
+  }
+
   /*
   Takes a dictionary formated {key: Occurences of key}
   and an empty list and formats the data for a nivo part chart
   in that list
   */
   function pie_formatting(dictionary, pie_data){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["id"] = keys[i];
+      new_dict["label"] = keys[i];
+      new_dict["value"] = value[i];
+      pie_data.push(new_dict)
+    }
+  }
+  function pieFormatting(dictionary, pie_data){
     var keys = Object.keys(dictionary);
     var value = Object.values(dictionary);
     for (var i=0; i<keys.length; i++){
@@ -810,8 +905,8 @@ function DashboardRoute(props) {
   var alldata = []
 
   function getTableData(){
-        var Airtable = require('airtable');
-        var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+        // var Airtable = require('airtable');
+        // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
 
           var tab_ind = 0
           var table_data = []
@@ -1108,10 +1203,24 @@ function DashboardRoute(props) {
     setLoadingTrialsData(false)
   }
 
+  let dropdownItems = {
+    "Start Year": "Start_Year",
+    "Age Groups": "Age_Groups",
+    "Sponsors": "Sponsor",
+    "Sponsor Types": "Sponsor_Type",
+    "Study Types": "Study_Type",
+    "Outcomes": "Outcome_Concepts",
+    "Facilities": "Facility_Settings",
+    "Regions": "Geography_Regions",
+    "Interventions": "Interventions_Rollup"
+  }
+
   function getLandscapeChartData() {
     // data list
-    var data_list = []
-    var statuses = new Set()
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+
     return new Promise((resolve, reject) => {
       base('Trials').select({
 
@@ -1121,15 +1230,35 @@ function DashboardRoute(props) {
 
 
           records.forEach(function(record) {
-            statuses.add(record.get('Status'))
+            //statuses.add(record.get('Status'))
             // get all status
-            let point = {}
-            point["Status"] = record.get('Status')
-            point["x"] = String(record.get(landscapeXAxis))
-            point["y"] = String(record.get([landscapeYAxis]))
-            point["z"] = record.get(landscapeZAxis)
+            let status = record.get('Status')
+            let allx = String(record.get(landscapeXAxis))
+            let ally = String(record.get([landscapeYAxis]))
+            let z = record.get(landscapeZAxis)
+            if (landscapeZAxis === "Trial Volume") {
+              z = 1
+            }
 
-            data_list.push(point)
+
+
+            // need to do each y with each x
+            for (var y of ally.split(",")){
+              if (y !== ""){
+                for (var x of allx.split(",")){
+                  if (x !== "") {
+                    data_list.push([status, x, y, z])
+                    let as_string = status + "; " + x + "; " + y
+                    uni.add(as_string)
+                  }
+                }
+                ys.add(y)
+              }
+            }
+
+
+
+
 
           });
 
@@ -1140,17 +1269,46 @@ function DashboardRoute(props) {
             console.error(err);
             return reject({});
           }
-          // console.log("data list: ", data_list)
+          let new_data_list = []
           let clean_data = {}
-          for (var i of data_list){
-            if (i.Status in clean_data){
-              var val = clean_data[i.Status]
-              val.push({"x": i.x, "y": i.y, "z": i.z})
-            } else {
-              // console.log("I for else: ", i)
-              clean_data[i.Status] = [{"x": i.x, "y": i.y, "z": i.z}]
+          let zs = []
+          for (var i of uni){
+
+            var ids = i.split("; ")
+            let z = 0;
+            for (var arr of data_list){
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                z += arr[3]
+              }
             }
-          } // end for
+            let item = {}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+
+            new_data_list.push(item)
+          }
+
+
+          //console.log("data list: ", data_list)
+          console.log("new data: ", new_data_list)
+          //console.log('yS; ', ys)
+
+          for (var j of new_data_list){
+            let stat = Object.keys(j)[0]
+            let val = Object.values(j)
+
+            if (isNaN(val[0]["z"])){
+              val[0]["z"] = 0
+            }
+            zs.push(val[0]["z"])
+            // console.log("val: ", val[0]["z"])
+            if (stat in clean_data){
+              clean_data[stat].push(val[0])
+            } else {
+              clean_data[stat] = val
+            }
+          }
+          console.log("zs: ", zs)
+
           console.log("clean data: ", clean_data)
           var all_data=[]
           for (var item of Object.keys(clean_data)){
@@ -1159,9 +1317,11 @@ function DashboardRoute(props) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
-
+          setLandscapeChartHeight(ys.size * 30 + 300)
           var landscape_result={}
           landscape_result["data"] = all_data
+          landscape_result["max"] = Math.max(...zs)
+          landscape_result["min"] = Math.min(...zs)
           resolve(landscape_result)
 
         })
@@ -1175,9 +1335,10 @@ function DashboardRoute(props) {
     const result = await getLandscapeChartData()
     console.log("LANDSCAPE result: ", result)
 
-    setLandscapeChartData(result);
-    setLandscapeMinNodeSize(0);
-    setLandscapeMaxNodeSize(1000);
+    setLandscapeChartData(result.data);
+    // setLandscapeChartHeight(result.data.length * 100)
+    setLandscapeMinNodeSize(result.min);
+    setLandscapeMaxNodeSize(result.max);
     setLoadingLandscapeData(false)
   }
 
@@ -1563,7 +1724,7 @@ function DashboardRoute(props) {
     fetchLandscapeChartData();
   }
   // eslint-disable-next-line
-}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize])
+}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize, landscapeVisXAxis, landscapeVisYAxis, landscapeVisZAxis])
 
 
   if (currentUser === undefined) {
@@ -1572,15 +1733,19 @@ function DashboardRoute(props) {
 
   const setLandscapeAxis = (axis, value) => {
     console.log("landscape axis: ", axis, value)
+    console.log("checking this: ", dropdownItems[value])
     switch (axis) {
       case "x":
-        setLandscapeXAxis(value)
+        setLandscapeXAxis(dropdownItems[value])
+        setLandscapeVisXAxis(value)
         break;
       case "y":
-        setLandscapeYAxis(value)
+        setLandscapeYAxis(dropdownItems[value])
+        setLandscapeVisYAxis(value)
         break;
       case "z":
         setLandscapeZAxis(value)
+        //setLandscapeVisZAxis(dropdownItems[value])
         break;
       default:
         break;
@@ -1888,10 +2053,11 @@ function DashboardRoute(props) {
                       title="Landscape"
                       colors="rainbow"
                       chartData={landscapeChartData}
+                      chartHeight={landscapeChartHeight}
                       minNodeSize={landscapeMinNodeSize}
                       maxNodeSize={landscapeMaxNodeSize}
-                      xAxisLabel={landscapeXAxis}
-                      yAxisLabel={landscapeYAxis}
+                      xAxisLabel={landscapeVisXAxis}
+                      yAxisLabel={landscapeVisYAxis}
                       zAxisLabel={landscapeZAxis}
                       setLandscapeAxis={setLandscapeAxis}
                       loading={loadingLandscapeData}
