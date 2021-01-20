@@ -35,8 +35,8 @@ import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme
       { title: "Enrollment", field: "Enrollment", hozAlign: "left", width: 150 },
       { title: "Intervention Types", field: "Intervention_Types", hozAlign: "left", width: 150 },
       { title: "Interventions", field: "Interventions", hozAlign: "left", width: 150 },
-      { title: "Regions", field: "Geography_Regions", hozAlign: "left", width: 150 },
-      { title: "Countries", field: "Geography_Countries", hozAlign: "left", width: 150  },
+      { title: "Regions", field: "Regions_Rollup_Unique", hozAlign: "left", width: 150 },
+      { title: "Countries", field: "Countries_Rollup_Unique", hozAlign: "left", width: 150  },
       { title: "Outcomes", field: "Outcome_Concepts", hozAlign: "left", width: 150 }
       ];
 

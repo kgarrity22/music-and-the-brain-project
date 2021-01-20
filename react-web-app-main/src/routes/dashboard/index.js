@@ -811,11 +811,11 @@ function DashboardRoute(props) {
   const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
   const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Facility_Settings")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
 
   const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
-  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Age Groups")
+  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Settings")
   const [landscapeVisZAxis, setLandscapeVisZAxis] = useState("Enrollment")
 
   const [allTableData, setAllTableData] = useState([])
@@ -1245,7 +1245,7 @@ function DashboardRoute(props) {
     "Sponsor Types": "Sponsor_Type",
     "Study Types": "Study_Type",
     "Outcomes": "Outcome_Concepts",
-    "Facilities": "Facility_Settings",
+    "Settings": "Facility_Settings",
     "Regions": "Geography_Regions",
     "Interventions": "Intervention_Types"
   }
@@ -1366,7 +1366,7 @@ function DashboardRoute(props) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
-          setLandscapeChartHeight(ys.size * 30 + 300)
+          setLandscapeChartHeight(ys.size * 50 + 300)
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
@@ -1546,6 +1546,7 @@ function DashboardRoute(props) {
   // Interventions variables for airtable data
   var interventions_dict = {}
   var interventions_bar = []
+  var interventions_line = []
   var interventions_bar_formatted = {}
   var interventions_result = {}
   // Get Intervention data from airtable
@@ -1563,6 +1564,7 @@ function DashboardRoute(props) {
             var interventions = record.get('Intervention_Types').split(", ")
             for (var item of interventions){
               pie_collection(interventions_dict, item)
+
             }
 
 
@@ -1653,6 +1655,9 @@ function DashboardRoute(props) {
       })
     })
 }// end of get trialStatusPieChartData
+
+
+
 
   const fetchSponsorsData = async () => {
         const result = await getSponsorsChartsData()
@@ -2208,27 +2213,17 @@ function DashboardRoute(props) {
                     <Col>
                       <PrismBarChart
                         color="blue"
-                        layout="vertical"
-                        title="Sponsor Breakdown"
+                        layout="horizontal"
+                        title="Sponsor Type Breakdown"
                         chartData={sponsorsTop10ByTrialsBarChartData.data}
                         groupKeys={sponsorsTop10ByTrialsBarChartData.group_keys}
                         indexKey="sponsor"
-                        xAxisLabel="Sponsor Type"
                         yAxisLabel=""
+                        xAxisLabel="Trials"
                         showLegend={false}
                         loading={loadingSponsorsData}
                       />
                     </Col>
-                  </Row>
-                  <Row>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="blue"
-                      title="Sponsor Types"
-                      chartData={populationVolunteersPieChartData}
-                      loading={loadingPopulationData}
-                    />
-                  </Col>
                   </Row>
                   <Row>
                     <Col>
