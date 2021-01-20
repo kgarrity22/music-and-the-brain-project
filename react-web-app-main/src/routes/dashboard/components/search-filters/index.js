@@ -16,7 +16,7 @@ function SearchFilterSection(props) {
     setTitleIsChecked(!titleIsChecked)
     // console.log("title is checked: ", titleIsChecked)
     for (let filter in props.filters){
-      //console.log("filter of props.filters; ", filter)
+      // console.log("filter of props.filters; ", filter)
       //console.log("titleIsChecked: ", titleIsChecked)
       if (props.filters[filter] === titleIsChecked) {
         props.onFilterClicked(props.title, filter, false)
@@ -63,7 +63,7 @@ function SearchFilterSection(props) {
       <div className="search-filters-container">
         {
           Object.keys(props.filters).map((filter, index) => (
-              <Form.Group key={index} className={"checkbox-group " + props.color + " " + (props.activeFilter === filter ? 'active' : '')}
+              <Form.Group key={index} className={"checkbox-group " + props.color + " "/* + (props.activeFilter === filter ? 'active' : '')*/}
                 onMouseEnter={props.onFilterHover ? (e) => props.onFilterHover(filter) : null}
                 onMouseLeave={props.onFilterUnHover ? (e) => props.onFilterUnHover(filter) : null}
               >
