@@ -3,6 +3,7 @@ import { Redirect, withRouter } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap'
 import axios from 'axios';
 import { Auth } from 'aws-amplify';
+import * as d3 from 'd3'
 
 import CsvDownloader from 'react-csv-downloader';
 
@@ -693,38 +694,51 @@ function DashboardRoute(props) {
   }
 
   function createSunburst(level1, level2, level3, data) {
-    let whole = {}
-    whole["name"] = "data"
-    // whole["Children"] = []
-    let first_children = {}
 
-    for (var record of data){
-      let lev1 = record[level1].toString()
-      let lev2 = record[level2].toString()
-      let lev3 = record[level3].toString()
-      if (Object.keys(first_children).includes(lev1)){
-        for (var i of lev2.split(", ")){
-          if (first_children[lev1].includes(i)){
-          } else {
-            first_children[lev1].push({i})
+    var rollupdata = d3.rollup(data, g => g.length, d => d[level1][0], d => d[level2], d => d[level3])
+    console.log("Rollup: ", rollupdata)
+    // now take this and reformat it for as arrays rather than maps
+    let wholedata = []
+    // console.log(rollupdata.keys())
+    for (var key of rollupdata.keys()){
+      // for each key
+      let name0 = key
+      let children0 = []
+      // console.log("CHECK", rollupdata.get(key))
+      for (var element1 of rollupdata.get(key)){
+        console.log("ELEMENT1: ", element1[0])
+        let element1split = element1[0].split(", ")
+        for (let elem of element1split){
+          let name1 = elem
+          let children1 = []
+          let middle = {}
+          for (var element2 of element1[1].keys()){
+            let map = element1[1]
+            let name2 = element2
+            let value = map.get(element2)
+            let outer = {}
+            outer["name"] = name2
+            outer["value"] = value
+            children1.push(outer)
           }
-        }
-      } else {
-        first_children[lev1] = []
-        for (var j of lev2.split(", ")){
-          var dict = {j: j}
-          first_children[lev1].push(dict)
+          middle["name"] = name1
+          middle["children"] = children1
+          children0.push(middle)
         }
       }
+      var inner = {}
+      inner["name"] = name0
+      inner["children"] = children0
+      wholedata.push(inner)
     }
-    console.log("First Children: ", first_children)
 
-    // go through each record
-    // if
-
-
-
+    let sunburst_data = {}
+    sunburst_data["name"] = "data"
+    sunburst_data["children"] = wholedata
+    console.log("SUNBURST DATA: ", sunburst_data)
+    return sunburst_data
   }
+
 
 
 
@@ -820,6 +834,9 @@ function DashboardRoute(props) {
 
   const [allTableData, setAllTableData] = useState([])
   const [loadingAllTableData, setLoadingAllTableData] = useState(true)
+
+  const [sponsorsSunburstChart, setSponsorsSunburstChart] = useState({})
+  const [loadingSponsorsSunburstChart, setLoadingSponsorsSunburstChart] = useState(true)
 
 
 
@@ -990,7 +1007,8 @@ function DashboardRoute(props) {
     const fetchAllTableData = async () => {
       const res = await getTableData()
       newgetfilters(alldata)
-      createSunburst("Sponsor_Type", "Intervention_Types", "Status", alldata)
+      const res2 = createSunburst("Sponsor_Type", "Intervention_Types", "Status", alldata)
+
       //console.log("RES: ", res.tabledata)
       for (var record of res.tabledata){
         for (var key of Object.keys(record)){
@@ -1001,6 +1019,8 @@ function DashboardRoute(props) {
       }
       setAllTableData(res.tabledata)
       setLoadingAllTableData(false)
+      setSponsorsSunburstChart(res2)
+      setLoadingSponsorsSunburstChart(false)
       //console.log("all data as input: ", alldata)
 
 
@@ -1761,7 +1781,9 @@ function DashboardRoute(props) {
       setLoadingGeographyData(true)
       fetchGeographyData();
       setLoadingAllTableData(true)
+      setLoadingSponsorsSunburstChart(true)
       fetchAllTableData();
+
       // console.log("tabledata after fetch: ", fetchAllTableData())
       // setLoadingLandscapeData(true)
       // fetchLandscapeChartData();
@@ -2207,6 +2229,16 @@ function DashboardRoute(props) {
                   <Row>
                     <Col>
                       <SectionTitle title="Sponsors" color="blue" />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <PrismSunburst
+                        colors="rainbow"
+                        title="Sponsors Breakdown"
+                        chartData={sponsorsSunburstChart}
+                        loading={loadingSponsorsSunburstChart}
+                      />
                     </Col>
                   </Row>
                   <Row>

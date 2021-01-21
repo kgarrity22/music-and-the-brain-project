@@ -23,6 +23,7 @@
     "aws-amplify": "^3.3.8",
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
+    "d3": "^6.3.1",
     "direction": "^1.0.4",
     "marked": "^1.2.7",
     "material-table": "^1.69.2",
