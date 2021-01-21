@@ -665,11 +665,16 @@ function DashboardRoute(props) {
           }
         }
       } else {
-        countOccurrences(bar_obj, value)
+          var itemlist = value.split(",")
+          for (var j of itemlist){
+            countOccurrences(bar_obj, j)
+          }
+        //countOccurrences(bar_obj, value)
       }
     }
 
     var keys = Object.keys(bar_obj).map(function(key){
+      //console.log("KEY: ", key)
       return [key, bar_obj[key]];
     });
     keys.sort(function(first, second){
@@ -677,10 +682,14 @@ function DashboardRoute(props) {
     })
     let updated_bars = {};
     for (var i of keys.slice(0, numBars)){
+      //console.log("i: ", i)
       updated_bars[i[0]] = i[1]
     }
     let bar_formatted = {};
+    //console.log("updated BArs: ", updated_bars)
     bar_formatting(updated_bars, [], bar_formatted, indexKey)
+    console.log("bar FORMAtTED: ", bar_formatted)
+    return bar_formatted
   }
 
   function createSunburst(level1, level2, level3, data) {
@@ -1036,6 +1045,9 @@ function DashboardRoute(props) {
       setPopulationEnrollmentPieChartData(createPieChart("Healthy_Volunteers", alldata))
       setLoadingPopulationData(false)
 
+      setOutcomesTop10ParentBarChartData(createBarChart("Outcome_Concepts", 10, "outcome", alldata));
+      setLoadingOutcomesData(false)
+
 
     }
 
@@ -1332,155 +1344,91 @@ function DashboardRoute(props) {
   }
 
 
-
-
-//
-//   var single_multi_site_dict = {}
-//   var single_multi_site_pie = [];
-//   var enrollment_dict = {}
-//   var enrollment_pie = []
-//   var population_result = {}
-//   var volunteers_pie_dict = {}
-//   var volunteers_pie = [];
-//
-//   function getPopulationsChartsData() {
-//
-//     return new Promise((resolve, reject) => {
-//       base('Trials').select({
-//
-//           filterByFormula: airtableFilters,
-//           view: "Raw View"
-//       }).eachPage(function page(records, fetchNextPage) {
-//
-//
-//
-//           records.forEach(function(record) {
-//
-//             pie_collection(single_multi_site_dict, record.get('Single_Multi_Site'))
-//             pie_collection(enrollment_dict, record.get('Enrollment_Target'))
-//             pie_collection(volunteers_pie_dict, record.get('Healthy_Volunteers'))
-//
-//           });
-//
-//           fetchNextPage();
-//
-//       }, function done(err) {
-//           if (err) {
-//             console.error(err);
-//             return reject({});
-//           }
-//
-//           pie_formatting(single_multi_site_dict, single_multi_site_pie)
-//           pie_formatting(volunteers_pie_dict, volunteers_pie)
-//           pie_formatting(enrollment_dict, enrollment_pie)
-//
-//           population_result["sites_pie"] = single_multi_site_pie;
-//           population_result["volunteers_pie"] = volunteers_pie
-//           population_result["enrollment_pie"] = enrollment_pie
-//
-//           resolve(population_result)
-//
-//       })
-//     })
-// }// end of get PopulationsData
-//
-//
-//   const fetchPopulationData = async () => {
-//
-//     const result = await getPopulationsChartsData()
-//
-//     setSingleMultiSitePieChartData(result.sites_pie);
-//     setPopulationVolunteersPieChartData(result.volunteers_pie);
-//     setPopulationEnrollmentPieChartData(result.enrollment_pie)
-//     setLoadingPopulationData(false)
-//   }
-
-
-
-  // Outcomes Variables for airtable
-  var outcomes_dict = {}
-  var outcomes_bar = []
-  var outcomes_bar_formatted = {}
-  var outcomes_result = {}
-
-  // Get Outcomes data from airtable
-  function getOutcomesChartsData() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-          records.forEach(function(record) {
-            // OUTCOMES FILTERS
-
-            var outcome = record.get('Outcome_Concepts')
-            if (typeof(outcome)==='object'){
-              for (var item of outcome){
-                if (item === null){
-                  console.log()
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-
-                    pie_collection(outcomes_dict, j)
-                  }
-                }
-              }
-            } else {
-
-              pie_collection(outcomes_dict, outcome)
-            }
-
-
-
-          });
-
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-          //console.log("OUTCOMES DICT: ", outcomes_dict)
-
-          var items = Object.keys(outcomes_dict).map(function(key) {
-            return [key, outcomes_dict[key]];
-          });
-
-          // Sort the array based on the second element
-          items.sort(function(first, second) {
-            return second[1] - first[1];
-          });
-
-          var updated_outcomes_dict = {}
-          for (var item of items.slice(0, 10)){
-            updated_outcomes_dict[item[0]] = item[1]
-          }
-
-
-          bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
-          outcomes_result["outcome_bar"] = outcomes_bar_formatted
-          //console.log("OUTCOME data: ", outcomes_bar_formatted)
-
-          resolve(outcomes_result)
-
-      })
-    })
-  }// end
-
-
-  // Fetch and set outcomes data
-  const fetchOutcomesData = async () => {
-
-    const result = await getOutcomesChartsData()
-
-    setOutcomesTop10ParentBarChartData(result.outcome_bar);
-    setLoadingOutcomesData(false)
-  }
+  //
+  // // Outcomes Variables for airtable
+  // var outcomes_dict = {}
+  // var outcomes_bar = []
+  // var outcomes_bar_formatted = {}
+  // var outcomes_result = {}
+  //
+  // // Get Outcomes data from airtable
+  // function getOutcomesChartsData() {
+  //
+  //   return new Promise((resolve, reject) => {
+  //     base('Trials').select({
+  //
+  //         filterByFormula: airtableFilters,
+  //         view: "Raw View"
+  //     }).eachPage(function page(records, fetchNextPage) {
+  //
+  //         records.forEach(function(record) {
+  //           // OUTCOMES FILTERS
+  //
+  //           var outcome = record.get('Outcome_Concepts')
+  //           if (typeof(outcome)==='object'){
+  //             for (var item of outcome){
+  //               if (item === null){
+  //                 console.log()
+  //               } else {
+  //                 var itemlist = item.split(", ")
+  //                 for (var j of itemlist){
+  //
+  //                   pie_collection(outcomes_dict, j)
+  //                 }
+  //               }
+  //             }
+  //           } else {
+  //
+  //             pie_collection(outcomes_dict, outcome)
+  //           }
+  //
+  //
+  //
+  //         });
+  //
+  //         fetchNextPage();
+  //
+  //     }, function done(err) {
+  //         if (err) {
+  //           console.error(err);
+  //           return reject({});
+  //         }
+  //         //console.log("OUTCOMES DICT: ", outcomes_dict)
+  //
+  //         var items = Object.keys(outcomes_dict).map(function(key) {
+  //           return [key, outcomes_dict[key]];
+  //         });
+  //
+  //         // Sort the array based on the second element
+  //         items.sort(function(first, second) {
+  //           return second[1] - first[1];
+  //         });
+  //
+  //         var updated_outcomes_dict = {}
+  //         for (var item of items.slice(0, 10)){
+  //           updated_outcomes_dict[item[0]] = item[1]
+  //         }
+  //
+  //
+  //         bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
+  //         outcomes_result["outcome_bar"] = outcomes_bar_formatted
+  //         //console.log("OUTCOME data: ", outcomes_bar_formatted)
+  //
+  //         resolve(outcomes_result)
+  //
+  //     })
+  //   })
+  // }// end
+  //
+  //
+  // // Fetch and set outcomes data
+  // const fetchOutcomesData = async () => {
+  //
+  //   const result = await getOutcomesChartsData()
+  //
+  //   setOutcomesTop10ParentBarChartData(result.outcome_bar);
+  //   setLoadingOutcomesData(false)
+  // }
 
 
   // Interventions variables for airtable data
@@ -1692,8 +1640,8 @@ function DashboardRoute(props) {
       // fetchTrialsMetricData();
 
       //fetchPopulationData();
-      setLoadingOutcomesData(true)
-      fetchOutcomesData();
+
+      // fetchOutcomesData();
       setLoadingInterventionsData(true)
       fetchInterventionsData();
       setLoadingSponsorsData(true)
@@ -1705,6 +1653,7 @@ function DashboardRoute(props) {
       setLoadingTrialsSunburstChart(true)
       setLoadingTrialsData(true)
       setLoadingPopulationData(true)
+      setLoadingOutcomesData(true)
       fetchAllTableData();
 
       // console.log("tabledata after fetch: ", fetchAllTableData())
