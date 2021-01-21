@@ -665,7 +665,11 @@ function DashboardRoute(props) {
           }
         }
       } else {
-          var itemlist = value.split(",")
+          if (airtableName === "Intervention_Types"){
+            var itemlist = value.split(", ")
+          } else {
+            var itemlist = value.split(",")
+          }
           for (var j of itemlist){
             countOccurrences(bar_obj, j)
           }
@@ -1025,8 +1029,6 @@ function DashboardRoute(props) {
       setTrialsSunburstChart(res3)
       setLoadingTrialsSunburstChart(false)
 
-
-
       setTrialStatusPieChartData(createPieChart("Status", alldata));
       setTrialPurposePieChartData(createPieChart("Purpose", alldata));
 
@@ -1037,8 +1039,6 @@ function DashboardRoute(props) {
       setTrialMaskingPieChartData(createPieChart("Masking_Clean", alldata));
 
       setLoadingTrialsData(false)
-      //console.log("all data as input: ", alldata)
-
 
       setSingleMultiSitePieChartData(createPieChart("Single_Multi_Site", alldata));
       setPopulationVolunteersPieChartData(createPieChart("Enrollment_Target", alldata));
@@ -1048,8 +1048,11 @@ function DashboardRoute(props) {
       setOutcomesTop10ParentBarChartData(createBarChart("Outcome_Concepts", 10, "outcome", alldata));
       setLoadingOutcomesData(false)
 
-      setInterventionsTop10BarChartData(createBarChart("Intervention_Types", 10, "interventions", alldata));
+      setInterventionsTop10BarChartData(createBarChart("Intervention_Types", 10, "intervention", alldata));
       setLoadingInterventionsData(false)
+
+      setSponsorsTop10ByTrialsBarChartData(createBarChart("Sponsor_Type", 10, "sponsor", alldata));
+      setLoadingSponsorsData(false)
 
 
     }
@@ -1344,75 +1347,6 @@ function DashboardRoute(props) {
 
 
 
-  // // Interventions variables for airtable data
-  // var interventions_dict = {}
-  // var interventions_bar = []
-  // var interventions_line = []
-  // var interventions_bar_formatted = {}
-  // var interventions_result = {}
-  // // Get Intervention data from airtable
-  // function getInterventionsChartsData() {
-  //
-  //   return new Promise((resolve, reject) => {
-  //     base('Trials').select({
-  //
-  //         filterByFormula: airtableFilters,
-  //         view: "Raw View"
-  //     }).eachPage(function page(records, fetchNextPage) {
-  //
-  //         records.forEach(function(record) {
-  //
-  //           var interventions = record.get('Intervention_Types').split(", ")
-  //           for (var item of interventions){
-  //             pie_collection(interventions_dict, item)
-  //
-  //           }
-  //
-  //
-  //         });
-  //
-  //         fetchNextPage();
-  //
-  //     }, function done(err) {
-  //         if (err) {
-  //           console.error(err);
-  //           return reject({});
-  //         }
-  //         //console.log("Interventions DICT: ", interventions_dict)
-  //
-  //         var items = Object.keys(interventions_dict).map(function(key) {
-  //           return [key, interventions_dict[key]];
-  //         });
-  //
-  //         // Sort the array based on the second element
-  //         items.sort(function(first, second) {
-  //           return second[1] - first[1];
-  //         });
-  //
-  //         var updated_interventions_dict = {}
-  //         for (var item of items.slice(0, 10)){
-  //           updated_interventions_dict[item[0]] = item[1]
-  //         }
-  //
-  //
-  //         bar_formatting(updated_interventions_dict, interventions_bar, interventions_bar_formatted, "intervention")
-  //         interventions_result["interventions_bar"] = interventions_bar_formatted
-  //         //console.log("InTERVENtION data: ", interventions_bar_formatted)
-  //
-  //         resolve(interventions_result)
-  //
-  //     })
-  //   })
-  // }// end Interventions get function
-  //
-  // const fetchInterventionsData = async () => {
-  //
-  //   const result = await getInterventionsChartsData()
-  //   setInterventionsTop10BarChartData(result.interventions_bar);
-  //
-  //   setLoadingInterventionsData(false)
-  // }
-
 
   // Sponsors variables for airtable
   var sponsors_dict = {}
@@ -1555,10 +1489,10 @@ function DashboardRoute(props) {
       //fetchPopulationData();
 
       // fetchOutcomesData();
-      setLoadingInterventionsData(true)
-      fetchInterventionsData();
-      setLoadingSponsorsData(true)
-      fetchSponsorsData();
+
+      // fetchInterventionsData();
+
+      // fetchSponsorsData();
       setLoadingGeographyData(true)
       fetchGeographyData();
       setLoadingAllTableData(true)
@@ -1567,6 +1501,8 @@ function DashboardRoute(props) {
       setLoadingTrialsData(true)
       setLoadingPopulationData(true)
       setLoadingOutcomesData(true)
+      setLoadingInterventionsData(true)
+      setLoadingSponsorsData(true)
       fetchAllTableData();
 
       // console.log("tabledata after fetch: ", fetchAllTableData())
