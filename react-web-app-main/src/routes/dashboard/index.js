@@ -1048,6 +1048,9 @@ function DashboardRoute(props) {
       setOutcomesTop10ParentBarChartData(createBarChart("Outcome_Concepts", 10, "outcome", alldata));
       setLoadingOutcomesData(false)
 
+      setInterventionsTop10BarChartData(createBarChart("Intervention_Types", 10, "interventions", alldata));
+      setLoadingInterventionsData(false)
+
 
     }
 
@@ -1255,11 +1258,6 @@ function DashboardRoute(props) {
                 ys.add(y)
               }
             }
-
-
-
-
-
           });
 
           fetchNextPage();
@@ -1344,15 +1342,16 @@ function DashboardRoute(props) {
   }
 
 
-  //
-  // // Outcomes Variables for airtable
-  // var outcomes_dict = {}
-  // var outcomes_bar = []
-  // var outcomes_bar_formatted = {}
-  // var outcomes_result = {}
-  //
-  // // Get Outcomes data from airtable
-  // function getOutcomesChartsData() {
+
+
+  // // Interventions variables for airtable data
+  // var interventions_dict = {}
+  // var interventions_bar = []
+  // var interventions_line = []
+  // var interventions_bar_formatted = {}
+  // var interventions_result = {}
+  // // Get Intervention data from airtable
+  // function getInterventionsChartsData() {
   //
   //   return new Promise((resolve, reject) => {
   //     base('Trials').select({
@@ -1362,26 +1361,12 @@ function DashboardRoute(props) {
   //     }).eachPage(function page(records, fetchNextPage) {
   //
   //         records.forEach(function(record) {
-  //           // OUTCOMES FILTERS
   //
-  //           var outcome = record.get('Outcome_Concepts')
-  //           if (typeof(outcome)==='object'){
-  //             for (var item of outcome){
-  //               if (item === null){
-  //                 console.log()
-  //               } else {
-  //                 var itemlist = item.split(", ")
-  //                 for (var j of itemlist){
+  //           var interventions = record.get('Intervention_Types').split(", ")
+  //           for (var item of interventions){
+  //             pie_collection(interventions_dict, item)
   //
-  //                   pie_collection(outcomes_dict, j)
-  //                 }
-  //               }
-  //             }
-  //           } else {
-  //
-  //             pie_collection(outcomes_dict, outcome)
   //           }
-  //
   //
   //
   //         });
@@ -1393,10 +1378,10 @@ function DashboardRoute(props) {
   //           console.error(err);
   //           return reject({});
   //         }
-  //         //console.log("OUTCOMES DICT: ", outcomes_dict)
+  //         //console.log("Interventions DICT: ", interventions_dict)
   //
-  //         var items = Object.keys(outcomes_dict).map(function(key) {
-  //           return [key, outcomes_dict[key]];
+  //         var items = Object.keys(interventions_dict).map(function(key) {
+  //           return [key, interventions_dict[key]];
   //         });
   //
   //         // Sort the array based on the second element
@@ -1404,101 +1389,29 @@ function DashboardRoute(props) {
   //           return second[1] - first[1];
   //         });
   //
-  //         var updated_outcomes_dict = {}
+  //         var updated_interventions_dict = {}
   //         for (var item of items.slice(0, 10)){
-  //           updated_outcomes_dict[item[0]] = item[1]
+  //           updated_interventions_dict[item[0]] = item[1]
   //         }
   //
   //
-  //         bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
-  //         outcomes_result["outcome_bar"] = outcomes_bar_formatted
-  //         //console.log("OUTCOME data: ", outcomes_bar_formatted)
+  //         bar_formatting(updated_interventions_dict, interventions_bar, interventions_bar_formatted, "intervention")
+  //         interventions_result["interventions_bar"] = interventions_bar_formatted
+  //         //console.log("InTERVENtION data: ", interventions_bar_formatted)
   //
-  //         resolve(outcomes_result)
+  //         resolve(interventions_result)
   //
   //     })
   //   })
-  // }// end
+  // }// end Interventions get function
   //
+  // const fetchInterventionsData = async () => {
   //
-  // // Fetch and set outcomes data
-  // const fetchOutcomesData = async () => {
+  //   const result = await getInterventionsChartsData()
+  //   setInterventionsTop10BarChartData(result.interventions_bar);
   //
-  //   const result = await getOutcomesChartsData()
-  //
-  //   setOutcomesTop10ParentBarChartData(result.outcome_bar);
-  //   setLoadingOutcomesData(false)
+  //   setLoadingInterventionsData(false)
   // }
-
-
-  // Interventions variables for airtable data
-  var interventions_dict = {}
-  var interventions_bar = []
-  var interventions_line = []
-  var interventions_bar_formatted = {}
-  var interventions_result = {}
-  // Get Intervention data from airtable
-  function getInterventionsChartsData() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-          records.forEach(function(record) {
-
-            var interventions = record.get('Intervention_Types').split(", ")
-            for (var item of interventions){
-              pie_collection(interventions_dict, item)
-
-            }
-
-
-          });
-
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-          //console.log("Interventions DICT: ", interventions_dict)
-
-          var items = Object.keys(interventions_dict).map(function(key) {
-            return [key, interventions_dict[key]];
-          });
-
-          // Sort the array based on the second element
-          items.sort(function(first, second) {
-            return second[1] - first[1];
-          });
-
-          var updated_interventions_dict = {}
-          for (var item of items.slice(0, 10)){
-            updated_interventions_dict[item[0]] = item[1]
-          }
-
-
-          bar_formatting(updated_interventions_dict, interventions_bar, interventions_bar_formatted, "intervention")
-          interventions_result["interventions_bar"] = interventions_bar_formatted
-          //console.log("InTERVENtION data: ", interventions_bar_formatted)
-
-          resolve(interventions_result)
-
-      })
-    })
-  }// end Interventions get function
-
-  const fetchInterventionsData = async () => {
-
-    const result = await getInterventionsChartsData()
-    setInterventionsTop10BarChartData(result.interventions_bar);
-
-    setLoadingInterventionsData(false)
-  }
 
 
   // Sponsors variables for airtable
