@@ -245,18 +245,7 @@ function DashboardRoute(props) {
   //INTERVENTIONS SETS
   var intervention_set = new Set();
 
-  // var drugs_set = new Set();
-  // var devices_set = new Set();
-  // var drugs_set = new Set();
-  // var biological_set = new Set();
-  // var procedures_set = new Set();
-  // var radiation_set = new Set();
-  // var behavioral_set = new Set();
-  // var genetic_set = new Set();
-  // var dietarySupplements_set = new Set();
-  // var combProds_set = new Set();
-  // var diagnostic_set = new Set();
-  // var otherInt_set = new Set();
+
 
   // OUTCOMES SETS
   var outcomes_set = new Set();
@@ -558,35 +547,35 @@ function DashboardRoute(props) {
         var subfilter_set = new Set()
         // now we need to go through the alltabledata and get the values that of the subfilter key
 
-        if (subfilter === "Geography") {
-          // create a country list and a region list
-          // create a set of unique regions
-          for (var trial_regions of regions_list){
-            var region_list_index = regions_list.indexOf(trial_regions)
-            var country_names = countries_list[region_list_index]
-            if (typeof(trial_regions) === 'object'){
-              for (var region of trial_regions){
-                if (Object.keys(unique_regions).indexOf(region)!==-1){
-                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
-                } else {
-                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
-                }
-              }
-            }
-          }
-          var sorted_regions = {}
-          for (var region of Object.keys(unique_regions)){
-            var sorted_countries = {}
-            sortDictionary(unique_regions[region], sorted_countries)
-            unique_regions[region] = sorted_countries
-          }
-          sortDictionary(unique_regions, sorted_regions)
-          geography_filts["Regions"] = sorted_regions
-        }
+        // if (subfilter === "Geography") {
+        //   // create a country list and a region list
+        //   // create a set of unique regions
+        //   for (var trial_regions of regions_list){
+        //     var region_list_index = regions_list.indexOf(trial_regions)
+        //     var country_names = countries_list[region_list_index]
+        //     if (typeof(trial_regions) === 'object'){
+        //       for (var region of trial_regions){
+        //         if (Object.keys(unique_regions).indexOf(region)!==-1){
+        //               unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
+        //         } else {
+        //               unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
+        //         }
+        //       }
+        //     }
+        //   }
+        //   var sorted_regions = {}
+        //   for (var region of Object.keys(unique_regions)){
+        //     var sorted_countries = {}
+        //     sortDictionary(unique_regions[region], sorted_countries)
+        //     unique_regions[region] = sorted_countries
+        //   }
+        //   sortDictionary(unique_regions, sorted_regions)
+        //   geography_filts["Regions"] = sorted_regions
+        // }
 
-        else {
-
-        }
+        // else {
+        //
+        // }
         for (var item of allTableData){
 
           Object.keys(item).forEach(key => {
@@ -652,9 +641,10 @@ function DashboardRoute(props) {
     let line_list = [];
     let line_formatted = {};
     line_formatting(line_obj, line_list, line_formatted)
-    line_formatted.id = airtable_yAxis
+    line_formatted.id = 0
+    console.log('LINE FORMATTED: ', line_formatted)
 
-    return line_formatted
+    return [line_formatted]
   }
 
   // numbars is if you want top 10 bars or all bars or top 20 bars etc
@@ -996,15 +986,7 @@ function DashboardRoute(props) {
               // alldata = table_data
               console.log("ALL data: ", alldata)
 
-
               var tabledata = {}
-              // for (var record of table_data){
-              //   for (var key of Object.keys(record)){
-              //     if (typeof(record[key] !== "String")){
-              //       record[key] = record[key].toString()
-              //     }
-              //   }
-              // }
               tabledata["tabledata"] = table_data
               resolve(tabledata)
           })
@@ -1033,7 +1015,26 @@ function DashboardRoute(props) {
       setLoadingSponsorsSunburstChart(false)
       setTrialsSunburstChart(res3)
       setLoadingTrialsSunburstChart(false)
+
+
+
+      setTrialStatusPieChartData(createPieChart("Status", alldata));
+      setTrialPurposePieChartData(createPieChart("Purpose", alldata));
+
+      setTrialTypePieChartData(createPieChart("Study_Type", alldata));
+      setTrialAgeGroupsPieChartData(createPieChart("Age_Groups", alldata));
+      setCumulativeTrialsLineChartData(createLineChart("Start_Year", "trials", alldata));
+      setTrialRandomizationPieChartData(createPieChart("Randomization", alldata));
+      setTrialMaskingPieChartData(createPieChart("Masking_Clean", alldata));
+
+      setLoadingTrialsData(false)
       //console.log("all data as input: ", alldata)
+
+
+      setSingleMultiSitePieChartData(createPieChart("Single_Multi_Site", alldata));
+      setPopulationVolunteersPieChartData(createPieChart("Enrollment_Target", alldata));
+      setPopulationEnrollmentPieChartData(createPieChart("Healthy_Volunteers", alldata))
+      setLoadingPopulationData(false)
 
 
     }
@@ -1176,99 +1177,6 @@ function DashboardRoute(props) {
   }
 
 
-  var purpose_pie_dict = {}
-  var purpose_pie = [];
-  var type_pie_dict = {}
-  var type_pie = [];
-  var randomization_pie_dict = {}
-  var randomization_pie = [];
-  var masking_pie_dict = {}
-  var masking_pie = [];
-  var status_pie_dict = {}
-  var status_pie = [];
-
-  var trials_line_dict = {}
-  var trials_line = [];
-  var trials_line_formatted = {}
-  var trials_result = {}
-
-  var age_groups_pie_dict = {}
-  var age_groups_pie = [];
-
-  function getTrialsChartsData() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-
-          records.forEach(function(record) {
-            var age = record.get('Age_Groups')
-            for (var item of age){
-              pie_collection(age_groups_pie_dict, item)
-            }
-            pie_collection(purpose_pie_dict, record.get('Purpose'))
-            pie_collection(type_pie_dict, record.get('Study_Type'))
-            pie_collection(status_pie_dict, record.get('Status'))
-            pie_collection(trials_line_dict, record.get('Start_Year'))
-            pie_collection(randomization_pie_dict, record.get('Randomization'))
-            pie_collection(masking_pie_dict, record.get('Masking_Clean'))
-
-          });
-
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-          pie_formatting(age_groups_pie_dict, age_groups_pie)
-          pie_formatting(purpose_pie_dict, purpose_pie)
-          pie_formatting(type_pie_dict, type_pie)
-          pie_formatting(status_pie_dict, status_pie)
-          pie_formatting(randomization_pie_dict, randomization_pie)
-          pie_formatting(masking_pie_dict, masking_pie)
-
-          line_formatting(trials_line_dict, trials_line, trials_line_formatted)
-          trials_line_formatted.id = 'Trials'
-
-          trials_result["age_pie"] = age_groups_pie;
-          trials_result["purpose_pie"] = purpose_pie;
-          trials_result["type_pie"] = type_pie
-          trials_result["status_pie"] = status_pie
-          trials_result["randomization_pie"] = randomization_pie
-          trials_result["masking_pie"] = masking_pie
-          trials_result["trials_line"] = [trials_line_formatted]
-          //console.log(trials_line_formatted)
-
-          resolve(trials_result)
-
-      })
-    })
-}// end of get trialStatusPieChartData
-
-  const fetchTrialsMetricData = async () => {
-
-
-    const result = await getTrialsChartsData();
-    //console.log("result: ", result)
-
-    setTrialStatusPieChartData(result.status_pie);
-    setTrialPurposePieChartData(result.purpose_pie);
-    // extra pie here if we want it
-    setTrialTypePieChartData(result.type_pie);
-    setTrialAgeGroupsPieChartData(result.age_pie);
-    setCumulativeTrialsLineChartData(result.trials_line);
-    setTrialRandomizationPieChartData(result.randomization_pie);
-    setTrialMaskingPieChartData(result.masking_pie);
-
-    setLoadingTrialsData(false)
-  }
 
   let dropdownItems = {
     "Start Year": "Start_Year",
@@ -1426,66 +1334,66 @@ function DashboardRoute(props) {
 
 
 
-
-  var single_multi_site_dict = {}
-  var single_multi_site_pie = [];
-  var enrollment_dict = {}
-  var enrollment_pie = []
-  var population_result = {}
-  var volunteers_pie_dict = {}
-  var volunteers_pie = [];
-
-  function getPopulationsChartsData() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-
-
-          records.forEach(function(record) {
-
-            pie_collection(single_multi_site_dict, record.get('Single_Multi_Site'))
-            pie_collection(enrollment_dict, record.get('Enrollment_Target'))
-            pie_collection(volunteers_pie_dict, record.get('Healthy_Volunteers'))
-
-          });
-
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-          pie_formatting(single_multi_site_dict, single_multi_site_pie)
-          pie_formatting(volunteers_pie_dict, volunteers_pie)
-          pie_formatting(enrollment_dict, enrollment_pie)
-
-          population_result["sites_pie"] = single_multi_site_pie;
-          population_result["volunteers_pie"] = volunteers_pie
-          population_result["enrollment_pie"] = enrollment_pie
-
-          resolve(population_result)
-
-      })
-    })
-}// end of get PopulationsData
-
-
-  const fetchPopulationData = async () => {
-
-    const result = await getPopulationsChartsData()
-
-    setSingleMultiSitePieChartData(result.sites_pie);
-    setPopulationVolunteersPieChartData(result.volunteers_pie);
-    setPopulationEnrollmentPieChartData(result.enrollment_pie)
-    setLoadingPopulationData(false)
-  }
+//
+//   var single_multi_site_dict = {}
+//   var single_multi_site_pie = [];
+//   var enrollment_dict = {}
+//   var enrollment_pie = []
+//   var population_result = {}
+//   var volunteers_pie_dict = {}
+//   var volunteers_pie = [];
+//
+//   function getPopulationsChartsData() {
+//
+//     return new Promise((resolve, reject) => {
+//       base('Trials').select({
+//
+//           filterByFormula: airtableFilters,
+//           view: "Raw View"
+//       }).eachPage(function page(records, fetchNextPage) {
+//
+//
+//
+//           records.forEach(function(record) {
+//
+//             pie_collection(single_multi_site_dict, record.get('Single_Multi_Site'))
+//             pie_collection(enrollment_dict, record.get('Enrollment_Target'))
+//             pie_collection(volunteers_pie_dict, record.get('Healthy_Volunteers'))
+//
+//           });
+//
+//           fetchNextPage();
+//
+//       }, function done(err) {
+//           if (err) {
+//             console.error(err);
+//             return reject({});
+//           }
+//
+//           pie_formatting(single_multi_site_dict, single_multi_site_pie)
+//           pie_formatting(volunteers_pie_dict, volunteers_pie)
+//           pie_formatting(enrollment_dict, enrollment_pie)
+//
+//           population_result["sites_pie"] = single_multi_site_pie;
+//           population_result["volunteers_pie"] = volunteers_pie
+//           population_result["enrollment_pie"] = enrollment_pie
+//
+//           resolve(population_result)
+//
+//       })
+//     })
+// }// end of get PopulationsData
+//
+//
+//   const fetchPopulationData = async () => {
+//
+//     const result = await getPopulationsChartsData()
+//
+//     setSingleMultiSitePieChartData(result.sites_pie);
+//     setPopulationVolunteersPieChartData(result.volunteers_pie);
+//     setPopulationEnrollmentPieChartData(result.enrollment_pie)
+//     setLoadingPopulationData(false)
+//   }
 
 
 
@@ -1780,10 +1688,10 @@ function DashboardRoute(props) {
     if (initialFilterLoadComplete) {
       setLoadingStatsData(true)
       fetchSingleStatMetrics();
-      setLoadingTrialsData(true)
-      fetchTrialsMetricData();
-      setLoadingPopulationData(true)
-      fetchPopulationData();
+
+      // fetchTrialsMetricData();
+
+      //fetchPopulationData();
       setLoadingOutcomesData(true)
       fetchOutcomesData();
       setLoadingInterventionsData(true)
@@ -1795,6 +1703,8 @@ function DashboardRoute(props) {
       setLoadingAllTableData(true)
       setLoadingSponsorsSunburstChart(true)
       setLoadingTrialsSunburstChart(true)
+      setLoadingTrialsData(true)
+      setLoadingPopulationData(true)
       fetchAllTableData();
 
       // console.log("tabledata after fetch: ", fetchAllTableData())
