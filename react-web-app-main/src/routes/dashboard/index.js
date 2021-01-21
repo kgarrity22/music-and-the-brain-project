@@ -694,8 +694,12 @@ function DashboardRoute(props) {
   }
 
   function createSunburst(level1, level2, level3, data) {
+    if (typeof(data[0][level1]) === 'object'){
+      var rollupdata = d3.rollup(data, g => g.length, d => d[level1][0], d => d[level2], d => d[level3])
+    } else {
+      var rollupdata = d3.rollup(data, g => g.length, d => d[level1], d => d[level2], d => d[level3])
+    }
 
-    var rollupdata = d3.rollup(data, g => g.length, d => d[level1][0], d => d[level2], d => d[level3])
     console.log("Rollup: ", rollupdata)
     // now take this and reformat it for as arrays rather than maps
     let wholedata = []
@@ -706,12 +710,13 @@ function DashboardRoute(props) {
       let children0 = []
       // console.log("CHECK", rollupdata.get(key))
       for (var element1 of rollupdata.get(key)){
-        console.log("ELEMENT1: ", element1[0])
-        let element1split = element1[0].split(", ")
-        for (let elem of element1split){
-          let name1 = elem
+        //console.log("ELEMENT1: ", element1[0])
+        // let element1split = element1[0]
+        // for (let elem of element1split){
+          let name1 = element1[0]
           let children1 = []
           let middle = {}
+          //console.log("NAME1: ", name1)
           for (var element2 of element1[1].keys()){
             let map = element1[1]
             let name2 = element2
@@ -721,10 +726,14 @@ function DashboardRoute(props) {
             outer["value"] = value
             children1.push(outer)
           }
+
           middle["name"] = name1
           middle["children"] = children1
+          //console.log("middle: ", middle)
+
+
           children0.push(middle)
-        }
+
       }
       var inner = {}
       inner["name"] = name0
@@ -837,8 +846,8 @@ function DashboardRoute(props) {
 
   const [sponsorsSunburstChart, setSponsorsSunburstChart] = useState({})
   const [loadingSponsorsSunburstChart, setLoadingSponsorsSunburstChart] = useState(true)
-
-
+  const [trialsSunburstChart, setTrialsSunburstChart] = useState({})
+  const [loadingTrialsSunburstChart, setLoadingTrialsSunburstChart] = useState(true)
 
 
   // loading variables - set the loading icons until the data has fully loaded
@@ -1007,7 +1016,8 @@ function DashboardRoute(props) {
     const fetchAllTableData = async () => {
       const res = await getTableData()
       newgetfilters(alldata)
-      const res2 = createSunburst("Sponsor_Type", "Intervention_Types", "Status", alldata)
+      const res2 = createSunburst("Sponsor_Type", "Status", "Sponsor", alldata)
+      const res3 = createSunburst("Purpose", "Intervention_Types", "Status", alldata)
 
       //console.log("RES: ", res.tabledata)
       for (var record of res.tabledata){
@@ -1021,6 +1031,8 @@ function DashboardRoute(props) {
       setLoadingAllTableData(false)
       setSponsorsSunburstChart(res2)
       setLoadingSponsorsSunburstChart(false)
+      setTrialsSunburstChart(res3)
+      setLoadingTrialsSunburstChart(false)
       //console.log("all data as input: ", alldata)
 
 
@@ -1782,6 +1794,7 @@ function DashboardRoute(props) {
       fetchGeographyData();
       setLoadingAllTableData(true)
       setLoadingSponsorsSunburstChart(true)
+      setLoadingTrialsSunburstChart(true)
       fetchAllTableData();
 
       // console.log("tabledata after fetch: ", fetchAllTableData())
@@ -2144,6 +2157,16 @@ function DashboardRoute(props) {
                   </Col>
                   </Row>
 
+                  <Row>
+                    <Col>
+                      <PrismSunburst
+                        colors="rainbow"
+                        title="Trials Breakdown"
+                        chartData={trialsSunburstChart}
+                        loading={loadingTrialsSunburstChart}
+                      />
+                    </Col>
+                  </Row>
 
                   <Row>
                     <Col>
