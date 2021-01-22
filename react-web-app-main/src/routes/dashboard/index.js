@@ -490,39 +490,40 @@ function DashboardRoute(props) {
 
 
 
-  const fetchFilters = async () => {
+  // const fetchFilters = async () => {
+  //
+  //   const res = await getTableData()
+  //   // const result = newgetfilters(res[1])
+  //   // console.log("***FILTERS****: ", result)
+  //   // // const result = newgetfilters
+  //   //
+  //   //
+  //   // setTrialsFilters(res)
+  //   // setInterventionsFilters(result.Interventions)
+  //   // setOutcomesFilters(result.Outcomes)
+  //   // setSponsorsFilters(result.Sponsors)
+  //   // setPopulationFilters(result.Populations)
+  //   // setGeographyFilters(result.Geography)
+  //   setInitialFilterLoadComplete(true)
+  //   // setUpdatedRequested(Date.now())
+  // }
+  // useEffect(() => {
+  //   fetchFilters();
+  // }, [])
 
-    const res = await getTableData()
-    const result = newgetfilters(alldata)
-    console.log("***FILTERS****: ", result)
-    // const result = newgetfilters
-
-
-    setTrialsFilters(result.Trials)
-    setInterventionsFilters(result.Interventions)
-    setOutcomesFilters(result.Outcomes)
-    setSponsorsFilters(result.Sponsors)
-    setPopulationFilters(result.Populations)
-    setGeographyFilters(result.Geography)
-    setInitialFilterLoadComplete(true)
-    // setUpdatedRequested(Date.now())
-  }
-  useEffect(() => {
-    fetchFilters();
-  }, [])
-
-  const generateFiltersPostBody = () => {
-    console.log("INTEVENTIONS FILTERS: ", interventionsFilters)
-    return {
-      "Trials": trialsFilters,
-      "Populations": populationFilters,
-      "Interventions": interventionsFilters,
-      "Outcomes": outcomesFilters,
-      "Sponsors": sponsorsFilters,
-      "Geography": geographyFilters,
-
-    }
-  }
+  // const generateFiltersPostBody = () => {
+  //   console.log("all data gen filt post bod: ", alldata)
+  //   return {
+  //     "Trials": trialsFilters,
+  //     "Populations": populationFilters,
+  //     "Interventions": interventionsFilters,
+  //     "Outcomes": outcomesFilters,
+  //     "Sponsors": sponsorsFilters,
+  //     "Geography": geographyFilters,
+  //
+  //   }
+  // }
+  const [allData, setAllData] = useState([])
 
   // Filters
   const [sidebarIsVisible, setSidebarIsVisible] = useState(false)
@@ -702,14 +703,15 @@ function DashboardRoute(props) {
       return total;
   }
 
-  var alldata = []
+
 
   function getTableData(){
         // var Airtable = require('airtable');
         // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
 
-          var tab_ind = 0
-          var table_data = []
+        var tab_ind = 0
+        var table_data = []
+        var alldata = []
 
         return new Promise((resolve, reject) => {
           base('Trials').select({
@@ -738,6 +740,7 @@ function DashboardRoute(props) {
 
               var tabledata = {}
               tabledata["tabledata"] = table_data
+              tabledata["alldata"] = alldata
               resolve(tabledata)
           })
         })
@@ -747,13 +750,19 @@ function DashboardRoute(props) {
 
     const fetchAllTableData = async () => {
       const res = await getTableData()
-      let result = newgetfilters(alldata)
-      setTrialsFilters(result.Trials)
-      setInterventionsFilters(result.Interventions)
-      setOutcomesFilters(result.Outcomes)
-      setSponsorsFilters(result.Sponsors)
-      setPopulationFilters(result.Populations)
-      setGeographyFilters(result.Geography)
+      let filters = newgetfilters(res.alldata)
+      let alldata = res.alldata
+      console.log("RES: ", res)
+      // setAllData(alldata)
+      // console.log("SET ALL DATA: ", allData)
+      setInitialFilterLoadComplete(true)
+
+      setTrialsFilters(filters.Trials)
+      setInterventionsFilters(filters.Interventions)
+      setOutcomesFilters(filters.Outcomes)
+      setSponsorsFilters(filters.Sponsors)
+      setPopulationFilters(filters.Populations)
+      setGeographyFilters(filters.Geography)
       setInitialFilterLoadComplete(true)
 
       const res2 = createSunburst("Sponsor_Type", "Status", "Sponsor", alldata)
@@ -800,6 +809,22 @@ function DashboardRoute(props) {
       setLoadingSponsorsData(false)
 
 
+    }
+    useEffect(() => {
+      fetchAllTableData();
+    }, [])
+
+    const generateFiltersPostBody = () => {
+      //console.log("all data gen filt post bod: ", alldata)
+      return {
+        "Trials": trialsFilters,
+        "Populations": populationFilters,
+        "Interventions": interventionsFilters,
+        "Outcomes": outcomesFilters,
+        "Sponsors": sponsorsFilters,
+        "Geography": geographyFilters,
+
+      }
     }
 
   // GET SINGLE METRICS  from airtable
@@ -888,6 +913,8 @@ function DashboardRoute(props) {
 
 
 
+//*************************************************************************
+// change this so that it takes arguments
 
   const fetchSingleStatMetrics = async () => {
 
@@ -943,6 +970,7 @@ function DashboardRoute(props) {
 
 
 
+// Landscapes ************************************************
   function getLandscapeChartData() {
     // data list
     let data_list = []
@@ -1080,64 +1108,10 @@ function DashboardRoute(props) {
   }
 
 
+  // need to get geography to set up easily
 
 
 
-  // Sponsors variables for airtable
-  var sponsors_dict = {}
-  var sponsors_bar = []
-  var sponsors_bar_formatted = {}
-  var sponsors_result = {}
-  // Get Sponsors data from airtable
-  function getSponsorsChartsData() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-
-
-          records.forEach(function(record) {
-
-            pie_collection(sponsors_dict, record.get('Sponsor_Type'))
-
-
-          });
-
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-
-          bar_formatting(sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
-          sponsors_result["sponsors_bar"] = sponsors_bar_formatted
-          //console.log("SPONSOR data: ", sponsors_bar_formatted)
-
-          resolve(sponsors_result)
-
-      })
-    })
-}// end of get trialStatusPieChartData
-
-
-
-
-  const fetchSponsorsData = async () => {
-        const result = await getSponsorsChartsData()
-
-        setSponsorsTop10ByTrialsBarChartData(result.sponsors_bar);
-        // setSponsorsTop10ByEnrollmentBarChartData(result.data.sponsors_top_10_by_enrollment);
-        //setSponsorsBreakdownChartData(result.data.sponsors_breakdown);
-
-        setLoadingSponsorsData(false)
-      }
 
       var geography_result = []
       var geography_country_dict = {}
@@ -1215,19 +1189,12 @@ function DashboardRoute(props) {
 
 
   useEffect(() => {
+    console.log("MADE IT HERE: ", initialFilterLoadComplete)
     if (initialFilterLoadComplete) {
+      console.log("MADE IT HERE: ", initialFilterLoadComplete)
       setLoadingStatsData(true)
       fetchSingleStatMetrics();
 
-      // fetchTrialsMetricData();
-
-      //fetchPopulationData();
-
-      // fetchOutcomesData();
-
-      // fetchInterventionsData();
-
-      // fetchSponsorsData();
       setLoadingGeographyData(true)
       fetchGeographyData();
       setLoadingAllTableData(true)
