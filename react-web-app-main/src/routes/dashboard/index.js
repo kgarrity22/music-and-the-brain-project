@@ -102,12 +102,30 @@ function DashboardRoute(props) {
     setUpdatedRequested(Date())
     closeSidebar()
     console.log("Filters?", generateFiltersPostBody())
+    // fetchAllTableData()
     var filters_list = getAirtableFilters()
     var filts_final = formatFiltersForAirtable(filters_list)
 
     setAirtableFilters(filts_final)
 
 
+  }
+
+  // Dictionary responsible for normalizing names - airtable key is the value and regular text name is the key
+  let dropdownItems = {
+    "Start Year": "Start_Year",
+    "Age Groups": "Age_Groups",
+    "Sponsors": "Sponsor",
+    "Sponsor Types": "Sponsor_Type",
+    "Study Types": "Study_Type",
+    "Outcomes": "Outcome_Concepts",
+    "Settings": "Facility_Settings",
+    "Regions": "Geography_Regions",
+    "Interventions": "Intervention_Types",
+    "Type": "Study_Type",
+    "Masking": "Masking_Clean",
+    "Single/Multi Site": "Single_Multi_Site",
+    "Healthy Volunteers": "Healthy_Volunteers",
   }
 
 
@@ -226,73 +244,7 @@ function DashboardRoute(props) {
 
   var Airtable = require('airtable');
   var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
-  //TRIALS SETS
-  var phases_set = new Set();
-  var status_set = new Set();
-  var purpose_set = new Set();
-  var type_set = new Set();
-  var randomization_set = new Set();
-  var masking_set = new Set();
 
-  //POPULATIONS SETS
-  var ageGroups_set = new Set();
-  var healthyVolunteers_set = new Set();
-  var singleMultiSite_set = new Set();
-  var targEnrollment_set = new Set();
-  var settings_set = new Set();
-
-
-  //INTERVENTIONS SETS
-  var intervention_set = new Set();
-
-
-
-  // OUTCOMES SETS
-  var outcomes_set = new Set();
-
-  //SPONSORS SETS
-  var sponsors_set = new Set();
-
-  //GEOGRAPHY SETS
-  var regions_set = new Set();
-  var regions_list = []
-  var countries_list = []
-
-  //TRIALS DICTIONARIES
-  var unique_phases = {};
-  var unique_status = {};
-  var unique_purpose = {};
-  var unique_type = {};
-  var unique_random = {};
-  var unique_masking = {};
-
-  //POPULATIONS DICTIONARIES
-  var unique_ageGroups = {};
-  var unique_healthyVolunteers = {};
-  var unique_singleMultiSite = {};
-  var unique_targEnrollment = {};
-  var unique_settings = {};
-
-  //INTERVENTIONS DICTIONARIES
-  var unique_interventions = {};
-
-  // OUTCOMES DICTIONARIES
-  var unique_outcomes = {};
-
-  // SPONSORS DICTIONARIES
-  var unique_sponsors = {};
-
-
-  // GEOGRAPHY DICTIONARIES
-  var unique_regions = {};
-
-
-  var trials_filts = {};
-  var populations_filts = {};
-  var interventions_filts = {};
-  var outcome_filts = {};
-  var sponsor_filts = {};
-  var geography_filts = {}
 
   // takes a full dictionary and an empty dictionary and sorts the full one into the empty one
   function sortDictionary(dictionary, new_dict){
@@ -307,8 +259,6 @@ function DashboardRoute(props) {
     }
   }
 
-
-
   function create_filter_dict(set, unique_dict){
     for (var i of set) {
 
@@ -318,221 +268,18 @@ function DashboardRoute(props) {
     }
   }
 
-
-
-  function getairtable() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-          // Selecting the first 3 records in Raw View:
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-          // This function (`page`) will get called for each page of records.
-
-
-          records.forEach(function(record) {
-            // TRIALS FILTERS
-            phases_set.add(record.get('Phase'))
-            status_set.add(record.get('Status'))
-            purpose_set.add(record.get('Purpose'))
-            type_set.add(record.get('Study_Type'))
-            randomization_set.add(record.get('Randomization'))
-            masking_set.add(record.get('Masking_Clean'))
-            // console.log("hERE!")
-
-            // POPULATIONS FILTERS
-
-            var age = record.get('Age_Groups')[0].split(", ")
-            for (var item of age){
-              //console.log("item: ", item)
-              ageGroups_set.add(item)
-            }
-            healthyVolunteers_set.add(record.get('Healthy_Volunteers'))
-            singleMultiSite_set.add(record.get('Single_Multi_Site'))
-            targEnrollment_set.add(record.get('Enrollment_Target'))
-
-            var settings = record.get('Facility_Settings')
-            //console.log("settings: ", settings)
-            if (typeof(settings)==='object'){
-              for (var item of settings){
-                //console.log("item: ", item)
-                settings_set.add(item)
-              }
-            } else {
-              settings_set.add(settings)
-            }
-
-
-            // INTERVENTIONS FILTERS
-
-            var interventions = record.get('Intervention_Types').split(", ")
-            for (var item of interventions){
-              intervention_set.add(item)
-            }
-
-
-
-            // OUTCOMES FILTERS
-
-            var outcome = record.get('Outcome_Concepts')
-            if (typeof(outcome)==='object'){
-              for (var item of outcome){
-                if (item === null){
-                  // console.log("null")
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-                    outcomes_set.add(j)
-                  }
-                }
-              }
-            } else {
-              outcomes_set.add(outcome)
-            }
-
-
-
-            // SPONSORS FILTERS
-            sponsors_set.add(record.get('Sponsor_Type'))
-
-
-            // GEOGRAPHY FILTERs
-            regions_set.add(record.get('Geography_Regions'))
-            regions_list.push(record.get('Geography_Regions'))
-            countries_list.push(record.get('Geography_Countries'))
-
-
-          });
-
-          // To fetch the next page of records, call `fetchNextPage`.
-          // If there are more records, `page` will get called again.
-          // If there are no more records, `done` will get called.
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-
-          // TRIALS
-          create_filter_dict([...phases_set].sort(), unique_phases)
-          create_filter_dict([...status_set].sort(), unique_status)
-          create_filter_dict([...purpose_set].sort(), unique_purpose)
-          create_filter_dict([...type_set].sort(), unique_type)
-          create_filter_dict([...randomization_set].sort(), unique_random)
-          create_filter_dict([...masking_set].sort(), unique_masking)
-
-
-          trials_filts["Type"] = unique_type;
-          trials_filts["Status"] = unique_status;
-          trials_filts["Purpose"] = unique_purpose;
-          trials_filts["Randomization"] = unique_random;
-          trials_filts["Masking"] = unique_masking;
-          trials_filts["Phase"] = unique_phases;
-
-          // POPULATIONS
-          create_filter_dict([...ageGroups_set].sort(), unique_ageGroups)
-          create_filter_dict([...healthyVolunteers_set].sort(), unique_healthyVolunteers)
-          create_filter_dict([...singleMultiSite_set].sort(), unique_singleMultiSite)
-          create_filter_dict([...targEnrollment_set].sort(), unique_targEnrollment)
-          create_filter_dict([...settings_set].sort(), unique_settings)
-
-
-          populations_filts["Age Groups"] = unique_ageGroups;
-          populations_filts["Healthy Volunteers"] = unique_healthyVolunteers;
-          populations_filts["Single/Multi Site"] = unique_singleMultiSite;
-          populations_filts["Target Enrollment"] = unique_targEnrollment;
-          populations_filts["Settings"] = unique_settings;
-
-
-          // INTERVENTIONS
-          create_filter_dict([...intervention_set].sort(), unique_interventions)
-          interventions_filts["Interventions"] = unique_interventions
-
-
-          // OUTCOMES
-          create_filter_dict([...outcomes_set].sort(), unique_outcomes)
-          outcome_filts["Outcomes"] = unique_outcomes
-
-
-          // SPONSORS
-
-          create_filter_dict([...sponsors_set].sort(), unique_sponsors)
-          sponsor_filts["Sponsors"] = unique_sponsors
-
-
-          // GEOGRAPHY
-
-          for (var trial_regions of regions_list){
-            var region_list_index = regions_list.indexOf(trial_regions)
-            var country_names = countries_list[region_list_index]
-
-            if (typeof(trial_regions) === 'object'){
-
-              for (var region of trial_regions){
-
-                if (Object.keys(unique_regions).indexOf(region)!==-1){
-
-                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
-
-                } else {
-
-                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
-                }
-              }
-            }
-          }
-          var sorted_regions = {}
-
-          for (var region of Object.keys(unique_regions)){
-            var sorted_countries = {}
-            sortDictionary(unique_regions[region], sorted_countries)
-            unique_regions[region] = sorted_countries
-          }
-          sortDictionary(unique_regions, sorted_regions)
-
-          geography_filts["Regions"] = sorted_regions
-
-
-
-          var result = {}
-          result["trials"] = trials_filts
-          result["populations"] = populations_filts
-          result["interventions"] = interventions_filts
-          result["outcomes"] = outcome_filts
-          result["sponsors"] = sponsor_filts
-          result["geography"] = geography_filts
-          //console.log("HOWs THIS LOOK: ", trials_filts)
-
-
-          resolve(result);
-
-      });
-    })
-
-
-}// end of promise
-
-
-
-
-
   var all_filters = {
     "Trials": ['Phase', 'Status', 'Purpose', 'Study_Type', 'Randomization', 'Masking_Clean'],
     "Populations": ['Age_Groups', 'Healthy_Volunteers', 'Single_Multi_Site', "Enrollment_Target", "Facility_Settings"],
     "Interventions": ["Intervention_Types"],
     "Outcomes": ['Outcome_Concepts'],
     "Sponsors": ['Sponsor_Type'],
-    "Geography": [/* in here should be the exact names from airtable
-      this needs work*/
-    ]
+    "Geography": ["Geography_Regions", "Geography_Countries"]
   }
 
   // creating a single function to help make creating dynamic filters much simpler
   // TODO: need to put in conditions to handle geography
+
   function newgetfilters(allTableData){
     var result = {}
     for (var filter_header of Object.keys(all_filters)){
@@ -610,6 +357,7 @@ function DashboardRoute(props) {
       }
       result[filter_header] = mainfilters
     }
+    console.log("Filters: ", result)
     return result
   }
 
@@ -647,8 +395,7 @@ function DashboardRoute(props) {
     return [line_formatted]
   }
 
-  // numbars is if you want top 10 bars or all bars or top 20 bars etc
-  // indexKey - this is bar of the props of the bar charts
+
 
   function createBarChart(airtableName, numBars, indexKey, data){
     let bar_obj = {};
@@ -673,7 +420,6 @@ function DashboardRoute(props) {
           for (var j of itemlist){
             countOccurrences(bar_obj, j)
           }
-        //countOccurrences(bar_obj, value)
       }
     }
 
@@ -696,6 +442,7 @@ function DashboardRoute(props) {
     return bar_formatted
   }
 
+
   function createSunburst(level1, level2, level3, data) {
     if (typeof(data[0][level1]) === 'object'){
       var rollupdata = d3.rollup(data, g => g.length, d => d[level1][0], d => d[level2], d => d[level3])
@@ -706,20 +453,15 @@ function DashboardRoute(props) {
     console.log("Rollup: ", rollupdata)
     // now take this and reformat it for as arrays rather than maps
     let wholedata = []
-    // console.log(rollupdata.keys())
+
     for (var key of rollupdata.keys()){
-      // for each key
+
       let name0 = key
       let children0 = []
-      // console.log("CHECK", rollupdata.get(key))
       for (var element1 of rollupdata.get(key)){
-        //console.log("ELEMENT1: ", element1[0])
-        // let element1split = element1[0]
-        // for (let elem of element1split){
           let name1 = element1[0]
           let children1 = []
           let middle = {}
-          //console.log("NAME1: ", name1)
           for (var element2 of element1[1].keys()){
             let map = element1[1]
             let name2 = element2
@@ -729,21 +471,15 @@ function DashboardRoute(props) {
             outer["value"] = value
             children1.push(outer)
           }
-
           middle["name"] = name1
           middle["children"] = children1
-          //console.log("middle: ", middle)
-
-
           children0.push(middle)
-
       }
       var inner = {}
       inner["name"] = name0
       inner["children"] = children0
       wholedata.push(inner)
     }
-
     let sunburst_data = {}
     sunburst_data["name"] = "data"
     sunburst_data["children"] = wholedata
@@ -756,17 +492,18 @@ function DashboardRoute(props) {
 
   const fetchFilters = async () => {
 
-    const result = await getairtable()
-    // console.log("***FILTERS****: ", result)
+    const res = await getTableData()
+    const result = newgetfilters(alldata)
+    console.log("***FILTERS****: ", result)
+    // const result = newgetfilters
 
 
-
-    setTrialsFilters(result.trials)
-    setInterventionsFilters(result.interventions)
-    setOutcomesFilters(result.outcomes)
-    setSponsorsFilters(result.sponsors)
-    setPopulationFilters(result.populations)
-    setGeographyFilters(result.geography.Regions)
+    setTrialsFilters(result.Trials)
+    setInterventionsFilters(result.Interventions)
+    setOutcomesFilters(result.Outcomes)
+    setSponsorsFilters(result.Sponsors)
+    setPopulationFilters(result.Populations)
+    setGeographyFilters(result.Geography)
     setInitialFilterLoadComplete(true)
     // setUpdatedRequested(Date.now())
   }
@@ -775,7 +512,7 @@ function DashboardRoute(props) {
   }, [])
 
   const generateFiltersPostBody = () => {
-
+    console.log("INTEVENTIONS FILTERS: ", interventionsFilters)
     return {
       "Trials": trialsFilters,
       "Populations": populationFilters,
@@ -1010,7 +747,15 @@ function DashboardRoute(props) {
 
     const fetchAllTableData = async () => {
       const res = await getTableData()
-      newgetfilters(alldata)
+      let result = newgetfilters(alldata)
+      setTrialsFilters(result.Trials)
+      setInterventionsFilters(result.Interventions)
+      setOutcomesFilters(result.Outcomes)
+      setSponsorsFilters(result.Sponsors)
+      setPopulationFilters(result.Populations)
+      setGeographyFilters(result.Geography)
+      setInitialFilterLoadComplete(true)
+
       const res2 = createSunburst("Sponsor_Type", "Status", "Sponsor", alldata)
       const res3 = createSunburst("Purpose", "Intervention_Types", "Status", alldata)
 
@@ -1196,17 +941,7 @@ function DashboardRoute(props) {
 
 
 
-  let dropdownItems = {
-    "Start Year": "Start_Year",
-    "Age Groups": "Age_Groups",
-    "Sponsors": "Sponsor",
-    "Sponsor Types": "Sponsor_Type",
-    "Study Types": "Study_Type",
-    "Outcomes": "Outcome_Concepts",
-    "Settings": "Facility_Settings",
-    "Regions": "Geography_Regions",
-    "Interventions": "Intervention_Types"
-  }
+
 
   function getLandscapeChartData() {
     // data list
