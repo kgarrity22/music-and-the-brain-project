@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Redirect, withRouter } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap'
-import axios from 'axios';
 import { Auth } from 'aws-amplify';
 import * as d3 from 'd3'
-
-import CsvDownloader from 'react-csv-downloader';
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -73,9 +70,6 @@ const initialStats = [
 
 
 
-
-
-
 function DashboardRoute(props) {
 
   const [currentUser, setCurrentUser] = useState("")
@@ -92,27 +86,27 @@ function DashboardRoute(props) {
     getCurrentAuthenticatedUser()
   }, [currentUser])
 
+
   const [airtableFilters, setAirtableFilters] = useState("")
 
 
   const [updateRequested, setUpdatedRequested] = useState("")
-  // sets filters
+
+  // Handles The Update Button
   const onUpdateButtonClicked = (e) => {
-    //console.log(e)
+
     setUpdatedRequested(Date())
     closeSidebar()
-    console.log("Filters?", generateFiltersPostBody())
-    // fetchAllTableData()
-    var filters_list = getAirtableFilters()
-    var filts_final = formatFiltersForAirtable(filters_list)
 
+    let filters_list = getAirtableFilters()
+    let filts_final = formatFiltersForAirtable(filters_list)
     setAirtableFilters(filts_final)
 
 
   }
 
   // Dictionary responsible for normalizing names - airtable key is the value and regular text name is the key
-  let dropdownItems = {
+  const dropdownItems = {
     "Start Year": "Start_Year",
     "Age Groups": "Age_Groups",
     "Sponsors": "Sponsor",
@@ -126,9 +120,158 @@ function DashboardRoute(props) {
     "Masking": "Masking_Clean",
     "Single/Multi Site": "Single_Multi_Site",
     "Healthy Volunteers": "Healthy_Volunteers",
+    "Target Enrollment": "Enrollment_Target",
+    "Randomization": "Randomization",
+    "Phase": "Phase",
+    "Status": "Status",
+    "Purpose": "Purpose"
   }
 
 
+
+
+
+
+
+
+  const [trialsFilters, setTrialsFilters] = useState({})
+  const [populationFilters, setPopulationFilters] = useState({})
+  const [interventionsFilters, setInterventionsFilters] = useState({})
+  const [outcomesFilters, setOutcomesFilters] = useState({})
+  const [sponsorsFilters, setSponsorsFilters] = useState({})
+  const [geographyFilters, setGeographyFilters] = useState({})
+  const [initialFilterLoadComplete, setInitialFilterLoadComplete] = useState(false)
+
+
+  var Airtable = require('airtable');
+  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+
+
+////////////////////////////////////////////////////////////////////////
+
+// HELPER FUNCTION SECTION
+
+//////////////////////////////////////////////////////////////////////
+
+  // funtion that sums the values of a list
+  function sum(list1){
+    const total = list1.reduce(
+        (previousScore, currentScore, index)=>previousScore+currentScore,
+        0);
+        //console.log(total);
+      return total;
+  }
+
+  // takes a full dictionary and an empty dictionary and sorts the full one into the empty one
+  function sortDictionary(dictionary, new_dict){
+    var items = Object.keys(dictionary).map(function(key) {
+      return [key, dictionary[key]];
+    });
+
+    items.sort();
+
+    for (var item of items){
+      new_dict[item[0]] = item[1]
+    }
+  }
+
+  // formats a dictionary correctly for the filters
+  function create_filter_dict(set, unique_dict){
+    for (var i of set) {
+        i = String(i)
+        unique_dict[i] = true;
+    }
+  }
+
+  // bascially an accumulator where 'dictionary' holds the key 'key' and the value is the occurences of key
+  function countOccurrences(dictionary, key){
+    if(key in dictionary){
+      dictionary[key]+=1;
+    } else {
+      dictionary[key] = 1
+    }
+  }
+
+  // helper that formats a dictionary for a pie chart
+  function pieFormatting(dictionary, pie_data){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["id"] = keys[i];
+      new_dict["label"] = keys[i];
+      new_dict["value"] = value[i];
+      pie_data.push(new_dict)
+    }
+  }
+
+
+  // this creates the data for a bar chart given a dictionary of name and number
+  function barFormatting(dictionary, bar_data, bar_formatted, bar_type){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict[[bar_type]] = keys[i];
+      new_dict[[keys[i]]] = value[i];
+      bar_data.push(new_dict)
+    }
+
+    bar_formatted["data"] = bar_data;
+    bar_formatted["group_keys"] = keys
+  }
+
+  function lineFormatting(dictionary, line_data, line_formatted){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["x"] = keys[i];
+      new_dict["y"] = value[i];
+      line_data.push(new_dict)
+    }
+    line_formatted["id"] = 0;
+    line_formatted["data"] = line_data;
+  }
+
+  function geogFormatting(dictionary, geog_data){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["id"] = keys[i];
+      new_dict["value"] = value[i];
+      geog_data.push(new_dict)
+    }
+  }
+
+
+
+
+  // helper function to get the value related to a specified key
+  function getVal(dictionary, key){
+    return dictionary[key];
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////
+
+  // FILTER HANDLING SECTION
+
+  //////////////////////////////////////////////////////////////////////
+
+  // to add new filters
+  const all_filters = {
+    "Trials": ['Masking_Clean', 'Phase', 'Purpose', 'Randomization', 'Status',  'Study_Type'],
+    "Populations": ['Age_Groups', "Enrollment_Target", "Facility_Settings", 'Healthy_Volunteers', 'Single_Multi_Site'],
+    "Interventions": ["Intervention_Types"],
+    "Outcomes": ['Outcome_Concepts'],
+    "Sponsors": ['Sponsor_Type'],
+    "Geography": ["Geography_Regions", "Geography_Countries"]
+  }
+
+  // this creates and returns a dictionary list of dictionaries
+  // there is one dictionary for every checkbox that has been unchecked
   function getAirtableFilters(){
     var filter_dict = generateFiltersPostBody()
     var store = []
@@ -145,41 +288,14 @@ function DashboardRoute(props) {
 
             if (filter_dict[section][sub_section][key] === false) {
 
-              if (sub_section === "Type") {
-                var new_dict = {"Study_Type": key}
-                store.push(new_dict)
-              } else if (sub_section === "Age Groups"){
-                var new_dict = {"Age_Groups": key}
-                store.push(new_dict)
-              } else if (sub_section === "Masking"){
-                var new_dict = {"Masking_Clean": key}
-                store.push(new_dict)
-              } else if (sub_section === "Healthy Volunteers"){
-                var new_dict = {"Healthy_Volunteers": key}
-                store.push(new_dict)
-              } else if (sub_section === "Single/Multi Site"){
-                var new_dict = {"Single_Multi_Site": key}
-                store.push(new_dict)
-              } else if (sub_section === "Target Enrollment"){
-                var new_dict = {"Enrollment_Target": key}
-                store.push(new_dict)
-              } else if (sub_section === "Settings"){
-                var new_dict = {"Facility_Settings": key}
-                store.push(new_dict)
-              } else if (sub_section === "Interventions"){
-                var new_dict = {"Intervention_Types": key}
-                store.push(new_dict)
-              } else if (sub_section === "Outcomes"){
-                var new_dict = {"Outcome_Concepts": key}
-                store.push(new_dict)
-              } else if (sub_section === "Sponsors"){
-                var new_dict = {"Sponsor_Type": key}
+              if (sub_section === "Sponsors"){
+                let new_dict = {"Sponsor_Type": key}
                 store.push(new_dict)
               } else if (section === "Geography"){
-                var new_dict = {"Geography_Countries": key}
+                let new_dict = {"Geography_Countries": key}
                 store.push(new_dict)
               } else {
-                var new_dict = {[sub_section]: key}
+                let new_dict = {[dropdownItems[sub_section]]: key}
                 store.push(new_dict)
               }
             }
@@ -190,7 +306,8 @@ function DashboardRoute(props) {
     console.log("filters that have been stored: ", store)
     return store
   }
-//var filters = "NOT(OR({Phase} = 'Phase 1'))"
+
+
 // formats the filter string to give airtable the filterbyformula
   function formatFiltersForAirtable(filter_list){
     // basic string
@@ -231,51 +348,6 @@ function DashboardRoute(props) {
     return str
   }
 
-
-
-  const [trialsFilters, setTrialsFilters] = useState({})
-  const [populationFilters, setPopulationFilters] = useState({})
-  const [interventionsFilters, setInterventionsFilters] = useState({})
-  const [outcomesFilters, setOutcomesFilters] = useState({})
-  const [sponsorsFilters, setSponsorsFilters] = useState({})
-  const [geographyFilters, setGeographyFilters] = useState({})
-  const [initialFilterLoadComplete, setInitialFilterLoadComplete] = useState(false)
-
-
-  var Airtable = require('airtable');
-  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
-
-
-  // takes a full dictionary and an empty dictionary and sorts the full one into the empty one
-  function sortDictionary(dictionary, new_dict){
-    var items = Object.keys(dictionary).map(function(key) {
-      return [key, dictionary[key]];
-    });
-
-    items.sort();
-
-    for (var item of items){
-      new_dict[item[0]] = item[1]
-    }
-  }
-
-  function create_filter_dict(set, unique_dict){
-    for (var i of set) {
-
-        i = String(i)
-        unique_dict[i] = true;
-
-    }
-  }
-
-  var all_filters = {
-    "Trials": ['Phase', 'Status', 'Purpose', 'Study_Type', 'Randomization', 'Masking_Clean'],
-    "Populations": ['Age_Groups', 'Healthy_Volunteers', 'Single_Multi_Site', "Enrollment_Target", "Facility_Settings"],
-    "Interventions": ["Intervention_Types"],
-    "Outcomes": ['Outcome_Concepts'],
-    "Sponsors": ['Sponsor_Type'],
-    "Geography": ["Geography_Regions", "Geography_Countries"]
-  }
 
   // creating a single function to help make creating dynamic filters much simpler
   // TODO: need to put in conditions to handle geography
@@ -353,20 +425,30 @@ function DashboardRoute(props) {
         // now when we get here, we will have created the set for one subfilter
         // need to pass this subfilter to the create filter dictionary function
         create_filter_dict([...subfilter_set].sort(), unique_subfilters)
-        mainfilters[subfilter] = unique_subfilters
+        console.log("Main filters: ", mainfilters)
+        console.log("subfilter: ", subfilter)
+        let index = Object.values(dropdownItems).indexOf(subfilter)
+        mainfilters[Object.keys(dropdownItems)[index]] = unique_subfilters
       }
       result[filter_header] = mainfilters
+      console.log("filter HEADERS: ", filter_header)
     }
-    console.log("Filters: ", result)
+    //console.log("Filters: ", result)
     return result
   }
 
-  // INSTEAD OF FOR LOOP TO FIND KEY IN DICTIONARY
-  function getVal(dictionary, key){
-    return dictionary[key];
-  }
+
+
+
+////////////////////////////////////////////////////////////////
+
+//  CHART CREATION FUNCTIONS                                 //
+
+///////////////////////////////////////////////////////////////
 
   // CREATE PIE CHART
+  // airtable name is the column name in airtable
+  // data should be the whole data set after filtering
   function createPieChart(airtableName, data){
     let pie_obj = {}
     for (var record of data){
@@ -380,7 +462,8 @@ function DashboardRoute(props) {
   }
 
   // CREATE LINE CHART
-  function createLineChart(airtable_xAxis, airtable_yAxis, data){
+  // airtable x axis is the column name of whatever you want the xaxis to be, data is the whole data set after filtering
+  function createLineChart(airtable_xAxis, data){
     var line_obj = {};
     for (var record of data){
       let value = getVal(record, airtable_xAxis)
@@ -388,15 +471,17 @@ function DashboardRoute(props) {
     }
     let line_list = [];
     let line_formatted = {};
-    line_formatting(line_obj, line_list, line_formatted)
+    lineFormatting(line_obj, line_list, line_formatted)
     line_formatted.id = 0
     console.log('LINE FORMATTED: ', line_formatted)
 
     return [line_formatted]
   }
 
-
-
+  // CREATE BAR CHART
+  // airtable name is the column name in airtable of the data you want the pie chart to show
+  // numBars is the number of bars you want (i.e. 10 will give you top 10 bars)
+  // indexkey is a nivo specific item - doesn't matter what you make this as long as it matches the value for indexKey in the html
   function createBarChart(airtableName, numBars, indexKey, data){
     let bar_obj = {};
     for (var record of data){
@@ -437,12 +522,15 @@ function DashboardRoute(props) {
     }
     let bar_formatted = {};
     //console.log("updated BArs: ", updated_bars)
-    bar_formatting(updated_bars, [], bar_formatted, indexKey)
+    barFormatting(updated_bars, [], bar_formatted, indexKey)
     console.log("bar FORMAtTED: ", bar_formatted)
     return bar_formatted
   }
 
 
+  // CREATE SUNBURST CHART
+  // level1 is the data you want at the inner level, level2 at middle and level3 at outer
+  // each level name should match the name of an airtable column
   function createSunburst(level1, level2, level3, data) {
     if (typeof(data[0][level1]) === 'object'){
       var rollupdata = d3.rollup(data, g => g.length, d => d[level1][0], d => d[level2], d => d[level3])
@@ -487,43 +575,48 @@ function DashboardRoute(props) {
     return sunburst_data
   }
 
+  // CREATE CHLOROPETH CHART
+  // airtable name is the column you want to use for countries and data is the whole data set after filtering 
+  function createChloropeth(airtableName, data){
+      const cc = require('@genyus/country-code');
+      let geography_result = []
+      let geography_country_dict = {}
+      for (let record of data){
+        let country = record[airtableName]
+        //console.log("COUNTRY: ", country)
+        if (typeof(country)!=='object'){
+          for (let item of country.split(",")){
+            if (item === "Czechia") {
+              countOccurrences(geography_country_dict, "CZE")
+            } else if (item === ""){
+
+            } else {
+              var code = cc.nameIncludes(item)[0].alpha3
+              countOccurrences(geography_country_dict, code)
+            }
+          }
+        }
+      } // end for record loop
+      console.log("Geog dict: ", geography_country_dict)
+      geogFormatting(geography_country_dict, geography_result)
+      console.log("Geography REsult: ", geography_result)
+      return geography_result
+    }
 
 
 
-  // const fetchFilters = async () => {
-  //
-  //   const res = await getTableData()
-  //   // const result = newgetfilters(res[1])
-  //   // console.log("***FILTERS****: ", result)
-  //   // // const result = newgetfilters
-  //   //
-  //   //
-  //   // setTrialsFilters(res)
-  //   // setInterventionsFilters(result.Interventions)
-  //   // setOutcomesFilters(result.Outcomes)
-  //   // setSponsorsFilters(result.Sponsors)
-  //   // setPopulationFilters(result.Populations)
-  //   // setGeographyFilters(result.Geography)
-  //   setInitialFilterLoadComplete(true)
-  //   // setUpdatedRequested(Date.now())
-  // }
-  // useEffect(() => {
-  //   fetchFilters();
-  // }, [])
 
-  // const generateFiltersPostBody = () => {
-  //   console.log("all data gen filt post bod: ", alldata)
-  //   return {
-  //     "Trials": trialsFilters,
-  //     "Populations": populationFilters,
-  //     "Interventions": interventionsFilters,
-  //     "Outcomes": outcomesFilters,
-  //     "Sponsors": sponsorsFilters,
-  //     "Geography": geographyFilters,
-  //
-  //   }
-  // }
-  const [allData, setAllData] = useState([])
+
+
+
+
+
+
+
+
+
+
+
 
   // Filters
   const [sidebarIsVisible, setSidebarIsVisible] = useState(false)
@@ -565,17 +658,14 @@ function DashboardRoute(props) {
   const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
 
 
-  //
-  /*/////////////////////////////////////////////////////////
 
-  *//////////////////////////////////////////////////////////
   const [landscapeChartData, setLandscapeChartData] = useState([])
   const [landscapeChartHeight, setLandscapeChartHeight] = useState(100)
 
   const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
   const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Facility_Settings")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
 
   const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
@@ -603,87 +693,9 @@ function DashboardRoute(props) {
 
 
 
-  /*
-  This function creates a dictionary where the key is and items name and the value
-  is the occurences of that key
-  */
 
-  function pie_collection(dictionary, key){
-    if(key in dictionary){
-      dictionary[key]+=1;
-    } else {
-      dictionary[key] = 1
-    }
-  }
 
-  function countOccurrences(dictionary, key){
-    if(key in dictionary){
-      dictionary[key]+=1;
-    } else {
-      dictionary[key] = 1
-    }
-  }
 
-  /*
-  Takes a dictionary formated {key: Occurences of key}
-  and an empty list and formats the data for a nivo part chart
-  in that list
-  */
-  function pie_formatting(dictionary, pie_data){
-    var keys = Object.keys(dictionary);
-    var value = Object.values(dictionary);
-    for (var i=0; i<keys.length; i++){
-      var new_dict = {};
-      new_dict["id"] = keys[i];
-      new_dict["label"] = keys[i];
-      new_dict["value"] = value[i];
-      pie_data.push(new_dict)
-    }
-  }
-  function pieFormatting(dictionary, pie_data){
-    var keys = Object.keys(dictionary);
-    var value = Object.values(dictionary);
-    for (var i=0; i<keys.length; i++){
-      var new_dict = {};
-      new_dict["id"] = keys[i];
-      new_dict["label"] = keys[i];
-      new_dict["value"] = value[i];
-      pie_data.push(new_dict)
-    }
-  }
-
-  // this creates the data for a bar chart given a dictionary of name and number
-  function bar_formatting(dictionary, bar_data, bar_formatted, bar_type){
-    var keys = Object.keys(dictionary);
-    var value = Object.values(dictionary);
-    for (var i=0; i<keys.length; i++){
-      var new_dict = {};
-      new_dict[[bar_type]] = keys[i];
-      new_dict[[keys[i]]] = value[i];
-      bar_data.push(new_dict)
-    }
-
-    bar_formatted["data"] = bar_data;
-    bar_formatted["group_keys"] = keys
-  }
-
-  /*
-  takes a dictionary with {key: #value(num of key occurences)}
-  and two empty lists
-  - at the end, the second list is properly formatted for a nivo line graph
-  */
-  function line_formatting(dictionary, line_data, line_formatted){
-    var keys = Object.keys(dictionary);
-    var value = Object.values(dictionary);
-    for (var i=0; i<keys.length; i++){
-      var new_dict = {};
-      new_dict["x"] = keys[i];
-      new_dict["y"] = value[i];
-      line_data.push(new_dict)
-    }
-    line_formatted["id"] = 0;
-    line_formatted["data"] = line_data;
-  }
 
   // Single Metrics Vars
   var single_metrics_result = {}
@@ -694,20 +706,13 @@ function DashboardRoute(props) {
   var single_metric_interventions = 0
   var single_metric_sites = new Set()
 
-  // funtion that sums the values of a list
-  function sum(list1){
-    const total = list1.reduce(
-        (previousScore, currentScore, index)=>previousScore+currentScore,
-        0);
-        //console.log(total);
-      return total;
-  }
 
 
 
+  // this is now the only function that pulls in data from airtable
+  // it returns a dictionary with keys "tabledata" (properly formatted for the tabulator table)
+  // and "alldata", the data used to pass to the createChart functions
   function getTableData(){
-        // var Airtable = require('airtable');
-        // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
 
         var tab_ind = 0
         var table_data = []
@@ -735,9 +740,7 @@ function DashboardRoute(props) {
                 return reject({});
               }
 
-              // alldata = table_data
               console.log("ALL data: ", alldata)
-
               var tabledata = {}
               tabledata["tabledata"] = table_data
               tabledata["alldata"] = alldata
@@ -752,11 +755,9 @@ function DashboardRoute(props) {
       const res = await getTableData()
       let filters = newgetfilters(res.alldata)
       let alldata = res.alldata
-      console.log("RES: ", res)
-      // setAllData(alldata)
-      // console.log("SET ALL DATA: ", allData)
-      setInitialFilterLoadComplete(true)
 
+
+      // SET FILTERS
       setTrialsFilters(filters.Trials)
       setInterventionsFilters(filters.Interventions)
       setOutcomesFilters(filters.Outcomes)
@@ -765,10 +766,7 @@ function DashboardRoute(props) {
       setGeographyFilters(filters.Geography)
       setInitialFilterLoadComplete(true)
 
-      const res2 = createSunburst("Sponsor_Type", "Status", "Sponsor", alldata)
-      const res3 = createSunburst("Purpose", "Intervention_Types", "Status", alldata)
-
-      //console.log("RES: ", res.tabledata)
+      // Converting table data to strings; otherwise the format is weird when you download the table
       for (var record of res.tabledata){
         for (var key of Object.keys(record)){
           if (typeof(record[key] !== "String")){
@@ -776,11 +774,14 @@ function DashboardRoute(props) {
           }
         }
       }
+      // SET TABLE DATA
       setAllTableData(res.tabledata)
       setLoadingAllTableData(false)
-      setSponsorsSunburstChart(res2)
+
+      // SET SUNBURST CHARTS
+      setSponsorsSunburstChart(createSunburst("Sponsor_Type", "Status", "Sponsor", alldata))
       setLoadingSponsorsSunburstChart(false)
-      setTrialsSunburstChart(res3)
+      setTrialsSunburstChart(createSunburst("Purpose", "Intervention_Types", "Status", alldata))
       setLoadingTrialsSunburstChart(false)
 
       setTrialStatusPieChartData(createPieChart("Status", alldata));
@@ -788,7 +789,7 @@ function DashboardRoute(props) {
 
       setTrialTypePieChartData(createPieChart("Study_Type", alldata));
       setTrialAgeGroupsPieChartData(createPieChart("Age_Groups", alldata));
-      setCumulativeTrialsLineChartData(createLineChart("Start_Year", "trials", alldata));
+      setCumulativeTrialsLineChartData(createLineChart("Start_Year", alldata));
       setTrialRandomizationPieChartData(createPieChart("Randomization", alldata));
       setTrialMaskingPieChartData(createPieChart("Masking_Clean", alldata));
 
@@ -808,14 +809,17 @@ function DashboardRoute(props) {
       setSponsorsTop10ByTrialsBarChartData(createBarChart("Sponsor_Type", 10, "sponsor", alldata));
       setLoadingSponsorsData(false)
 
+      setGeographyFacilitiesChartData(createChloropeth("Countries_Rollup_Unique", alldata));
+      setLoadingGeographyData(false)
+
 
     }
     useEffect(() => {
       fetchAllTableData();
     }, [])
 
+    // used for updating the filters
     const generateFiltersPostBody = () => {
-      //console.log("all data gen filt post bod: ", alldata)
       return {
         "Trials": trialsFilters,
         "Populations": populationFilters,
@@ -823,9 +827,11 @@ function DashboardRoute(props) {
         "Outcomes": outcomesFilters,
         "Sponsors": sponsorsFilters,
         "Geography": geographyFilters,
-
       }
     }
+
+
+    // need to convert this one
 
   // GET SINGLE METRICS  from airtable
   function getSingleMetrics() {
@@ -969,7 +975,7 @@ function DashboardRoute(props) {
 
 
 
-
+  // need to convert this one
 // Landscapes ************************************************
   function getLandscapeChartData() {
     // data list
@@ -1094,6 +1100,7 @@ function DashboardRoute(props) {
   }// end of get trialStatusPieChartData
 
 
+// need to convert this one
 // convert this to add the landscape chart
   const fetchLandscapeChartData = async () => {
 
@@ -1108,95 +1115,18 @@ function DashboardRoute(props) {
   }
 
 
-  // need to get geography to set up easily
 
-
-
-
-      var geography_result = []
-      var geography_country_dict = {}
-
-      function geog_formatting(dictionary, geog_data){
-        var keys = Object.keys(dictionary);
-        var value = Object.values(dictionary);
-        for (var i=0; i<keys.length; i++){
-          var new_dict = {};
-          new_dict["id"] = keys[i];
-          new_dict["value"] = value[i];
-          geog_data.push(new_dict)
-        }
-      }
-
-
-      const cc = require('@genyus/country-code');
-      function getGeographyData() {
-
-        return new Promise((resolve, reject) => {
-          base('Trials').select({
-              // Selecting the first 3 records in Raw View:
-              filterByFormula: airtableFilters,
-              view: "Raw View"
-          }).eachPage(function page(records, fetchNextPage) {
-              // This function (`page`) will get called for each page of records.
-
-
-              records.forEach(function(record) {
-                // countries_list.push(record.get('Geography_Countries'))
-
-                var country = record.get('Countries_Rollup_Unique')
-                var trial_NCT = record.get('NCT')
-                //console.log("NCT: ", trial_NCT, " Country: ", country)
-              //  console.log("country 0: ", country[0])
-
-                if (typeof(country)==='object'){
-                  for (var item of country){
-                    // this if statement is just because the library isn't able to convert it
-                    if (item === "Czechia") {
-                      pie_collection(geography_country_dict, "CZE")
-                    } else {
-                      var code = cc.nameIncludes(item)[0].alpha3
-                      pie_collection(geography_country_dict, code)
-
-                    }
-                  }
-                }
-
-              });
-
-              fetchNextPage();
-
-          }, function done(err) {
-              if (err) {
-                console.error(err);
-                return reject({});
-              }
-
-              console.log("geog data; ", geography_country_dict)
-              geog_formatting(geography_country_dict, geography_result)
-              resolve(geography_result)
-
-          })
-        })
-    }// end of get geographyData
-
-
-  const fetchGeographyData = async () => {
-
-    const result = await getGeographyData()
-    setGeographyFacilitiesChartData(result);
-    setLoadingGeographyData(false)
-  }
 
 
   useEffect(() => {
-    console.log("MADE IT HERE: ", initialFilterLoadComplete)
+
     if (initialFilterLoadComplete) {
-      console.log("MADE IT HERE: ", initialFilterLoadComplete)
+
       setLoadingStatsData(true)
       fetchSingleStatMetrics();
 
-      setLoadingGeographyData(true)
-      fetchGeographyData();
+
+
       setLoadingAllTableData(true)
       setLoadingSponsorsSunburstChart(true)
       setLoadingTrialsSunburstChart(true)
@@ -1205,14 +1135,9 @@ function DashboardRoute(props) {
       setLoadingOutcomesData(true)
       setLoadingInterventionsData(true)
       setLoadingSponsorsData(true)
+      setLoadingGeographyData(true)
       fetchAllTableData();
-
-      // console.log("tabledata after fetch: ", fetchAllTableData())
-      // setLoadingLandscapeData(true)
-      // fetchLandscapeChartData();
-      // setData();
-
-
+      // fetchGeographyData();
     }
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
@@ -1292,15 +1217,10 @@ function DashboardRoute(props) {
         case 'Outcomes':
           setActiveParentFilterSections(outcomesFilters)
           break;
-
         case 'Sponsors':
-          // const sponsorParentFilterSections = { ...sponsorsFilters};
-          // delete sponsorParentFilterSections.Children
           setActiveParentFilterSections(sponsorsFilters)
           break;
         case 'Geography':
-          // const geographyParentFilterSections = { ...geographyFilters};
-          // delete geographyParentFilterSections.Children
           setActiveParentFilterSections(geographyFilters)
           break;
         default:
@@ -1332,15 +1252,11 @@ function DashboardRoute(props) {
     console.log("first filter: ", filter)
     console.log("first section: ", section)
     if (filter) {
-      //console.log('inside PFC and filter is: ', filter)
       switch (activeCategoryFilter) {
         case 'Trials':
           setTrialsFilters(filters => updateFilters(filters, section, filter))
           setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
           if ((filter || trialsFilters[section][filter] === false) && shouldSelect === true){
-            //console.log("FILTER: ", filter)
-            //console.log("section: ", section)
-            //console.log("what is this: ", trialsFilters[section])
             setActiveParentFilter(filter)
             setActiveChildFilterSections({})
           }
