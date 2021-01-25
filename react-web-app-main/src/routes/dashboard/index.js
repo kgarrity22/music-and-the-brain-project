@@ -958,42 +958,21 @@ function DashboardRoute(props) {
   */
   function singleStatUniquesCount(airtableName, data){
     let countSet = new Set()
-    console.log("AIRTABlE NAME IS: ", airtableName)
+    //console.log("AIRTABlE NAME IS: ", airtableName)
     for (let record of data){
       let value = getVal(record, airtableName)
       if (typeof(value) === "string"){
         var itemlist = value.split(",")
         for (var j of itemlist){
           if (j === "" || j.slice(0, 1) === " ") {
-            
+
           } else {
             countSet.add(j)
           }
         }
       }
-
-      //console.log("value: ", value)
-      // if (typeof(value)==='object'){
-      //   for (let item of value){
-      //     if (item === null){
-      //       countSet.add(null)
-      //     } else {
-      //       var itemlist = item.split(", ")
-      //       for (var j of itemlist){
-      //         countSet.add(j)
-      //       }
-      //     }
-      //   }
-      // } else {
-      //
-      //   var itemlist = value.split(", ")
-      //   for (var j of itemlist){
-      //     countSet.add(j)
-      //   }
-      //   // countSet.add(value)
-      // }
     }
-    console.log("Count set is: ", countSet)
+    //console.log("Count set is: ", countSet)
     return countSet.size
   }
 
@@ -1004,18 +983,27 @@ function DashboardRoute(props) {
       return data.length
     } else {
       // general if you wanted a total count
-      let countList = []
+      let numList = []
+      let strList = []
+      let doSum = true
       for (let record of data){
         let value = record[airtableName]
-        //**********************check this, may be a string
-        if (typeof(value) === 'number') {
-          countList.push(value)
-        } else if (typeof(value) === "object"){
-          countList.push(value.length)
+        if (typeof(value) === "string"){
+          if (isNaN(parseInt(value))){
+            let all =
+            strList.push(value)
+            doSum = false
+
+          } else {
+            numList.push(parseInt(value))
+            doSum = true
+          }
+        } else {
+          console.log("Run a check: ", typeof(value))
         }
       }
-
-      return sum(countList)
+      console.log("Stir list: ", strList)
+      return doSum ? sum(numList) : strList.length
     }
 
   }
