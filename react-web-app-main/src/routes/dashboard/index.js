@@ -205,7 +205,6 @@ function DashboardRoute(props) {
     }
   }
 
-
   // this creates the data for a bar chart given a dictionary of name and number
   function barFormatting(dictionary, bar_data, bar_formatted, bar_type){
     var keys = Object.keys(dictionary);
@@ -244,9 +243,6 @@ function DashboardRoute(props) {
       geog_data.push(new_dict)
     }
   }
-
-
-
 
   // helper function to get the value related to a specified key
   function getVal(dictionary, key){
@@ -437,9 +433,6 @@ function DashboardRoute(props) {
     return result
   }
 
-
-
-
 ////////////////////////////////////////////////////////////////
 
 //  CHART CREATION FUNCTIONS                                 //
@@ -576,7 +569,7 @@ function DashboardRoute(props) {
   }
 
   // CREATE CHLOROPETH CHART
-  // airtable name is the column you want to use for countries and data is the whole data set after filtering 
+  // airtable name is the column you want to use for countries and data is the whole data set after filtering
   function createChloropeth(airtableName, data){
       const cc = require('@genyus/country-code');
       let geography_result = []
@@ -602,15 +595,6 @@ function DashboardRoute(props) {
       console.log("Geography REsult: ", geography_result)
       return geography_result
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -698,13 +682,13 @@ function DashboardRoute(props) {
 
 
   // Single Metrics Vars
-  var single_metrics_result = {}
-  var single_metric_trials = []
-  var single_metric_participants = []
-  var single_metric_sponsors = new Set()
-  var single_metric_outcomes = new Set()
-  var single_metric_interventions = 0
-  var single_metric_sites = new Set()
+  // var single_metrics_result = {}
+  // var single_metric_trials = []
+  // var single_metric_participants = []
+  // var single_metric_sponsors = new Set()
+  // var single_metric_outcomes = new Set()
+  // var single_metric_interventions = 0
+  // var single_metric_sites = new Set()
 
 
 
@@ -726,7 +710,6 @@ function DashboardRoute(props) {
           }).eachPage(function page(records, fetchNextPage) {
 
               records.forEach(function(record) {
-
                 record.fields["id"] = tab_ind
                 tab_ind = tab_ind + 1;
                 table_data.push(record.fields)
@@ -741,6 +724,7 @@ function DashboardRoute(props) {
               }
 
               console.log("ALL data: ", alldata)
+              // console.log("CHECK: ", typeof(alldata[4]["Arms_Raw"]))
               var tabledata = {}
               tabledata["tabledata"] = table_data
               tabledata["alldata"] = alldata
@@ -812,6 +796,50 @@ function DashboardRoute(props) {
       setGeographyFacilitiesChartData(createChloropeth("Countries_Rollup_Unique", alldata));
       setLoadingGeographyData(false)
 
+      // SET SINGLE STATS
+      setStats([
+        {
+          color: 'red',
+          stats: [
+            { title: 'Trials', metric: singleStatTotalsCount("Trials", alldata) }
+          ]
+        },
+        {
+          color: 'orange',
+          stats: [
+            { title: 'Participants', metric: singleStatTotalsCount("Enrollment", alldata)}
+          ]
+        },
+        {
+          color: 'yellow',
+          stats: [
+            { title: 'Interventions', metric: singleStatTotalsCount("Interventions_Rollup", alldata) }
+          ]
+        },
+        {
+          color: 'green',
+          stats: [
+            { title: 'Outcomes', metric: singleStatUniquesCount("Outcome_Concepts", alldata) }
+          ]
+        },
+
+        {
+          color: 'blue',
+          stats: [
+            { title: 'Sponsors', metric: singleStatUniquesCount('Sponsor', alldata) }
+          ]
+        },
+
+        {
+          color: 'violet',
+          stats: [
+            { title: 'Sites', metric: singleStatUniquesCount("Facilities_Links", alldata) }
+          ]
+        },
+
+      ])
+      setLoadingStatsData(false)
+
 
     }
     useEffect(() => {
@@ -833,144 +861,214 @@ function DashboardRoute(props) {
 
     // need to convert this one
 
-  // GET SINGLE METRICS  from airtable
-  function getSingleMetrics() {
+//   // GET SINGLE METRICS  from airtable
+//   function getSingleMetrics() {
+//
+//     return new Promise((resolve, reject) => {
+//       base('Trials').select({
+//           // Selecting the first 3 records in Raw View:
+//           filterByFormula: airtableFilters,
+//           view: "Raw View"
+//       }).eachPage(function page(records, fetchNextPage) {
+//           // This function (`page`) will get called for each page of records.
+//
+//
+//           records.forEach(function(record) {
+//
+//             single_metric_trials.push(1)
+//             var enrollment_type = typeof(record.get('Enrollment'))
+//             if (enrollment_type === 'number') {
+//               single_metric_participants.push(record.get('Enrollment'))
+//             }
+//             single_metric_sponsors.add(record.get('Sponsor'))
+//
+//             // trials, just push (1)
+//             // enrollment, check if number
+//             // get single metrics uniques and get single metrics totals
+//             // uniques would be sponsors, outcomes Facilities_Links
+//             // totals would be trials, participants, interventions
+//
+//             // intervention_set
+//
+//             var intervention = record.get('Interventions_Rollup')
+//             single_metric_interventions += intervention.length
+//
+//             // outcomes
+//             var outcome = record.get('Outcome_Concepts')
+//             if (typeof(outcome)==='object'){
+//               for (var item of outcome){
+//                 if (item === null){
+//                   single_metric_outcomes.add(null)
+//                 } else {
+//                   var itemlist = item.split(", ")
+//                   for (var j of itemlist){
+//                     single_metric_outcomes.add(j)
+//                   }
+//                 }
+//               }
+//             } else {
+//               single_metric_outcomes.add(outcome)
+//             }
+//
+//             // sites
+//             var facility_ids = record.get('Facilities_Links')
+//             if (typeof(facility_ids)==='object'){
+//               for (var item of facility_ids){
+//                 if (item === null){
+//                   single_metric_sites.add(null)
+//                 } else {
+//                   var itemlist = item.split(", ")
+//                   for (var j of itemlist){
+//                     single_metric_sites.add(j)
+//                   }
+//                 }
+//               }
+//             } else {
+//               single_metric_sites.add(facility_ids)
+//             }
+//
+//           });
+//
+//           fetchNextPage();
+//
+//       }, function done(err) {
+//           if (err) {
+//             console.error(err);
+//             return reject({});
+//           }
+//
+//
+//           single_metrics_result["trials"] = sum(single_metric_trials);
+//           single_metrics_result["participants"] = sum(single_metric_participants);
+//           single_metrics_result["interventions"] = single_metric_interventions;
+//           single_metrics_result["outcomes"] = single_metric_outcomes.size;
+//           single_metrics_result["sponsors"] = single_metric_sponsors.size;
+//           single_metrics_result["sites"] = single_metric_sites.size;
+//
+//           resolve(single_metrics_result)
+//
+//       })
+//     })
+// }
+  // get single site metrics
+  /*
+  There are two types of single stat metrics; counts of totals and counts of unqiues
+  ex. trials and participants count total # of trials and total enrollment
+  this is compared to outcomes, which is only counting the unique outcomes
+  */
+  function singleStatUniquesCount(airtableName, data){
+    let countSet = new Set()
+    console.log("AIRTABlE NAME IS: ", airtableName)
+    for (let record of data){
+      let value = getVal(record, airtableName)
+      if (typeof(value) === "string"){
+        var itemlist = value.split(",")
+        for (var j of itemlist){
+          countSet.add(j)
+        }
+      }
 
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-          // Selecting the first 3 records in Raw View:
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-          // This function (`page`) will get called for each page of records.
+      //console.log("value: ", value)
+      // if (typeof(value)==='object'){
+      //   for (let item of value){
+      //     if (item === null){
+      //       countSet.add(null)
+      //     } else {
+      //       var itemlist = item.split(", ")
+      //       for (var j of itemlist){
+      //         countSet.add(j)
+      //       }
+      //     }
+      //   }
+      // } else {
+      //
+      //   var itemlist = value.split(", ")
+      //   for (var j of itemlist){
+      //     countSet.add(j)
+      //   }
+      //   // countSet.add(value)
+      // }
+    }
+    console.log("Count set is: ", countSet)
+    return countSet.size
+  }
 
 
-          records.forEach(function(record) {
+  function singleStatTotalsCount(airtableName, data){
+    // trials counts
+    if (airtableName === "Trials"){
+      return data.length
+    } else {
+      // general if you wanted a total count
+      let countList = []
+      for (let record of data){
+        let value = record[airtableName]
+        //**********************check this, may be a string
+        if (typeof(value) === 'number') {
+          countList.push(value)
+        } else if (typeof(value) === "object"){
+          countList.push(value.length)
+        }
+      }
 
-            single_metric_trials.push(1)
-            var enrollment_type = typeof(record.get('Enrollment'))
-            if (enrollment_type === 'number') {
-              single_metric_participants.push(record.get('Enrollment'))
-            }
-            single_metric_sponsors.add(record.get('Sponsor'))
+      return sum(countList)
+    }
 
-            // intervention_set
-
-            var intervention = record.get('Interventions_Rollup')
-            single_metric_interventions += intervention.length
-
-            // outcomes
-            var outcome = record.get('Outcome_Concepts')
-            if (typeof(outcome)==='object'){
-              for (var item of outcome){
-                if (item === null){
-                  single_metric_outcomes.add(null)
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-                    single_metric_outcomes.add(j)
-                  }
-                }
-              }
-            } else {
-              single_metric_outcomes.add(outcome)
-            }
-
-            // sites
-            var facility_ids = record.get('Facilities_Links')
-            if (typeof(facility_ids)==='object'){
-              for (var item of facility_ids){
-                if (item === null){
-                  single_metric_sites.add(null)
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-                    single_metric_sites.add(j)
-                  }
-                }
-              }
-            } else {
-              single_metric_sites.add(facility_ids)
-            }
-
-          });
-
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-
-          single_metrics_result["trials"] = sum(single_metric_trials);
-          single_metrics_result["participants"] = sum(single_metric_participants);
-          single_metrics_result["interventions"] = single_metric_interventions;
-          single_metrics_result["outcomes"] = single_metric_outcomes.size;
-          single_metrics_result["sponsors"] = single_metric_sponsors.size;
-          single_metrics_result["sites"] = single_metric_sites.size;
-
-          resolve(single_metrics_result)
-
-      })
-    })
-}
-
+  }
 
 
 //*************************************************************************
 // change this so that it takes arguments
 
-  const fetchSingleStatMetrics = async () => {
-
-    const result = await getSingleMetrics()
-    //console.log("result for single metric: ", result)
-
-
-    setStats([
-      {
-        color: 'red',
-        stats: [
-          { title: 'Trials', metric: result.trials }
-        ]
-      },
-      {
-        color: 'orange',
-        stats: [
-          { title: 'Participants', metric: result.participants }
-        ]
-      },
-      {
-        color: 'yellow',
-        stats: [
-          { title: 'Interventions', metric: result.interventions }
-        ]
-      },
-      {
-        color: 'green',
-        stats: [
-          { title: 'Outcomes', metric: result.outcomes }
-        ]
-      },
-
-      {
-        color: 'blue',
-        stats: [
-          { title: 'Sponsors', metric: result.sponsors }
-        ]
-      },
-
-      {
-        color: 'violet',
-        stats: [
-          { title: 'Sites', metric: result.sites }
-        ]
-      },
-
-    ])
-    setLoadingStatsData(false)
-  }
+  // const fetchSingleStatMetrics = async () => {
+  //
+  //   const result = await getSingleMetrics()
+  //   //console.log("result for single metric: ", result)
+  //   setStats([
+  //     {
+  //       color: 'red',
+  //       stats: [
+  //         { title: 'Trials', metric: result.trials}
+  //       ]
+  //     },
+  //     {
+  //       color: 'orange',
+  //       stats: [
+  //         { title: 'Participants', metric: result.participants}
+  //       ]
+  //     },
+  //     {
+  //       color: 'yellow',
+  //       stats: [
+  //         { title: 'Interventions', metric: result.interventions}
+  //       ]
+  //     },
+  //     {
+  //       color: 'green',
+  //       stats: [
+  //         { title: 'Outcomes', metric: result.outcomes}
+  //       ]
+  //     },
+  //
+  //     {
+  //       color: 'blue',
+  //       stats: [
+  //         { title: 'Sponsors', metric: result.sponsors}
+  //       ]
+  //     },
+  //
+  //     {
+  //       color: 'violet',
+  //       stats: [
+  //         { title: 'Sites', metric: result.sites}
+  //       ]
+  //     },
+  //
+  //   ])
+  //   setLoadingStatsData(false)
+  //
+  //
+  // }
 
 
 
@@ -1122,8 +1220,8 @@ function DashboardRoute(props) {
 
     if (initialFilterLoadComplete) {
 
-      setLoadingStatsData(true)
-      fetchSingleStatMetrics();
+
+      // fetchSingleStatMetrics();
 
 
 
@@ -1136,6 +1234,7 @@ function DashboardRoute(props) {
       setLoadingInterventionsData(true)
       setLoadingSponsorsData(true)
       setLoadingGeographyData(true)
+      setLoadingStatsData(true)
       fetchAllTableData();
       // fetchGeographyData();
     }
