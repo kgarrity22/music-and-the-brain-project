@@ -299,7 +299,7 @@ function DashboardRoute(props) {
       }
     }
 
-    console.log("filters that have been stored: ", store)
+    //console.log("filters that have been stored: ", store)
     return store
   }
 
@@ -421,13 +421,13 @@ function DashboardRoute(props) {
         // now when we get here, we will have created the set for one subfilter
         // need to pass this subfilter to the create filter dictionary function
         create_filter_dict([...subfilter_set].sort(), unique_subfilters)
-        console.log("Main filters: ", mainfilters)
-        console.log("subfilter: ", subfilter)
+        //console.log("Main filters: ", mainfilters)
+        //console.log("subfilter: ", subfilter)
         let index = Object.values(dropdownItems).indexOf(subfilter)
         mainfilters[Object.keys(dropdownItems)[index]] = unique_subfilters
       }
       result[filter_header] = mainfilters
-      console.log("filter HEADERS: ", filter_header)
+      //console.log("filter HEADERS: ", filter_header)
     }
     //console.log("Filters: ", result)
     return result
@@ -466,7 +466,7 @@ function DashboardRoute(props) {
     let line_formatted = {};
     lineFormatting(line_obj, line_list, line_formatted)
     line_formatted.id = 0
-    console.log('LINE FORMATTED: ', line_formatted)
+    //console.log('LINE FORMATTED: ', line_formatted)
 
     return [line_formatted]
   }
@@ -590,9 +590,9 @@ function DashboardRoute(props) {
           }
         }
       } // end for record loop
-      console.log("Geog dict: ", geography_country_dict)
+      //console.log("Geog dict: ", geography_country_dict)
       geogFormatting(geography_country_dict, geography_result)
-      console.log("Geography REsult: ", geography_result)
+      //console.log("Geography REsult: ", geography_result)
       return geography_result
     }
 
@@ -813,7 +813,7 @@ function DashboardRoute(props) {
         {
           color: 'yellow',
           stats: [
-            { title: 'Interventions', metric: singleStatTotalsCount("Interventions_Rollup", alldata) }
+            { title: 'Interventions', metric: singleStatUniquesCount("Interventions_Link", alldata) }
           ]
         },
         {
@@ -972,7 +972,7 @@ function DashboardRoute(props) {
         }
       }
     }
-    //console.log("Count set is: ", countSet)
+    console.log("Count set is: ", airtableName, countSet)
     return countSet.size
   }
 
@@ -990,8 +990,15 @@ function DashboardRoute(props) {
         let value = record[airtableName]
         if (typeof(value) === "string"){
           if (isNaN(parseInt(value))){
-            let all =
-            strList.push(value)
+            let all = value.split(",")
+            // console.log("ALL: ", all)
+            // strList.push(value)
+            for (let item of all){
+              if (item !== ""){
+                console.log("ITEM; ", item)
+                strList.push(item)
+              }
+            }
             doSum = false
 
           } else {
@@ -999,7 +1006,7 @@ function DashboardRoute(props) {
             doSum = true
           }
         } else {
-          console.log("Run a check: ", typeof(value))
+          console.log("Run a check: ", value, typeof(value))
         }
       }
       console.log("Stir list: ", strList)
@@ -1247,8 +1254,8 @@ function DashboardRoute(props) {
   }
 
   const setLandscapeAxis = (axis, value) => {
-    console.log("landscape axis: ", axis, value)
-    console.log("checking this: ", dropdownItems[value])
+    //console.log("landscape axis: ", axis, value)
+    //console.log("checking this: ", dropdownItems[value])
     switch (axis) {
       case "x":
         setLandscapeXAxis(dropdownItems[value])
@@ -1340,8 +1347,8 @@ function DashboardRoute(props) {
   }
 
   const onParentFilterClicked = (section, filter, shouldSelect=true) => {
-    console.log("first filter: ", filter)
-    console.log("first section: ", section)
+    //console.log("first filter: ", filter)
+    //console.log("first section: ", section)
     if (filter) {
       switch (activeCategoryFilter) {
         case 'Trials':
