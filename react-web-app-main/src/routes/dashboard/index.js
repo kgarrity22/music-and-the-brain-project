@@ -656,6 +656,110 @@ function DashboardRoute(props) {
 
     }
 
+// CREATE LANDSCAPE CHART
+function createLandscapeChart(data){
+  let data_list = []
+  let uni = new Set()
+  let ys = new Set()
+  for (let record of data){
+    let status = getVal(record, "Status")
+    let allx = getVal(record, landscapeXAxis)
+    let ally = getVal(record, landscapeYAxis)
+    let z = getVal(record, landscapeZAxis)
+
+    if (landscapeZAxis === "Trial Volume") {
+      z = 1
+    }
+
+    let y_list = []
+    if (landscapeYAxis === "Intervention_Types"){
+      y_list = ally.split(", ")
+    } else {
+      y_list = ally.split(",")
+    }
+    let x_list = []
+    if ( landscapeXAxis === "Intervention_Types"){
+      x_list = allx.split(", ")
+    } else {
+      x_list = allx.split(",")
+    }
+
+    for (var y of y_list){
+      if (y !== ""){
+        for (var x of x_list){
+          if (x !== "") {
+            data_list.push([x, status, y, z])
+            let as_string = x + "; " + status + "; " + y
+            uni.add(as_string)
+          }
+        }
+        // we use this to calculate the height of the landscape
+        ys.add(y)
+      }
+    }
+  } // end of looping through the records
+
+  let new_data_list = []
+  let clean_data = {}
+  let zs = []
+  console.log("UNI: ", uni)
+  for (var i of uni){
+
+    var ids = i.split("; ")
+    let z = 0;
+    for (var arr of data_list){
+      if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+        z += parseInt(arr[3])
+      }
+    }
+    let item = {}
+    item[ids[1]] = {"x": ids[0], "y": ids[2], "z": z}
+
+    new_data_list.push(item)
+  }
+
+  console.log("NEW DATA LIST: ", new_data_list)
+  for (var j of new_data_list){
+    let stat = Object.keys(j)[0]
+    let val = Object.values(j)
+
+    if (isNaN(val[0]["z"])){
+      val[0]["z"] = 0
+    }
+    zs.push(val[0]["z"])
+    // console.log("val: ", val[0]["z"])
+    if (stat in clean_data){
+      clean_data[stat].push(val[0])
+    } else {
+      clean_data[stat] = val
+    }
+  }
+
+  var all_data=[]
+  for (var item of Object.keys(clean_data)){
+    var cleaned = {}
+    cleaned["id"] = item
+    let sorted = clean_data[item]
+
+    sorted.sort(function(first, second) {
+      //console.log("first, second: ", first, second)
+      return isNaN(parseInt(first.x)) ? first.x - second.x : parseInt(first.x) - parseInt(second.x)
+    })
+    cleaned["data"] = sorted
+    all_data.push(cleaned)
+  }
+  setLandscapeChartHeight(ys.size * 50 + 300)
+  var landscape_result={}
+  // let sorted_data = sorted(all_data, key=itemgetter('x'))
+
+  console.log("landscape DATA: ", all_data)
+
+  landscape_result["data"] = all_data
+  landscape_result["max"] = Math.max(...zs)
+  landscape_result["min"] = Math.min(...zs)
+  console.log("Landscape RESult: ", landscape_result)
+  return landscape_result
+}
 
 
 
@@ -919,252 +1023,6 @@ function DashboardRoute(props) {
         "Geography": geographyFilters,
       }
     }
-
-
-function createLandscapeChart(data){
-  let data_list = []
-  let uni = new Set()
-  let ys = new Set()
-  for (let record of data){
-    let status = getVal(record, "Status")
-    let allx = getVal(record, landscapeXAxis)
-    let ally = getVal(record, landscapeYAxis)
-    let z = getVal(record, landscapeZAxis)
-
-    if (landscapeZAxis === "Trial Volume") {
-      z = 1
-    }
-
-    let y_list = []
-    if (landscapeYAxis === "Intervention_Types"){
-      y_list = ally.split(", ")
-    } else {
-      y_list = ally.split(",")
-    }
-    let x_list = []
-    if ( landscapeXAxis === "Intervention_Types"){
-      x_list = allx.split(", ")
-    } else {
-      x_list = allx.split(",")
-    }
-
-    for (var y of y_list){
-      if (y !== ""){
-        for (var x of x_list){
-          if (x !== "") {
-            data_list.push([x, status, y, z])
-            let as_string = x + "; " + status + "; " + y
-            uni.add(as_string)
-          }
-        }
-        // we use this to calculate the height of the landscape
-        ys.add(y)
-      }
-    }
-  } // end of looping through the records
-
-  let new_data_list = []
-  let clean_data = {}
-  let zs = []
-  console.log("UNI: ", uni)
-  for (var i of uni){
-
-    var ids = i.split("; ")
-    let z = 0;
-    for (var arr of data_list){
-      if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
-        z += parseInt(arr[3])
-      }
-    }
-    let item = {}
-    item[ids[1]] = {"x": ids[0], "y": ids[2], "z": z}
-
-    new_data_list.push(item)
-  }
-
-  console.log("NEW DATA LIST: ", new_data_list)
-  for (var j of new_data_list){
-    let stat = Object.keys(j)[0]
-    let val = Object.values(j)
-
-    if (isNaN(val[0]["z"])){
-      val[0]["z"] = 0
-    }
-    zs.push(val[0]["z"])
-    // console.log("val: ", val[0]["z"])
-    if (stat in clean_data){
-      clean_data[stat].push(val[0])
-    } else {
-      clean_data[stat] = val
-    }
-  }
-
-  var all_data=[]
-  for (var item of Object.keys(clean_data)){
-    var cleaned = {}
-    cleaned["id"] = item
-    let sorted = clean_data[item]
-
-    sorted.sort(function(first, second) {
-      //console.log("first, second: ", first, second)
-      return isNaN(parseInt(first.x)) ? first.x - second.x : parseInt(first.x) - parseInt(second.x)
-    })
-    cleaned["data"] = sorted
-    all_data.push(cleaned)
-  }
-  setLandscapeChartHeight(ys.size * 50 + 300)
-  var landscape_result={}
-  // let sorted_data = sorted(all_data, key=itemgetter('x'))
-
-  console.log("landscape DATA: ", all_data)
-
-  landscape_result["data"] = all_data
-  landscape_result["max"] = Math.max(...zs)
-  landscape_result["min"] = Math.min(...zs)
-  console.log("Landscape RESult: ", landscape_result)
-  return landscape_result
-}
-
-
-
-  // need to convert this one
-// Landscapes ************************************************
-//   function getLandscapeChartData() {
-//     // data list
-//     let data_list = []
-//     let uni = new Set()
-//     let ys = new Set()
-//
-//     return new Promise((resolve, reject) => {
-//       base('Trials').select({
-//
-//           filterByFormula: airtableFilters,
-//           view: "Raw View"
-//       }).eachPage(function page(records, fetchNextPage) {
-//
-//
-//           records.forEach(function(record) {
-//             //statuses.add(record.get('Status'))
-//             // get all status
-//             let status = record.get('Status')
-//             let allx = String(record.get(landscapeXAxis))
-//             let ally = String(record.get([landscapeYAxis]))
-//             let z = record.get(landscapeZAxis)
-//             if (landscapeZAxis === "Trial Volume") {
-//               z = 1
-//             }
-//
-//             let y_list = []
-//             if ( landscapeYAxis === "Intervention_Types"){
-//               y_list = ally.split(", ")
-//             } else {
-//               y_list = ally.split(",")
-//             }
-//             let x_list = []
-//             if ( landscapeXAxis === "Intervention_Types"){
-//               x_list = allx.split(", ")
-//             } else {
-//               x_list = allx.split(",")
-//             }
-//
-//
-//
-//             // need to do each y with each x
-//             for (var y of y_list){
-//               if (y !== ""){
-//                 for (var x of x_list){
-//                   if (x !== "") {
-//                     data_list.push([status, x, y, z])
-//                     let as_string = status + "; " + x + "; " + y
-//                     uni.add(as_string)
-//                   }
-//                 }
-//                 ys.add(y)
-//               }
-//             }
-//           });
-//
-//           fetchNextPage();
-//
-//       }, function done(err) {
-//           if (err) {
-//             console.error(err);
-//             return reject({});
-//           }
-//           let new_data_list = []
-//           let clean_data = {}
-//           let zs = []
-//           //console.log("Ys: ", ys)
-//           for (var i of uni){
-//
-//             var ids = i.split("; ")
-//             let z = 0;
-//             for (var arr of data_list){
-//               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
-//                 z += arr[3]
-//               }
-//             }
-//             let item = {}
-//             item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
-//
-//             new_data_list.push(item)
-//           }
-//
-//
-//           //console.log("data list: ", data_list)
-//           //console.log("new data: ", new_data_list)
-//           //console.log('yS; ', ys)
-//
-//           for (var j of new_data_list){
-//             let stat = Object.keys(j)[0]
-//             let val = Object.values(j)
-//
-//             if (isNaN(val[0]["z"])){
-//               val[0]["z"] = 0
-//             }
-//             zs.push(val[0]["z"])
-//             // console.log("val: ", val[0]["z"])
-//             if (stat in clean_data){
-//               clean_data[stat].push(val[0])
-//             } else {
-//               clean_data[stat] = val
-//             }
-//           }
-//           //console.log("zs: ", zs)
-//
-//           //console.log("clean data: ", clean_data)
-//           var all_data=[]
-//           for (var item of Object.keys(clean_data)){
-//             var cleaned = {}
-//             cleaned["id"] = item
-//             cleaned["data"] = clean_data[item]
-//             all_data.push(cleaned)
-//           }
-//           setLandscapeChartHeight(ys.size * 50 + 300)
-//           var landscape_result={}
-//           landscape_result["data"] = all_data
-//           landscape_result["max"] = Math.max(...zs)
-//           landscape_result["min"] = Math.min(...zs)
-//           resolve(landscape_result)
-//
-//         })
-//       })
-//   }// end of get trialStatusPieChartData
-//
-//
-// // need to convert this one
-// // convert this to add the landscape chart
-//   const fetchLandscapeChartData = async () => {
-//
-//     const result = await getLandscapeChartData()
-//     console.log("LANDSCAPE result: ", result)
-//
-//     setLandscapeChartData(result.data);
-//     // setLandscapeChartHeight(result.data.length * 100)
-//     setLandscapeMinNodeSize(result.min);
-//     setLandscapeMaxNodeSize(result.max);
-//     setLoadingLandscapeData(false)
-//   }
 
 
 
