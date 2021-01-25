@@ -714,7 +714,7 @@ function DashboardRoute(props) {
   const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
 
   const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
-  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Settings")
+  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Age Groups")
   const [landscapeVisZAxis, setLandscapeVisZAxis] = useState("Enrollment")
 
   const [allTableData, setAllTableData] = useState([])
@@ -1004,9 +1004,10 @@ function createLandscapeChart(data){
     var cleaned = {}
     cleaned["id"] = item
     let sorted = clean_data[item]
+
     sorted.sort(function(first, second) {
       //console.log("first, second: ", first, second)
-      return parseInt(first.x) - parseInt(second.x);
+      return isNaN(parseInt(first.x)) ? first.x - second.x : parseInt(first.x) - parseInt(second.x)
     })
     cleaned["data"] = sorted
     all_data.push(cleaned)
@@ -1188,13 +1189,15 @@ function createLandscapeChart(data){
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
 
-//   useEffect(() => {
-//   if (initialFilterLoadComplete) {
-//     setLoadingLandscapeData(true)
-//     // fetchLandscapeChartData();
-//   }
-//   // eslint-disable-next-line
-// }, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize, landscapeVisXAxis, landscapeVisYAxis, landscapeVisZAxis])
+  useEffect(() => {
+  if (initialFilterLoadComplete) {
+
+    setLoadingLandscapeData(true)
+    fetchAllTableData();
+    // fetchLandscapeChartData();
+  }
+  // eslint-disable-next-line
+}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize, landscapeVisXAxis, landscapeVisYAxis, landscapeVisZAxis])
 
 
   if (currentUser === undefined) {
