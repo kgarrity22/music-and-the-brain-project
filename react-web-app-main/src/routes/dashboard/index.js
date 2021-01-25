@@ -964,7 +964,11 @@ function DashboardRoute(props) {
       if (typeof(value) === "string"){
         var itemlist = value.split(",")
         for (var j of itemlist){
-          countSet.add(j)
+          if (j === "" || j.slice(0, 1) === " ") {
+            
+          } else {
+            countSet.add(j)
+          }
         }
       }
 
