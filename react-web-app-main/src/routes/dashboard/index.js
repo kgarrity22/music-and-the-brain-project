@@ -597,6 +597,67 @@ function DashboardRoute(props) {
     }
 
 
+  // CALCULATE SINGLE STATS
+  /*
+    There are two types of single stat metrics; counts of totals and counts of unqiues
+    ex. trials and participants count total # of trials and total enrollment
+    this is compared to outcomes, which is only counting the unique outcomes
+  */
+  function singleStatUniquesCount(airtableName, data){
+      let countSet = new Set()
+      //console.log("AIRTABlE NAME IS: ", airtableName)
+      for (let record of data){
+        let value = getVal(record, airtableName)
+        if (typeof(value) === "string"){
+          var itemlist = value.split(",")
+          for (var j of itemlist){
+            if (j === "" || j.slice(0, 1) === " ") {
+
+            } else {
+              countSet.add(j)
+            }
+          }
+        }
+      }
+      //console.log("Count set is: ", airtableName, countSet)
+      return countSet.size
+    }
+
+
+  function singleStatTotalsCount(airtableName, data){
+      // trials counts
+      if (airtableName === "Trials"){
+        return data.length
+      } else {
+        // general if you wanted a total count
+        let numList = []
+        let strList = []
+        let doSum = true
+        for (let record of data){
+          let value = record[airtableName]
+          if (typeof(value) === "string"){
+            if (isNaN(parseInt(value))){
+
+              strList.push(value)
+              doSum = false
+
+            } else {
+              numList.push(parseInt(value))
+              doSum = true
+            }
+          } else {
+            //console.log("Run a check: ", value, typeof(value))
+          }
+        }
+        //console.log("Stir list: ", strList)
+        //console.log("Num List: ", airtableName, numList)
+        return doSum ? sum(numList) : strList.length
+      }
+
+    }
+
+
+
 
 
 
@@ -679,20 +740,6 @@ function DashboardRoute(props) {
 
 
 
-
-
-  // Single Metrics Vars
-  // var single_metrics_result = {}
-  // var single_metric_trials = []
-  // var single_metric_participants = []
-  // var single_metric_sponsors = new Set()
-  // var single_metric_outcomes = new Set()
-  // var single_metric_interventions = 0
-  // var single_metric_sites = new Set()
-
-
-
-
   // this is now the only function that pulls in data from airtable
   // it returns a dictionary with keys "tabledata" (properly formatted for the tabulator table)
   // and "alldata", the data used to pass to the createChart functions
@@ -740,6 +787,9 @@ function DashboardRoute(props) {
       let filters = newgetfilters(res.alldata)
       let alldata = res.alldata
 
+      console.log("ALL data: ", alldata)
+      console.log("vs TABle Data: ", res.tabledata)
+
 
       // SET FILTERS
       setTrialsFilters(filters.Trials)
@@ -754,6 +804,7 @@ function DashboardRoute(props) {
       for (var record of res.tabledata){
         for (var key of Object.keys(record)){
           if (typeof(record[key] !== "String")){
+            // console.log("what vals arent string: ", key)
             record[key] = record[key].toString()
           }
         }
@@ -768,31 +819,35 @@ function DashboardRoute(props) {
       setTrialsSunburstChart(createSunburst("Purpose", "Intervention_Types", "Status", alldata))
       setLoadingTrialsSunburstChart(false)
 
+      // SET TRIALS PIES AND LINE
       setTrialStatusPieChartData(createPieChart("Status", alldata));
       setTrialPurposePieChartData(createPieChart("Purpose", alldata));
-
       setTrialTypePieChartData(createPieChart("Study_Type", alldata));
       setTrialAgeGroupsPieChartData(createPieChart("Age_Groups", alldata));
       setCumulativeTrialsLineChartData(createLineChart("Start_Year", alldata));
       setTrialRandomizationPieChartData(createPieChart("Randomization", alldata));
       setTrialMaskingPieChartData(createPieChart("Masking_Clean", alldata));
-
       setLoadingTrialsData(false)
 
+      // SET POPULATIONS PIES
       setSingleMultiSitePieChartData(createPieChart("Single_Multi_Site", alldata));
       setPopulationVolunteersPieChartData(createPieChart("Enrollment_Target", alldata));
       setPopulationEnrollmentPieChartData(createPieChart("Healthy_Volunteers", alldata))
       setLoadingPopulationData(false)
 
+      // SET OUTCOMES BAR CHART
       setOutcomesTop10ParentBarChartData(createBarChart("Outcome_Concepts", 10, "outcome", alldata));
       setLoadingOutcomesData(false)
 
+      // SET INTERVENTIONS BAR CHART
       setInterventionsTop10BarChartData(createBarChart("Intervention_Types", 10, "intervention", alldata));
       setLoadingInterventionsData(false)
 
+      // SET SPONSORS BAR CHART
       setSponsorsTop10ByTrialsBarChartData(createBarChart("Sponsor_Type", 10, "sponsor", alldata));
       setLoadingSponsorsData(false)
 
+      // SET GEOGRAPHY MAP
       setGeographyFacilitiesChartData(createChloropeth("Countries_Rollup_Unique", alldata));
       setLoadingGeographyData(false)
 
@@ -833,12 +888,19 @@ function DashboardRoute(props) {
         {
           color: 'violet',
           stats: [
-            { title: 'Sites', metric: singleStatUniquesCount("Facilities_Links", alldata) }
+            { title: 'Sites', metric: singleStatTotalsCount("Facility_Counts", alldata) }
           ]
         },
 
       ])
       setLoadingStatsData(false)
+
+      let landscapeRes = createLandscapeChart(alldata)
+      setLandscapeChartData(landscapeRes.data);
+          // setLandscapeChartHeight(result.data.length * 100)
+      setLandscapeMinNodeSize(landscapeRes.min);
+      setLandscapeMaxNodeSize(landscapeRes.max);
+      setLoadingLandscapeData(false)
 
 
     }
@@ -859,74 +921,166 @@ function DashboardRoute(props) {
     }
 
 
-    // need to convert this one
+function createLandscapeChart(data){
+  let data_list = []
+  let uni = new Set()
+  let ys = new Set()
+  for (let record of data){
+    let status = getVal(record, "Status")
+    let allx = getVal(record, landscapeXAxis)
+    let ally = getVal(record, landscapeYAxis)
+    let z = getVal(record, landscapeZAxis)
 
-//   // GET SINGLE METRICS  from airtable
-//   function getSingleMetrics() {
+    if (landscapeZAxis === "Trial Volume") {
+      z = 1
+    }
+
+    let y_list = []
+    if (landscapeYAxis === "Intervention_Types"){
+      y_list = ally.split(", ")
+    } else {
+      y_list = ally.split(",")
+    }
+    let x_list = []
+    if ( landscapeXAxis === "Intervention_Types"){
+      x_list = allx.split(", ")
+    } else {
+      x_list = allx.split(",")
+    }
+
+    for (var y of y_list){
+      if (y !== ""){
+        for (var x of x_list){
+          if (x !== "") {
+            data_list.push([x, status, y, z])
+            let as_string = x + "; " + status + "; " + y
+            uni.add(as_string)
+          }
+        }
+        // we use this to calculate the height of the landscape
+        ys.add(y)
+      }
+    }
+  } // end of looping through the records
+
+  let new_data_list = []
+  let clean_data = {}
+  let zs = []
+  console.log("UNI: ", uni)
+  for (var i of uni){
+
+    var ids = i.split("; ")
+    let z = 0;
+    for (var arr of data_list){
+      if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+        z += parseInt(arr[3])
+      }
+    }
+    let item = {}
+    item[ids[1]] = {"x": ids[0], "y": ids[2], "z": z}
+
+    new_data_list.push(item)
+  }
+
+  console.log("NEW DATA LIST: ", new_data_list)
+  for (var j of new_data_list){
+    let stat = Object.keys(j)[0]
+    let val = Object.values(j)
+
+    if (isNaN(val[0]["z"])){
+      val[0]["z"] = 0
+    }
+    zs.push(val[0]["z"])
+    // console.log("val: ", val[0]["z"])
+    if (stat in clean_data){
+      clean_data[stat].push(val[0])
+    } else {
+      clean_data[stat] = val
+    }
+  }
+
+  var all_data=[]
+  for (var item of Object.keys(clean_data)){
+    var cleaned = {}
+    cleaned["id"] = item
+    let sorted = clean_data[item]
+    sorted.sort(function(first, second) {
+      //console.log("first, second: ", first, second)
+      return parseInt(first.x) - parseInt(second.x);
+    })
+    cleaned["data"] = sorted
+    all_data.push(cleaned)
+  }
+  setLandscapeChartHeight(ys.size * 50 + 300)
+  var landscape_result={}
+  // let sorted_data = sorted(all_data, key=itemgetter('x'))
+
+  console.log("landscape DATA: ", all_data)
+
+  landscape_result["data"] = all_data
+  landscape_result["max"] = Math.max(...zs)
+  landscape_result["min"] = Math.min(...zs)
+  console.log("Landscape RESult: ", landscape_result)
+  return landscape_result
+}
+
+
+
+  // need to convert this one
+// Landscapes ************************************************
+//   function getLandscapeChartData() {
+//     // data list
+//     let data_list = []
+//     let uni = new Set()
+//     let ys = new Set()
 //
 //     return new Promise((resolve, reject) => {
 //       base('Trials').select({
-//           // Selecting the first 3 records in Raw View:
+//
 //           filterByFormula: airtableFilters,
 //           view: "Raw View"
 //       }).eachPage(function page(records, fetchNextPage) {
-//           // This function (`page`) will get called for each page of records.
 //
 //
 //           records.forEach(function(record) {
-//
-//             single_metric_trials.push(1)
-//             var enrollment_type = typeof(record.get('Enrollment'))
-//             if (enrollment_type === 'number') {
-//               single_metric_participants.push(record.get('Enrollment'))
+//             //statuses.add(record.get('Status'))
+//             // get all status
+//             let status = record.get('Status')
+//             let allx = String(record.get(landscapeXAxis))
+//             let ally = String(record.get([landscapeYAxis]))
+//             let z = record.get(landscapeZAxis)
+//             if (landscapeZAxis === "Trial Volume") {
+//               z = 1
 //             }
-//             single_metric_sponsors.add(record.get('Sponsor'))
 //
-//             // trials, just push (1)
-//             // enrollment, check if number
-//             // get single metrics uniques and get single metrics totals
-//             // uniques would be sponsors, outcomes Facilities_Links
-//             // totals would be trials, participants, interventions
+//             let y_list = []
+//             if ( landscapeYAxis === "Intervention_Types"){
+//               y_list = ally.split(", ")
+//             } else {
+//               y_list = ally.split(",")
+//             }
+//             let x_list = []
+//             if ( landscapeXAxis === "Intervention_Types"){
+//               x_list = allx.split(", ")
+//             } else {
+//               x_list = allx.split(",")
+//             }
 //
-//             // intervention_set
 //
-//             var intervention = record.get('Interventions_Rollup')
-//             single_metric_interventions += intervention.length
 //
-//             // outcomes
-//             var outcome = record.get('Outcome_Concepts')
-//             if (typeof(outcome)==='object'){
-//               for (var item of outcome){
-//                 if (item === null){
-//                   single_metric_outcomes.add(null)
-//                 } else {
-//                   var itemlist = item.split(", ")
-//                   for (var j of itemlist){
-//                     single_metric_outcomes.add(j)
+//             // need to do each y with each x
+//             for (var y of y_list){
+//               if (y !== ""){
+//                 for (var x of x_list){
+//                   if (x !== "") {
+//                     data_list.push([status, x, y, z])
+//                     let as_string = status + "; " + x + "; " + y
+//                     uni.add(as_string)
 //                   }
 //                 }
+//                 ys.add(y)
 //               }
-//             } else {
-//               single_metric_outcomes.add(outcome)
 //             }
-//
-//             // sites
-//             var facility_ids = record.get('Facilities_Links')
-//             if (typeof(facility_ids)==='object'){
-//               for (var item of facility_ids){
-//                 if (item === null){
-//                   single_metric_sites.add(null)
-//                 } else {
-//                   var itemlist = item.split(", ")
-//                   for (var j of itemlist){
-//                     single_metric_sites.add(j)
-//                   }
-//                 }
-//               }
-//             } else {
-//               single_metric_sites.add(facility_ids)
-//             }
-//
 //           });
 //
 //           fetchNextPage();
@@ -936,293 +1090,86 @@ function DashboardRoute(props) {
 //             console.error(err);
 //             return reject({});
 //           }
+//           let new_data_list = []
+//           let clean_data = {}
+//           let zs = []
+//           //console.log("Ys: ", ys)
+//           for (var i of uni){
+//
+//             var ids = i.split("; ")
+//             let z = 0;
+//             for (var arr of data_list){
+//               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+//                 z += arr[3]
+//               }
+//             }
+//             let item = {}
+//             item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+//
+//             new_data_list.push(item)
+//           }
 //
 //
-//           single_metrics_result["trials"] = sum(single_metric_trials);
-//           single_metrics_result["participants"] = sum(single_metric_participants);
-//           single_metrics_result["interventions"] = single_metric_interventions;
-//           single_metrics_result["outcomes"] = single_metric_outcomes.size;
-//           single_metrics_result["sponsors"] = single_metric_sponsors.size;
-//           single_metrics_result["sites"] = single_metric_sites.size;
+//           //console.log("data list: ", data_list)
+//           //console.log("new data: ", new_data_list)
+//           //console.log('yS; ', ys)
 //
-//           resolve(single_metrics_result)
+//           for (var j of new_data_list){
+//             let stat = Object.keys(j)[0]
+//             let val = Object.values(j)
 //
+//             if (isNaN(val[0]["z"])){
+//               val[0]["z"] = 0
+//             }
+//             zs.push(val[0]["z"])
+//             // console.log("val: ", val[0]["z"])
+//             if (stat in clean_data){
+//               clean_data[stat].push(val[0])
+//             } else {
+//               clean_data[stat] = val
+//             }
+//           }
+//           //console.log("zs: ", zs)
+//
+//           //console.log("clean data: ", clean_data)
+//           var all_data=[]
+//           for (var item of Object.keys(clean_data)){
+//             var cleaned = {}
+//             cleaned["id"] = item
+//             cleaned["data"] = clean_data[item]
+//             all_data.push(cleaned)
+//           }
+//           setLandscapeChartHeight(ys.size * 50 + 300)
+//           var landscape_result={}
+//           landscape_result["data"] = all_data
+//           landscape_result["max"] = Math.max(...zs)
+//           landscape_result["min"] = Math.min(...zs)
+//           resolve(landscape_result)
+//
+//         })
 //       })
-//     })
-// }
-  // get single site metrics
-  /*
-  There are two types of single stat metrics; counts of totals and counts of unqiues
-  ex. trials and participants count total # of trials and total enrollment
-  this is compared to outcomes, which is only counting the unique outcomes
-  */
-  function singleStatUniquesCount(airtableName, data){
-    let countSet = new Set()
-    //console.log("AIRTABlE NAME IS: ", airtableName)
-    for (let record of data){
-      let value = getVal(record, airtableName)
-      if (typeof(value) === "string"){
-        var itemlist = value.split(",")
-        for (var j of itemlist){
-          if (j === "" || j.slice(0, 1) === " ") {
-
-          } else {
-            countSet.add(j)
-          }
-        }
-      }
-    }
-    console.log("Count set is: ", airtableName, countSet)
-    return countSet.size
-  }
-
-
-  function singleStatTotalsCount(airtableName, data){
-    // trials counts
-    if (airtableName === "Trials"){
-      return data.length
-    } else {
-      // general if you wanted a total count
-      let numList = []
-      let strList = []
-      let doSum = true
-      for (let record of data){
-        let value = record[airtableName]
-        if (typeof(value) === "string"){
-          if (isNaN(parseInt(value))){
-            let all = value.split(",")
-            // console.log("ALL: ", all)
-            // strList.push(value)
-            for (let item of all){
-              if (item !== ""){
-                console.log("ITEM; ", item)
-                strList.push(item)
-              }
-            }
-            doSum = false
-
-          } else {
-            numList.push(parseInt(value))
-            doSum = true
-          }
-        } else {
-          console.log("Run a check: ", value, typeof(value))
-        }
-      }
-      console.log("Stir list: ", strList)
-      return doSum ? sum(numList) : strList.length
-    }
-
-  }
-
-
-//*************************************************************************
-// change this so that it takes arguments
-
-  // const fetchSingleStatMetrics = async () => {
-  //
-  //   const result = await getSingleMetrics()
-  //   //console.log("result for single metric: ", result)
-  //   setStats([
-  //     {
-  //       color: 'red',
-  //       stats: [
-  //         { title: 'Trials', metric: result.trials}
-  //       ]
-  //     },
-  //     {
-  //       color: 'orange',
-  //       stats: [
-  //         { title: 'Participants', metric: result.participants}
-  //       ]
-  //     },
-  //     {
-  //       color: 'yellow',
-  //       stats: [
-  //         { title: 'Interventions', metric: result.interventions}
-  //       ]
-  //     },
-  //     {
-  //       color: 'green',
-  //       stats: [
-  //         { title: 'Outcomes', metric: result.outcomes}
-  //       ]
-  //     },
-  //
-  //     {
-  //       color: 'blue',
-  //       stats: [
-  //         { title: 'Sponsors', metric: result.sponsors}
-  //       ]
-  //     },
-  //
-  //     {
-  //       color: 'violet',
-  //       stats: [
-  //         { title: 'Sites', metric: result.sites}
-  //       ]
-  //     },
-  //
-  //   ])
-  //   setLoadingStatsData(false)
-  //
-  //
-  // }
-
-
-
-
-  // need to convert this one
-// Landscapes ************************************************
-  function getLandscapeChartData() {
-    // data list
-    let data_list = []
-    let uni = new Set()
-    let ys = new Set()
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-
-
-          records.forEach(function(record) {
-            //statuses.add(record.get('Status'))
-            // get all status
-            let status = record.get('Status')
-            let allx = String(record.get(landscapeXAxis))
-            let ally = String(record.get([landscapeYAxis]))
-            let z = record.get(landscapeZAxis)
-            if (landscapeZAxis === "Trial Volume") {
-              z = 1
-            }
-
-            let y_list = []
-            if ( landscapeYAxis === "Intervention_Types"){
-              y_list = ally.split(", ")
-            } else {
-              y_list = ally.split(",")
-            }
-            let x_list = []
-            if ( landscapeXAxis === "Intervention_Types"){
-              x_list = allx.split(", ")
-            } else {
-              x_list = allx.split(",")
-            }
-
-
-
-            // need to do each y with each x
-            for (var y of y_list){
-              if (y !== ""){
-                for (var x of x_list){
-                  if (x !== "") {
-                    data_list.push([status, x, y, z])
-                    let as_string = status + "; " + x + "; " + y
-                    uni.add(as_string)
-                  }
-                }
-                ys.add(y)
-              }
-            }
-          });
-
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-          let new_data_list = []
-          let clean_data = {}
-          let zs = []
-          //console.log("Ys: ", ys)
-          for (var i of uni){
-
-            var ids = i.split("; ")
-            let z = 0;
-            for (var arr of data_list){
-              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
-                z += arr[3]
-              }
-            }
-            let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
-
-            new_data_list.push(item)
-          }
-
-
-          //console.log("data list: ", data_list)
-          //console.log("new data: ", new_data_list)
-          //console.log('yS; ', ys)
-
-          for (var j of new_data_list){
-            let stat = Object.keys(j)[0]
-            let val = Object.values(j)
-
-            if (isNaN(val[0]["z"])){
-              val[0]["z"] = 0
-            }
-            zs.push(val[0]["z"])
-            // console.log("val: ", val[0]["z"])
-            if (stat in clean_data){
-              clean_data[stat].push(val[0])
-            } else {
-              clean_data[stat] = val
-            }
-          }
-          //console.log("zs: ", zs)
-
-          //console.log("clean data: ", clean_data)
-          var all_data=[]
-          for (var item of Object.keys(clean_data)){
-            var cleaned = {}
-            cleaned["id"] = item
-            cleaned["data"] = clean_data[item]
-            all_data.push(cleaned)
-          }
-          setLandscapeChartHeight(ys.size * 50 + 300)
-          var landscape_result={}
-          landscape_result["data"] = all_data
-          landscape_result["max"] = Math.max(...zs)
-          landscape_result["min"] = Math.min(...zs)
-          resolve(landscape_result)
-
-        })
-      })
-  }// end of get trialStatusPieChartData
-
-
-// need to convert this one
-// convert this to add the landscape chart
-  const fetchLandscapeChartData = async () => {
-
-    const result = await getLandscapeChartData()
-    console.log("LANDSCAPE result: ", result)
-
-    setLandscapeChartData(result.data);
-    // setLandscapeChartHeight(result.data.length * 100)
-    setLandscapeMinNodeSize(result.min);
-    setLandscapeMaxNodeSize(result.max);
-    setLoadingLandscapeData(false)
-  }
-
-
+//   }// end of get trialStatusPieChartData
+//
+//
+// // need to convert this one
+// // convert this to add the landscape chart
+//   const fetchLandscapeChartData = async () => {
+//
+//     const result = await getLandscapeChartData()
+//     console.log("LANDSCAPE result: ", result)
+//
+//     setLandscapeChartData(result.data);
+//     // setLandscapeChartHeight(result.data.length * 100)
+//     setLandscapeMinNodeSize(result.min);
+//     setLandscapeMaxNodeSize(result.max);
+//     setLoadingLandscapeData(false)
+//   }
 
 
 
   useEffect(() => {
 
     if (initialFilterLoadComplete) {
-
-
-      // fetchSingleStatMetrics();
-
-
 
       setLoadingAllTableData(true)
       setLoadingSponsorsSunburstChart(true)
@@ -1234,19 +1181,20 @@ function DashboardRoute(props) {
       setLoadingSponsorsData(true)
       setLoadingGeographyData(true)
       setLoadingStatsData(true)
+      setLoadingLandscapeData(true)
       fetchAllTableData();
-      // fetchGeographyData();
+
     }
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
 
-  useEffect(() => {
-  if (initialFilterLoadComplete) {
-    setLoadingLandscapeData(true)
-    fetchLandscapeChartData();
-  }
-  // eslint-disable-next-line
-}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize, landscapeVisXAxis, landscapeVisYAxis, landscapeVisZAxis])
+//   useEffect(() => {
+//   if (initialFilterLoadComplete) {
+//     setLoadingLandscapeData(true)
+//     // fetchLandscapeChartData();
+//   }
+//   // eslint-disable-next-line
+// }, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize, landscapeVisXAxis, landscapeVisYAxis, landscapeVisZAxis])
 
 
   if (currentUser === undefined) {
