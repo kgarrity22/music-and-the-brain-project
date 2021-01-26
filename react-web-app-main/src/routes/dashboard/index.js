@@ -15,6 +15,7 @@ import SectionTitle from './components/section-title'
 import PrismPieChart from './components/pie-chart'
 import PrismLineChart from './components/line-chart'
 import PrismBarChart from './components/bar-chart'
+import PrismAreaBump from './components/area-bump'
 import PrismSunburst from './components/sunburst-chart'
 import PrismScatterplot from './components/scatterplot'
 import PrismChoropleth from './components/choropleth'
@@ -218,9 +219,38 @@ function DashboardRoute(props) {
     bar_formatted["group_keys"] = keys
   }
 
+  function getAllYears(data){
+    let unique_years = new Set()
+    for (let record of data){
+      unique_years.add(parseInt(record["Start_Year"]))
+    }
+    let all_years = []
+    let years_list = [...unique_years].sort()
+    // get max and min
+    let min = years_list[0]
+    let max = years_list[years_list.length-1]
+
+    for (let i = min; i <= max; i++) {
+        all_years.push(i);
+    }
+    console.log("ALL YEarRS: ", all_years)
+    return all_years
+  }
+
   function lineFormatting(dictionary, line_data, line_formatted){
     var keys = Object.keys(dictionary);
+    console.log("keys: ", keys.sort())
+    let numkeys = []
     var value = Object.values(dictionary);
+    if (!isNaN(parseInt(keys[0]))){
+      for (let key of keys){
+        key = parseInt(key)
+        numkeys.push(key)
+      }
+    }
+    console.log("keys updated?: ", numkeys)
+
+
     for (var i=0; i<keys.length; i++){
       var new_dict = {};
       new_dict["x"] = keys[i];
@@ -481,7 +511,7 @@ function DashboardRoute(props) {
     lineFormatting(line_obj, line_list, line_formatted)
     line_formatted.id = 0
     //console.log('LINE FORMATTED: ', line_formatted)
-
+    console.log("Line Formatted: ", [line_formatted])
     return [line_formatted]
   }
 
@@ -532,6 +562,43 @@ function DashboardRoute(props) {
     barFormatting(updated_bars, [], bar_formatted, indexKey)
     //console.log("bar FORMAtTED: ", bar_formatted)
     return bar_formatted
+  }
+
+  function createAreaBump(idName, xName, yName, data){
+
+    // ****************
+    // to create the y axis - get the min and the max and then do iterate through and create 1+
+    //*************************
+    let areabump_result = []
+    let unique_ids = new Set()
+    for (let record of data){
+      let id = getVal(record, idName)
+      unique_ids.add(id)
+    }
+    for (let name of unique_ids){
+      var line_obj = {};
+      for (var record of data){
+        if (record[idName] === name){
+          let value = getVal(record, xName)
+          countOccurrences(line_obj, value)
+        }
+
+      }
+
+      let line_list = [];
+      let line_formatted = {};
+      lineFormatting(line_obj, line_list, line_formatted)
+      line_formatted.id = name
+      areabump_result.push(line_formatted)
+    }
+
+
+
+    // let simple_line = createLineChart(xName, data)
+    // console.log("simple name: ", simple_line)
+    console.log('Area BUMP result; ', areabump_result)
+    return areabump_result
+
   }
 
 
@@ -671,110 +738,108 @@ function DashboardRoute(props) {
 
     }
 
-// CREATE LANDSCAPE CHART
-function createLandscapeChart(data){
-  let data_list = []
-  let uni = new Set()
-  let ys = new Set()
-  for (let record of data){
-    let status = getVal(record, "Status")
-    let allx = getVal(record, landscapeXAxis)
-    let ally = getVal(record, landscapeYAxis)
-    let z = getVal(record, landscapeZAxis)
+  // CREATE LANDSCAPE CHART
+  function createLandscapeChart(data){
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+    for (let record of data){
+      let status = getVal(record, "Status")
+      let allx = getVal(record, landscapeXAxis)
+      let ally = getVal(record, landscapeYAxis)
+      let z = getVal(record, landscapeZAxis)
 
-    if (landscapeZAxis === "Trial Volume") {
-      z = 1
-    }
+      if (landscapeZAxis === "Trial Volume") {
+        z = 1
+      }
 
-    let y_list = []
-    if (landscapeYAxis === "Intervention_Types"){
-      y_list = ally.split(", ")
-    } else {
-      y_list = ally.split(",")
-    }
-    let x_list = []
-    if ( landscapeXAxis === "Intervention_Types"){
-      x_list = allx.split(", ")
-    } else {
-      x_list = allx.split(",")
-    }
+      let y_list = []
+      if (landscapeYAxis === "Intervention_Types"){
+        y_list = ally.split(", ")
+      } else {
+        y_list = ally.split(",")
+      }
+      let x_list = []
+      if ( landscapeXAxis === "Intervention_Types"){
+        x_list = allx.split(", ")
+      } else {
+        x_list = allx.split(",")
+      }
 
-    for (var y of y_list){
-      if (y !== ""){
-        for (var x of x_list){
-          if (x !== "") {
-            data_list.push([x, status, y, z])
-            let as_string = x + "; " + status + "; " + y
-            uni.add(as_string)
+      for (var y of y_list){
+        if (y !== ""){
+          for (var x of x_list){
+            if (x !== "") {
+              data_list.push([x, status, y, z])
+              let as_string = x + "; " + status + "; " + y
+              uni.add(as_string)
+            }
           }
-        }
         // we use this to calculate the height of the landscape
-        ys.add(y)
+          ys.add(y)
+        }
+      }
+    } // end of looping through the records
+
+    let new_data_list = []
+    let clean_data = {}
+    let zs = []
+    console.log("UNI: ", uni)
+    for (var i of uni){
+
+      var ids = i.split("; ")
+      let z = 0;
+      for (var arr of data_list){
+        if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+          z += parseInt(arr[3])
+        }
+      }
+      let item = {}
+      item[ids[1]] = {"x": ids[0], "y": ids[2], "z": z}
+
+      new_data_list.push(item)
+    }
+
+    //console.log("NEW DATA LIST: ", new_data_list)
+    for (var j of new_data_list){
+      let stat = Object.keys(j)[0]
+      let val = Object.values(j)
+
+      if (isNaN(val[0]["z"])){
+        val[0]["z"] = 0
+      }
+      zs.push(val[0]["z"])
+      // console.log("val: ", val[0]["z"])
+      if (stat in clean_data){
+        clean_data[stat].push(val[0])
+      } else {
+        clean_data[stat] = val
       }
     }
-  } // end of looping through the records
 
-  let new_data_list = []
-  let clean_data = {}
-  let zs = []
-  console.log("UNI: ", uni)
-  for (var i of uni){
+    var all_data=[]
+    for (var item of Object.keys(clean_data)){
+      var cleaned = {}
+      cleaned["id"] = item
+      let sorted = clean_data[item]
 
-    var ids = i.split("; ")
-    let z = 0;
-    for (var arr of data_list){
-      if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
-        z += parseInt(arr[3])
-      }
+      sorted.sort(function(first, second) {
+        //console.log("first, second: ", first, second)
+        return isNaN(parseInt(first.x)) ? first.x - second.x : parseInt(first.x) - parseInt(second.x)
+      })
+      cleaned["data"] = sorted
+      all_data.push(cleaned)
     }
-    let item = {}
-    item[ids[1]] = {"x": ids[0], "y": ids[2], "z": z}
+    setLandscapeChartHeight(ys.size * 50 + 300)
+    var landscape_result={}
 
-    new_data_list.push(item)
+
+    landscape_result["data"] = all_data
+    landscape_result["max"] = Math.max(...zs)
+    landscape_result["min"] = Math.min(...zs)
+    console.log("Landscape formatted: ", landscape_result)
+    return landscape_result
   }
-
-  //console.log("NEW DATA LIST: ", new_data_list)
-  for (var j of new_data_list){
-    let stat = Object.keys(j)[0]
-    let val = Object.values(j)
-
-    if (isNaN(val[0]["z"])){
-      val[0]["z"] = 0
-    }
-    zs.push(val[0]["z"])
-    // console.log("val: ", val[0]["z"])
-    if (stat in clean_data){
-      clean_data[stat].push(val[0])
-    } else {
-      clean_data[stat] = val
-    }
-  }
-
-  var all_data=[]
-  for (var item of Object.keys(clean_data)){
-    var cleaned = {}
-    cleaned["id"] = item
-    let sorted = clean_data[item]
-
-    sorted.sort(function(first, second) {
-      //console.log("first, second: ", first, second)
-      return isNaN(parseInt(first.x)) ? first.x - second.x : parseInt(first.x) - parseInt(second.x)
-    })
-    cleaned["data"] = sorted
-    all_data.push(cleaned)
-  }
-  setLandscapeChartHeight(ys.size * 50 + 300)
-  var landscape_result={}
-  // let sorted_data = sorted(all_data, key=itemgetter('x'))
-
-  //console.log("landscape DATA: ", all_data)
-
-  landscape_result["data"] = all_data
-  landscape_result["max"] = Math.max(...zs)
-  landscape_result["min"] = Math.min(...zs)
-  //console.log("Landscape RESult: ", landscape_result)
-  return landscape_result
-}
 
 
 
@@ -845,6 +910,11 @@ function createLandscapeChart(data){
   const [loadingTrialsSunburstChart, setLoadingTrialsSunburstChart] = useState(true)
 
 
+  const [interventionsAreaBumpChart, setInterventionsAreaBumpChart] = useState([])
+
+
+
+
   // loading variables - set the loading icons until the data has fully loaded
   const [loadingStatsData, setLoadingStatsData] = useState(true)
   const [loadingTrialsData, setLoadingTrialsData] = useState(true)
@@ -908,7 +978,7 @@ function createLandscapeChart(data){
 
       //console.log("ALL data: ", alldata)
       //console.log("vs TABle Data: ", res.tabledata)
-
+      let years = getAllYears(alldata)
 
       // SET FILTERS
       setTrialsFilters(filters.Trials)
@@ -1021,6 +1091,7 @@ function createLandscapeChart(data){
       setLandscapeMaxNodeSize(landscapeRes.max);
       setLoadingLandscapeData(false)
 
+      setInterventionsAreaBumpChart(createAreaBump("Status", "Start_Year", "Intervention_Types", alldata))
 
     }
     useEffect(() => {
@@ -1472,6 +1543,18 @@ function createLandscapeChart(data){
                         groupKeys={interventionsTop10BarChartData.group_keys}
                         indexKey="intervention"
                         xAxisLabel=""
+                        yAxisLabel=""
+                        loading={loadingInterventionsData}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <PrismAreaBump
+                        colors="rainbow"
+                        title="Measure Use Over Time"
+                        chartData={interventionsAreaBumpChart}
+                        xAxisLabel="Year"
                         yAxisLabel=""
                         loading={loadingInterventionsData}
                       />
