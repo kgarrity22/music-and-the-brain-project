@@ -240,17 +240,7 @@ function DashboardRoute(props) {
   function lineFormatting(dictionary, line_data, line_formatted){
     var keys = Object.keys(dictionary);
     console.log("keys: ", keys.sort())
-    let numkeys = []
-    var value = Object.values(dictionary);
-    if (!isNaN(parseInt(keys[0]))){
-      for (let key of keys){
-        key = parseInt(key)
-        numkeys.push(key)
-      }
-    }
-    console.log("keys updated?: ", numkeys)
-
-
+    let value = Object.values(dictionary)
     for (var i=0; i<keys.length; i++){
       var new_dict = {};
       new_dict["x"] = keys[i];
@@ -259,6 +249,26 @@ function DashboardRoute(props) {
     }
     line_formatted["id"] = 0;
     line_formatted["data"] = line_data;
+  }
+
+  function areaBumpFormatting(dictionary, years, idInput) {
+    let area_formatted = {}
+    let area_list = []
+    //console.log("YEARS: ", years)
+    console.log("Dictionary Keys: ", Object.keys(dictionary))
+    for (let year of years){
+      let new_dict = {}
+      new_dict["x"] = year
+      if (Object.keys(dictionary).includes(String(year))){
+        new_dict["y"] = dictionary[year]
+      } else {
+        new_dict["y"] = 0
+      }
+      area_list.push(new_dict)
+    }
+    area_formatted["id"] = idInput
+    area_formatted["data"] = area_list
+    return area_formatted
   }
 
   function geogFormatting(dictionary, geog_data){
@@ -566,30 +576,30 @@ function DashboardRoute(props) {
 
   function createAreaBump(idName, xName, yName, data){
 
-    // ****************
-    // to create the y axis - get the min and the max and then do iterate through and create 1+
-    //*************************
+
     let areabump_result = []
     let unique_ids = new Set()
     for (let record of data){
       let id = getVal(record, idName)
-      unique_ids.add(id)
+      if (idName === "Intervention_Types"){
+        let itemlist = id.split(", ")
+        itemlist.forEach(element => unique_ids.add(element))
+      } else {
+        unique_ids.add(id)
+      }
     }
     for (let name of unique_ids){
-      var line_obj = {};
+      var area_obj = {};
       for (var record of data){
         if (record[idName] === name){
           let value = getVal(record, xName)
-          countOccurrences(line_obj, value)
+          countOccurrences(area_obj, value)
         }
 
       }
-
-      let line_list = [];
-      let line_formatted = {};
-      lineFormatting(line_obj, line_list, line_formatted)
-      line_formatted.id = name
-      areabump_result.push(line_formatted)
+      let years = getAllYears(data)
+      let area = areaBumpFormatting(area_obj, years, name)
+      areabump_result.push(area)
     }
 
 
@@ -1091,7 +1101,7 @@ function DashboardRoute(props) {
       setLandscapeMaxNodeSize(landscapeRes.max);
       setLoadingLandscapeData(false)
 
-      setInterventionsAreaBumpChart(createAreaBump("Status", "Start_Year", "Intervention_Types", alldata))
+      setInterventionsAreaBumpChart(createAreaBump("Intervention_Types", "Start_Year", "Intervention_Types", alldata))
 
     }
     useEffect(() => {
@@ -1552,7 +1562,7 @@ function DashboardRoute(props) {
                     <Col>
                       <PrismAreaBump
                         colors="rainbow"
-                        title="Measure Use Over Time"
+                        title="Intervention Use Over Time"
                         chartData={interventionsAreaBumpChart}
                         xAxisLabel="Year"
                         yAxisLabel=""
