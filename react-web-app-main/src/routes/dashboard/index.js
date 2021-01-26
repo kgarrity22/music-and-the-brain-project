@@ -132,8 +132,6 @@ function DashboardRoute(props) {
 
 
 
-
-
   const [trialsFilters, setTrialsFilters] = useState({})
   const [populationFilters, setPopulationFilters] = useState({})
   const [interventionsFilters, setInterventionsFilters] = useState({})
@@ -263,7 +261,7 @@ function DashboardRoute(props) {
     "Interventions": ["Intervention_Types"],
     "Outcomes": ['Outcome_Concepts'],
     "Sponsors": ['Sponsor_Type'],
-    "Geography": ["Geography_Regions", "Geography_Countries"]
+    "Geography": ["Geography_Regions"]
   }
 
   // this creates and returns a dictionary list of dictionaries
@@ -362,74 +360,95 @@ function DashboardRoute(props) {
         var subfilter_set = new Set()
         // now we need to go through the alltabledata and get the values that of the subfilter key
 
-        // if (subfilter === "Geography") {
-        //   // create a country list and a region list
-        //   // create a set of unique regions
-        //   for (var trial_regions of regions_list){
-        //     var region_list_index = regions_list.indexOf(trial_regions)
-        //     var country_names = countries_list[region_list_index]
-        //     if (typeof(trial_regions) === 'object'){
-        //       for (var region of trial_regions){
-        //         if (Object.keys(unique_regions).indexOf(region)!==-1){
-        //               unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
-        //         } else {
-        //               unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
-        //         }
-        //       }
-        //     }
-        //   }
-        //   var sorted_regions = {}
-        //   for (var region of Object.keys(unique_regions)){
-        //     var sorted_countries = {}
-        //     sortDictionary(unique_regions[region], sorted_countries)
-        //     unique_regions[region] = sorted_countries
-        //   }
-        //   sortDictionary(unique_regions, sorted_regions)
-        //   geography_filts["Regions"] = sorted_regions
-        // }
+        if (filter_header === "Geography") {
+          console.log("MADE IT HERE: ", subfilter)
+          let regions_set = new Set()
+          let regions_list = []
+          let countries_list = []
+          for (let record of allTableData){
+            let region = getVal(record, "Geography_Regions")
+            let country = getVal(record, "Geography_Countries")
+            regions_set.add(region)
+            regions_list.push(region)
+            countries_list.push(country)
+          } // all records have been retrieved
 
-        // else {
-        //
-        // }
-        for (var item of allTableData){
-
-          Object.keys(item).forEach(key => {
-            if (key === subfilter){
-              // now need to check what item[key] is
-              //console.log("key is: ", key)
-              if (typeof(item[key])==='object'){
-                for (var i of item[key]){
-                  if (i === null){
-                  } else {
-                    var itemlist = i.split(", ")
-                    for (var j of itemlist){
-                      subfilter_set.add(j)
-                    }
-                  }
+          for (var trial_regions of regions_list){
+            var region_list_index = regions_list.indexOf(trial_regions)
+            var country_names = countries_list[region_list_index]
+            //console.log("NAMES: ", typeof(trial_regions))
+            if (typeof(trial_regions) === 'object'){
+              for (var region of trial_regions){
+                //console.log("REGIONS: ", region)
+                if (Object.keys(unique_subfilters).indexOf(region)!==-1){
+                //  console.log("[country_names[trial_regions.indexOf(region)]]: ", [country_names[trial_regions.indexOf(region)]])
+                      unique_subfilters[region][country_names[trial_regions.indexOf(region)]] = true;
+                } else {
+                      unique_subfilters[region] = {[country_names[trial_regions.indexOf(region)]]: true}
                 }
-              } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
-                var itemlist = item[key].split(", ")
-                for (var j of itemlist){
-                  subfilter_set.add(j)
-                }
+              }
+            } else {
+              // Unknown is a string for some reason
+              //console.log("Trial Regions: ", trials_regions)
+              if (Object.keys(unique_subfilters).indexOf(trial_regions)!==-1){
+               //console.log("[country_names[trial_regions.indexOf(region)]]: ", country_names)
+                    unique_subfilters[trial_regions][country_names] = true;
               } else {
-                subfilter_set.add(item[key])
+                    unique_subfilters[trial_regions] = {[country_names]: true}
               }
             }
-          })
+          }
+          var sorted_regions = {}
+          for (var region of Object.keys(unique_subfilters)){
+            var sorted_countries = {}
+            sortDictionary(unique_subfilters[region], sorted_countries)
+            unique_subfilters[region] = sorted_countries
+          }
+          sortDictionary(unique_subfilters, sorted_regions)
+          unique_subfilters = sorted_regions
+        } else {
+          for (var item of allTableData){
+
+            Object.keys(item).forEach(key => {
+              if (key === subfilter){
+                // now need to check what item[key] is
+                //console.log("key is: ", key)
+                if (typeof(item[key])==='object'){
+                  for (var i of item[key]){
+                    if (i === null){
+                    } else {
+                      var itemlist = i.split(", ")
+                      for (var j of itemlist){
+                        subfilter_set.add(j)
+                      }
+                    }
+                  }
+                } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
+                  console.log("item[key] in else IF: ", item[key])
+                  var itemlist = item[key].split(", ")
+                  for (var j of itemlist){
+                    subfilter_set.add(j)
+                  }
+                } else {
+                  console.log("item[key] in else: ", item[key])
+                  subfilter_set.add(item[key])
+                }
+              }
+            })
+          }
+          create_filter_dict([...subfilter_set].sort(), unique_subfilters)
+
         }
-        // now when we get here, we will have created the set for one subfilter
-        // need to pass this subfilter to the create filter dictionary function
-        create_filter_dict([...subfilter_set].sort(), unique_subfilters)
-        //console.log("Main filters: ", mainfilters)
-        //console.log("subfilter: ", subfilter)
+
+
+
         let index = Object.values(dropdownItems).indexOf(subfilter)
         mainfilters[Object.keys(dropdownItems)[index]] = unique_subfilters
       }
       result[filter_header] = mainfilters
       //console.log("filter HEADERS: ", filter_header)
     }
-    //console.log("Filters: ", result)
+    console.log("Filters: ", result)
     return result
   }
 
@@ -516,7 +535,7 @@ function DashboardRoute(props) {
     let bar_formatted = {};
     //console.log("updated BArs: ", updated_bars)
     barFormatting(updated_bars, [], bar_formatted, indexKey)
-    console.log("bar FORMAtTED: ", bar_formatted)
+    //console.log("bar FORMAtTED: ", bar_formatted)
     return bar_formatted
   }
 
@@ -718,7 +737,7 @@ function createLandscapeChart(data){
     new_data_list.push(item)
   }
 
-  console.log("NEW DATA LIST: ", new_data_list)
+  //console.log("NEW DATA LIST: ", new_data_list)
   for (var j of new_data_list){
     let stat = Object.keys(j)[0]
     let val = Object.values(j)
@@ -752,12 +771,12 @@ function createLandscapeChart(data){
   var landscape_result={}
   // let sorted_data = sorted(all_data, key=itemgetter('x'))
 
-  console.log("landscape DATA: ", all_data)
+  //console.log("landscape DATA: ", all_data)
 
   landscape_result["data"] = all_data
   landscape_result["max"] = Math.max(...zs)
   landscape_result["min"] = Math.min(...zs)
-  console.log("Landscape RESult: ", landscape_result)
+  //console.log("Landscape RESult: ", landscape_result)
   return landscape_result
 }
 
@@ -891,8 +910,8 @@ function createLandscapeChart(data){
       let filters = newgetfilters(res.alldata)
       let alldata = res.alldata
 
-      console.log("ALL data: ", alldata)
-      console.log("vs TABle Data: ", res.tabledata)
+      //console.log("ALL data: ", alldata)
+      //console.log("vs TABle Data: ", res.tabledata)
 
 
       // SET FILTERS
