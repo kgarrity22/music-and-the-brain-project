@@ -632,9 +632,9 @@ function DashboardRoute(props) {
               countSet.add(j)
             }
           }
-        } 
+        }
       }
-      console.log("Count set is: ", airtableName, countSet)
+      //console.log("Count set is: ", airtableName, countSet)
       return countSet.size
     }
 
