@@ -348,6 +348,7 @@ function DashboardRoute(props) {
 
   function newgetfilters(allTableData){
     var result = {}
+    let active = "Active, not recruiting"
     for (var filter_header of Object.keys(all_filters)){
       // a filter header will be the big title i.e. Trials or Geography
       // want to create a dictionary for each of these
@@ -376,12 +377,9 @@ function DashboardRoute(props) {
           for (var trial_regions of regions_list){
             var region_list_index = regions_list.indexOf(trial_regions)
             var country_names = countries_list[region_list_index]
-            //console.log("NAMES: ", typeof(trial_regions))
             if (typeof(trial_regions) === 'object'){
               for (var region of trial_regions){
-                //console.log("REGIONS: ", region)
                 if (Object.keys(unique_subfilters).indexOf(region)!==-1){
-                //  console.log("[country_names[trial_regions.indexOf(region)]]: ", [country_names[trial_regions.indexOf(region)]])
                       unique_subfilters[region][country_names[trial_regions.indexOf(region)]] = true;
                 } else {
                       unique_subfilters[region] = {[country_names[trial_regions.indexOf(region)]]: true}
@@ -411,8 +409,6 @@ function DashboardRoute(props) {
 
             Object.keys(item).forEach(key => {
               if (key === subfilter){
-                // now need to check what item[key] is
-                //console.log("key is: ", key)
                 if (typeof(item[key])==='object'){
                   for (var i of item[key]){
                     if (i === null){
@@ -423,14 +419,13 @@ function DashboardRoute(props) {
                       }
                     }
                   }
-                } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
-                  console.log("item[key] in else IF: ", item[key])
-                  var itemlist = item[key].split(", ")
-                  for (var j of itemlist){
+                } else if (item[key] !== active && item[key].includes(", ")){
+                    var itemlist = item[key].split(", ")
+                    for (var j of itemlist){
                     subfilter_set.add(j)
                   }
                 } else {
-                  console.log("item[key] in else: ", item[key])
+                  //console.log("item[key] in else: ", item[key])
                   subfilter_set.add(item[key])
                 }
               }
