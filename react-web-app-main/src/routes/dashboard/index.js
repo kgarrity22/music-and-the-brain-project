@@ -623,6 +623,7 @@ function DashboardRoute(props) {
       for (let record of data){
         let value = getVal(record, airtableName)
         if (typeof(value) === "string"){
+
           var itemlist = value.split(",")
           for (var j of itemlist){
             if (j === "" || j.slice(0, 1) === " ") {
@@ -631,9 +632,9 @@ function DashboardRoute(props) {
               countSet.add(j)
             }
           }
-        }
+        } 
       }
-      //console.log("Count set is: ", airtableName, countSet)
+      console.log("Count set is: ", airtableName, countSet)
       return countSet.size
     }
 
@@ -1006,7 +1007,7 @@ function createLandscapeChart(data){
         {
           color: 'violet',
           stats: [
-            { title: 'Sites', metric: singleStatTotalsCount("Facility_Counts", alldata) }
+            { title: 'Sites', metric: singleStatUniquesCount("Facilities_Links", alldata) }
           ]
         },
 
