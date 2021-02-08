@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "380bc7cb6606f22fcecca66642dfa441",
+    "revision": "04207121c038b462fee3ddb925ad270f",
     "url": "/Prism-Generic-Canvas/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/Prism-Generic-Canvas/static/css/2.880185b9.chunk.css"
   },
   {
-    "revision": "2afb2fb1274f6d295f22",
+    "revision": "c90c9827c9bdf0c72efb",
     "url": "/Prism-Generic-Canvas/static/css/main.bfb7396b.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/Prism-Generic-Canvas/static/js/2.56fb9048.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "2afb2fb1274f6d295f22",
-    "url": "/Prism-Generic-Canvas/static/js/main.71777316.chunk.js"
+    "revision": "c90c9827c9bdf0c72efb",
+    "url": "/Prism-Generic-Canvas/static/js/main.927ff84e.chunk.js"
   },
   {
     "revision": "441b07ab7db77c990843",

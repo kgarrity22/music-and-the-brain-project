@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/Prism-Generic-Canvas/static/css/main.bfb7396b.chunk.css",
-    "main.js": "/Prism-Generic-Canvas/static/js/main.71777316.chunk.js",
+    "main.js": "/Prism-Generic-Canvas/static/js/main.927ff84e.chunk.js",
     "runtime-main.js": "/Prism-Generic-Canvas/static/js/runtime-main.3dfdaea3.js",
     "static/css/2.880185b9.chunk.css": "/Prism-Generic-Canvas/static/css/2.880185b9.chunk.css",
     "static/js/2.56fb9048.chunk.js": "/Prism-Generic-Canvas/static/js/2.56fb9048.chunk.js",
     "index.html": "/Prism-Generic-Canvas/index.html",
-    "precache-manifest.3e0f09581ac1f04b2c2af18faa4236d1.js": "/Prism-Generic-Canvas/precache-manifest.3e0f09581ac1f04b2c2af18faa4236d1.js",
+    "precache-manifest.44ecb27cf4b88de4f1ceb0ec123db2ea.js": "/Prism-Generic-Canvas/precache-manifest.44ecb27cf4b88de4f1ceb0ec123db2ea.js",
     "service-worker.js": "/Prism-Generic-Canvas/service-worker.js",
     "static/js/2.56fb9048.chunk.js.LICENSE.txt": "/Prism-Generic-Canvas/static/js/2.56fb9048.chunk.js.LICENSE.txt"
   },
@@ -15,6 +15,6 @@
     "static/css/2.880185b9.chunk.css",
     "static/js/2.56fb9048.chunk.js",
     "static/css/main.bfb7396b.chunk.css",
-    "static/js/main.71777316.chunk.js"
+    "static/js/main.927ff84e.chunk.js"
   ]
 }
