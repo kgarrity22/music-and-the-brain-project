@@ -225,7 +225,7 @@ function DashboardRoute(props) {
 
 
   var Airtable = require('airtable');
-  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appIP9cQ87IyyNJMd');
+  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
   //TRIALS SETS
   var phases_set = new Set();
   var status_set = new Set();
@@ -1820,6 +1820,7 @@ function createSunburst(level1, level2, level3, data) {
       setLoadingGeographyData(true)
       fetchGeographyData();
       setLoadingAllTableData(true)
+      setLoadingSponsorsSunburstChart(true)
       fetchAllTableData();
       // console.log("tabledata after fetch: ", fetchAllTableData())
       // setLoadingLandscapeData(true)
@@ -2180,6 +2181,7 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
+
 
                   <Row>
                     <Col>
