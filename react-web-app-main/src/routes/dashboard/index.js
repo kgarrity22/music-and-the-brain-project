@@ -20,6 +20,7 @@ import PrismLineChart from './components/line-chart'
 import PrismBarChart from './components/bar-chart'
 import PrismSunburst from './components/sunburst-chart'
 import PrismScatterplot from './components/scatterplot'
+import PrismStaticScatterplot from './components/scatterplot-static'
 import PrismChoropleth from './components/choropleth'
 import MainTable from './components/tabulator'
 
@@ -862,8 +863,8 @@ function createSunburst(level1, level2, level3, data) {
   const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
   const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
   const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Facility_Settings")
-  const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Phase")
+  const [landscapeZAxis, setLandscapeZAxis] = useState("Trial Volume")
 
   const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
   const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Settings")
@@ -2166,8 +2167,8 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Row>
                   <Col>
-                    <PrismScatterplot
-                      title="Landscape"
+                    <PrismStaticScatterplot
+                      title="Trial Volume: Phase vs. Start Date"
                       colors="rainbow"
                       chartData={landscapeChartData}
                       chartHeight={landscapeChartHeight}
