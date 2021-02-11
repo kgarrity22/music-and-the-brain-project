@@ -1779,7 +1779,7 @@ function createSunburst(level1, level2, level3, data) {
   }// end of get trialStatusPieChartData
 
   function getSponsorsLandscapeChartData() {
-    // data list
+    let sponsors_dict = {}
     let data_list = []
     let uni = new Set()
     let ys = new Set()
@@ -1796,8 +1796,9 @@ function createSunburst(level1, level2, level3, data) {
             //statuses.add(record.get('Status'))
             // get all status
             let status = record.get('Status')
-            let allx = String(record.get('Sponsor'))
-            let ally = String(record.get('Start_Year'))
+            let allx = String(record.get('Start_Year'))
+            let ally = String(record.get('Sponsor'))
+            pie_collection(sponsors_dict, ally)
             let z = record.get("Enrollment")
 
             let y_list = ally.split(",")
@@ -1826,6 +1827,25 @@ function createSunburst(level1, level2, level3, data) {
             console.error(err);
             return reject({});
           }
+
+          var items = Object.keys(sponsors_dict).map(function(key) {
+            return [key, sponsors_dict[key]];
+          });
+
+          // Sort the array based on the second element
+          items.sort(function(first, second) {
+            return second[1] - first[1];
+          });
+          // let spon = items.slice(0, 20)
+          // console.log("SPON: ", spon)
+
+          var updated_sponsors_dict = {}
+          for (var item of items.slice(0, 20)){
+            updated_sponsors_dict[item[0]] = item[1]
+          }
+
+
+
           let new_data_list = []
           let clean_data = {}
           let zs = []
@@ -1840,9 +1860,12 @@ function createSunburst(level1, level2, level3, data) {
               }
             }
             let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            // console.log("IDS2: ", ids[2])
+            if (Object.keys(updated_sponsors_dict).indexOf(ids[2])!==-1){
+              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+              new_data_list.push(item)
+            }
 
-            new_data_list.push(item)
           }
 
           for (var j of new_data_list){
@@ -1875,6 +1898,7 @@ function createSunburst(level1, level2, level3, data) {
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
+          console.log("Sponsors: ", all_data)
           resolve(landscape_result)
 
         })
@@ -2933,7 +2957,7 @@ function createSunburst(level1, level2, level3, data) {
                       <PrismBarChart
                         color="blue"
                         layout="horizontal"
-                        title="Sponsor Type Breakdown"
+                        title="Top 10 Sponsors"
                         chartData={sponsorsTop10ByTrialsBarChartData.data}
                         groupKeys={sponsorsTop10ByTrialsBarChartData.group_keys}
                         indexKey="sponsor"
@@ -2961,7 +2985,7 @@ function createSunburst(level1, level2, level3, data) {
                       title="Sponsor Activity Over Time"
                       colors="rainbow"
                       chartData={sponsorsLandscapeChartData}
-                      chartHeight={500}
+                      chartHeight={900}
                       minNodeSize={sponsorsLandscapeMinNodeSize}
                       maxNodeSize={sponsorsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
