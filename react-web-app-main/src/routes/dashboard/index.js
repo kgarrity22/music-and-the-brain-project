@@ -1836,15 +1836,11 @@ function createSunburst(level1, level2, level3, data) {
           items.sort(function(first, second) {
             return second[1] - first[1];
           });
-          // let spon = items.slice(0, 20)
-          // console.log("SPON: ", spon)
 
           var updated_sponsors_dict = {}
           for (var item of items.slice(0, 20)){
             updated_sponsors_dict[item[0]] = item[1]
           }
-
-
 
           let new_data_list = []
           let clean_data = {}
@@ -1867,7 +1863,15 @@ function createSunburst(level1, level2, level3, data) {
             }
 
           }
-
+          new_data_list.sort(function(first, second) {
+            //console.log("first: ", Object.values(first)[0]["x"])
+            let keyname1 = Object.keys(first)[0]
+            let keyname2 = Object.keys(second)[0]
+            //console.log("KEYNAMES: ", keyname1, keyname2)
+            //console.log("first.keyname1, first.keyname2: ", first[keyname1].x, second[keyname2].x)
+            return second[keyname2] - first[keyname1];
+          });
+          console.log("NEW DATA LIST: ", new_data_list)
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
             let val = Object.values(j)
@@ -1893,6 +1897,7 @@ function createSunburst(level1, level2, level3, data) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
+
           // setLandscapeChartHeight(ys.size * 50 + 300)
           var landscape_result={}
           landscape_result["data"] = all_data
@@ -2879,7 +2884,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Row>
 
                   <Row>
-                  <Col>
+                  <Col lg={{span: 6}}>
                     <PrismPieChart
                       colors="green"
                       title="Number of Primary Outcomes"
@@ -2887,11 +2892,8 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingOutcomesData}
                     />
                   </Col>
-                  </Row>
 
-
-                  <Row>
-                    <Col>
+                    <Col lg={{span: 6}}>
                       <PrismBarChart
                         color="green"
                         layout="horizontal"
@@ -2943,7 +2945,7 @@ function createSunburst(level1, level2, level3, data) {
                     </Col>
                   </Row>
                   <Row>
-                    <Col>
+                    <Col lg={{span: 6}}>
                       <PrismPieChart
                         colors="blue"
                         title="Sponsor Type Breakdown"
@@ -2951,9 +2953,8 @@ function createSunburst(level1, level2, level3, data) {
                         loading={loadingSponsorsData}
                         />
                       </Col>
-                  </Row>
-                  <Row>
-                    <Col>
+
+                    <Col lg={{span: 6}}>
                       <PrismBarChart
                         color="blue"
                         layout="horizontal"
@@ -3003,7 +3004,16 @@ function createSunburst(level1, level2, level3, data) {
                     </Col>
                   </Row>
                   <Row>
-                    <Col>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="indigo"
+                      title="Regions"
+                      chartData={regionsPieChartData}
+                      loading={loadingGeographyData}
+                    />
+                  </Col>
+
+                    <Col lg={{span: 6}}>
                       <PrismBarChart
                         color="indigo"
                         layout="horizontal"
@@ -3018,16 +3028,7 @@ function createSunburst(level1, level2, level3, data) {
                       />
                     </Col>
                   </Row>
-                  <Row>
-                  <Col>
-                    <PrismPieChart
-                      colors="indigo"
-                      title="Regions"
-                      chartData={regionsPieChartData}
-                      loading={loadingGeographyData}
-                    />
-                  </Col>
-                  </Row>
+
                   <Row>
                     <Col>
                       <PrismChoropleth
@@ -3038,10 +3039,6 @@ function createSunburst(level1, level2, level3, data) {
                       />
                     </Col>
                   </Row>
-
-
-
-
 
                   <Row>
                     <Col>
