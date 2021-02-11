@@ -1439,10 +1439,12 @@ function createSunburst(level1, level2, level3, data) {
             all_data.push(cleaned)
           }
           // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
-          var landscape_result={}
+          let landscape_result={}
+          // console.log("CHECK THIS DATA: ", all_data)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
+          console.log("landscape res; ", landscape_result)
           resolve(landscape_result)
 
         })
@@ -1554,6 +1556,7 @@ function createSunburst(level1, level2, level3, data) {
           }
           // setPopulationsLandscapeChartHeight(ys.size * 50 + 300)
           var landscape_result={}
+          // console.log("CHECK THIS DATA: ", all_data)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
@@ -1884,7 +1887,7 @@ function createSunburst(level1, level2, level3, data) {
   const fetchLandscapeChartData = async () => {
 
     const trials = await getTrialsLandscapeChartData()
-    // console.log("LANDSCAPE result: ", result)
+    // console.log("LANDSCAPE trials: ", trials)
     const pops = await getPopulationsLandscapeChartData()
     const interventions = await getInterventionsLandscapeChartData()
     const outcomes = await getOutcomesLandscapeChartData()
@@ -1907,8 +1910,8 @@ function createSunburst(level1, level2, level3, data) {
     setOutcomesLandscapeMaxNodeSize(outcomes.max);
 
     setSponsorsLandscapeChartData(sponsors.data);
-    setTrialsLandscapeMinNodeSize(sponsors.min);
-    setTrialsLandscapeMaxNodeSize(sponsors.max);
+    setSponsorsLandscapeMinNodeSize(sponsors.min);
+    setSponsorsLandscapeMaxNodeSize(sponsors.max);
 
 
     setLoadingLandscapeData(false)
@@ -2772,7 +2775,7 @@ function createSunburst(level1, level2, level3, data) {
                       title="Phase vs. Trial Enrollment"
                       colors="rainbow"
                       chartData={populationsLandscapeChartData}
-                      chartHeight={500}
+                      chartHeight={800}
                       minNodeSize={populationsLandscapeMinNodeSize}
                       maxNodeSize={populationsLandscapeMaxNodeSize}
                       xAxisLabel={"Enrollment"}
@@ -2831,7 +2834,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Col>
                     <PrismStaticScatterplot
                       title="Phase vs. Intervention Type"
-                      colors="rainbow"
+                      colors="yellow"
                       chartData={interventionsLandscapeChartData}
                       chartHeight={500}
                       minNodeSize={interventionsLandscapeMinNodeSize}
@@ -2896,10 +2899,10 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Outcome Use Over Time"
-                      colors="rainbow"
+                      title="Intervention Type vs. Outcome Type"
+                      colors="green"
                       chartData={outcomesLandscapeChartData}
-                      chartHeight={600}
+                      chartHeight={1000}
                       minNodeSize={outcomesLandscapeMinNodeSize}
                       maxNodeSize={outcomesLandscapeMaxNodeSize}
                       xAxisLabel={"Intervention Type"}
