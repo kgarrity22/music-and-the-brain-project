@@ -824,12 +824,16 @@ function createSunburst(level1, level2, level3, data) {
 
   // outcomes charts original varible
   const [outcomesTop10ParentBarChartData, setOutcomesTop10ParentBarChartData] = useState({data: [], group_keys: []})
+  const [primaryOutcomesPieData, setPrimaryOutcomesPieData] = useState([])
 
   // intervention charts original variables
   const [interventionsTop10BarChartData, setInterventionsTop10BarChartData] = useState({data: [], group_keys: []})
+  const [interventionTypesPieChartData, setInterventionTypesPieChartData] = useState([])
+  const [interventionArmsPieChartData, setInterventionArmsPieChartData] = useState([])
 
   // sponsors charts original variables
   const [sponsorsTop10ByTrialsBarChartData, setSponsorsTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
+  const [sponsorTypePieChartData, setSponsorTypePieChartData] = useState([])
   const [sponsorsTop10ByEnrollmentBarChartData, setSponsorsTop10ByEnrollmentBarChartData] = useState({data: [], group_keys: []})
   const [sponsorsBreakdownChartData, setSponsorsBreakdownChartData] = useState([])
 
@@ -1953,6 +1957,9 @@ function createSunburst(level1, level2, level3, data) {
   var outcomes_bar = []
   var outcomes_bar_formatted = {}
   var outcomes_result = {}
+  let outcomes_pie_dict = {}
+  let primary_outcomes_pie = []
+
 
   // Get Outcomes data from airtable
   function getOutcomesChartsData() {
@@ -1985,6 +1992,13 @@ function createSunburst(level1, level2, level3, data) {
               pie_collection(outcomes_dict, outcome)
             }
 
+            let primary_outcome = record.get('Num_Primary_Outcomes')
+            if (primary_outcome >= 5){
+              pie_collection(outcomes_pie_dict, "5+")
+            } else {
+              pie_collection(outcomes_pie_dict, primary_outcome)
+            }
+
 
 
           });
@@ -2012,9 +2026,10 @@ function createSunburst(level1, level2, level3, data) {
             updated_outcomes_dict[item[0]] = item[1]
           }
 
-
+          pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
           bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
           outcomes_result["outcome_bar"] = outcomes_bar_formatted
+          outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
           //console.log("OUTCOME data: ", outcomes_bar_formatted)
 
           resolve(outcomes_result)
@@ -2028,17 +2043,19 @@ function createSunburst(level1, level2, level3, data) {
   const fetchOutcomesData = async () => {
 
     const result = await getOutcomesChartsData()
-
+    setPrimaryOutcomesPieData(result.primary_outcomes_pie)
     setOutcomesTop10ParentBarChartData(result.outcome_bar);
     setLoadingOutcomesData(false)
   }
 
 
   // Interventions variables for airtable data
-  var interventions_dict = {}
-  var interventions_bar = []
+  let interventions_types_dict = {}
+  var intervention_types_pie = []
+  var interventions_arms_dict = {}
+  var intervention_arms_pie = []
   var interventions_line = []
-  var interventions_bar_formatted = {}
+  // var interventions_bar_formatted = {}
   var interventions_result = {}
   // Get Intervention data from airtable
   function getInterventionsChartsData() {
@@ -2054,9 +2071,10 @@ function createSunburst(level1, level2, level3, data) {
 
             var interventions = record.get('Intervention_Types').split(", ")
             for (var item of interventions){
-              pie_collection(interventions_dict, item)
+              pie_collection(interventions_types_dict, item)
 
             }
+            pie_collection(interventions_arms_dict, record.get('Interventions_Count'))
 
 
           });
@@ -2068,26 +2086,11 @@ function createSunburst(level1, level2, level3, data) {
             console.error(err);
             return reject({});
           }
-          //console.log("Interventions DICT: ", interventions_dict)
 
-          var items = Object.keys(interventions_dict).map(function(key) {
-            return [key, interventions_dict[key]];
-          });
-
-          // Sort the array based on the second element
-          items.sort(function(first, second) {
-            return second[1] - first[1];
-          });
-
-          var updated_interventions_dict = {}
-          for (var item of items.slice(0, 10)){
-            updated_interventions_dict[item[0]] = item[1]
-          }
-
-
-          bar_formatting(updated_interventions_dict, interventions_bar, interventions_bar_formatted, "intervention")
-          interventions_result["interventions_bar"] = interventions_bar_formatted
-          //console.log("InTERVENtION data: ", interventions_bar_formatted)
+          pie_formatting(interventions_types_dict, intervention_types_pie)
+          pie_formatting(interventions_arms_dict, intervention_arms_pie)
+          interventions_result["intervention_types_pie"] = intervention_types_pie
+          interventions_result["intervention_arms_pie"] = intervention_arms_pie
 
           resolve(interventions_result)
 
@@ -2098,17 +2101,21 @@ function createSunburst(level1, level2, level3, data) {
   const fetchInterventionsData = async () => {
 
     const result = await getInterventionsChartsData()
-    setInterventionsTop10BarChartData(result.interventions_bar);
-    console.log("compare this bar: ", result.interventions_bar)
+    // setInterventionsTop10BarChartData(result.interventions_bar);
+    // console.log("compare this bar: ", result.interventions_bar)
+    setInterventionTypesPieChartData(result.intervention_types_pie)
+    setInterventionArmsPieChartData(result.intervention_arms_pie)
     setLoadingInterventionsData(false)
   }
 
 
   // Sponsors variables for airtable
-  var sponsors_dict = {}
+  var sponsor_types_dict = {}
+  let sponsors_dict = {}
   var sponsors_bar = []
   var sponsors_bar_formatted = {}
   var sponsors_result = {}
+  let sponsors_pie = []
   // Get Sponsors data from airtable
   function getSponsorsChartsData() {
 
@@ -2123,7 +2130,8 @@ function createSunburst(level1, level2, level3, data) {
 
           records.forEach(function(record) {
 
-            pie_collection(sponsors_dict, record.get('Sponsor_Type'))
+            pie_collection(sponsor_types_dict, record.get('Sponsor_Type'))
+            pie_collection(sponsors_dict, record.get('Sponsor'))
 
 
           });
@@ -2136,9 +2144,26 @@ function createSunburst(level1, level2, level3, data) {
             return reject({});
           }
 
+          pie_formatting(sponsor_types_dict, sponsors_pie)
+          var items = Object.keys(sponsors_dict).map(function(key) {
+            return [key, sponsors_dict[key]];
+          });
 
-          bar_formatting(sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
+          // Sort the array based on the second element
+          items.sort(function(first, second) {
+            return second[1] - first[1];
+          });
+
+          var updated_sponsors_dict = {}
+          for (var item of items.slice(0, 10)){
+            updated_sponsors_dict[item[0]] = item[1]
+          }
+
+          // console.log("bar original: ", countries_bar_formatted)
+          bar_formatting(updated_sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
+        //  bar_formatting(sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
           sponsors_result["sponsors_bar"] = sponsors_bar_formatted
+          sponsors_result["sponsors_pie"] = sponsors_pie
           //console.log("SPONSOR data: ", sponsors_bar_formatted)
 
           resolve(sponsors_result)
@@ -2154,6 +2179,7 @@ function createSunburst(level1, level2, level3, data) {
         const result = await getSponsorsChartsData()
 
         setSponsorsTop10ByTrialsBarChartData(result.sponsors_bar);
+        setSponsorTypePieChartData(result.sponsors_pie)
         // setSponsorsTop10ByEnrollmentBarChartData(result.data.sponsors_top_10_by_enrollment);
         //setSponsorsBreakdownChartData(result.data.sponsors_breakdown);
 
@@ -2695,20 +2721,25 @@ function createSunburst(level1, level2, level3, data) {
                     </Col>
                   </Row>
                   <Row>
-                    <Col>
-                      <PrismBarChart
-                        color="yellow"
-                        layout="horizontal"
-                        title="Intervention Types"
-                        chartData={interventionsTop10BarChartData.data}
-                        groupKeys={interventionsTop10BarChartData.group_keys}
-                        indexKey="intervention"
-                        xAxisLabel=""
-                        yAxisLabel=""
-                        loading={loadingInterventionsData}
-                      />
-                    </Col>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="yellow"
+                      title="Interventions Types"
+                      chartData={interventionTypesPieChartData}
+                      loading={loadingInterventionsData}
+                    />
+                  </Col>
+
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="yellow"
+                      title="Number of Intervention Arms"
+                      chartData={interventionArmsPieChartData}
+                      loading={loadingInterventionsData}
+                    />
+                  </Col>
                   </Row>
+
 
                   <Row>
                   <Col>
@@ -2733,6 +2764,19 @@ function createSunburst(level1, level2, level3, data) {
                       <SectionTitle title="Outcomes" color="green" />
                     </Col>
                   </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismPieChart
+                      colors="green"
+                      title="Number of Primary Outcomes"
+                      chartData={primaryOutcomesPieData}
+                      loading={loadingOutcomesData}
+                    />
+                  </Col>
+                  </Row>
+
+                  
                   <Row>
                     <Col>
                       <PrismBarChart
@@ -2773,16 +2817,14 @@ function createSunburst(level1, level2, level3, data) {
                   </Row>
                   <Row>
                     <Col>
-                      <PrismSunburst
-                        colors="rainbow"
-                        title="Sponsors Breakdown"
-                        chartData={sponsorsSunburstChart}
-                        loading={loadingSponsorsSunburstChart}
-                      />
-                    </Col>
+                      <PrismPieChart
+                        colors="blue"
+                        title="Sponsor Type Breakdown"
+                        chartData={sponsorTypePieChartData}
+                        loading={loadingSponsorsData}
+                        />
+                      </Col>
                   </Row>
-
-
                   <Row>
                     <Col>
                       <PrismBarChart
@@ -2800,8 +2842,16 @@ function createSunburst(level1, level2, level3, data) {
                     </Col>
                   </Row>
 
-
-
+                  <Row>
+                    <Col>
+                      <PrismSunburst
+                        colors="rainbow"
+                        title="Sponsors Breakdown"
+                        chartData={sponsorsSunburstChart}
+                        loading={loadingSponsorsSunburstChart}
+                      />
+                    </Col>
+                  </Row>
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
