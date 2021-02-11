@@ -2776,7 +2776,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  
+
                   <Row>
                     <Col>
                       <PrismBarChart
@@ -2796,7 +2796,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Intervention Type vs. Outcome Type"
+                      title="Outcome Use Over Time"
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
                       chartHeight={600}
