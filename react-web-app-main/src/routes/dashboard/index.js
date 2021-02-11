@@ -16,6 +16,7 @@ import SearchFilters from './components/search-filters'
 import SingleStat from './components/single-stat'
 import SectionTitle from './components/section-title'
 import PrismPieChart from './components/pie-chart'
+import PrismAreaBump from './components/area-bump'
 import PrismLineChart from './components/line-chart'
 import PrismBarChart from './components/bar-chart'
 import PrismSunburst from './components/sunburst-chart'
@@ -665,17 +666,17 @@ function createSunburst(level1, level2, level3, data) {
   }
 
   // CREATE PIE CHART
-  function createPieChart(airtableName, data){
-    let pie_obj = {}
-    for (var record of data){
-      let value = getVal(record, airtableName)
-      countOccurrences(pie_obj, value)
-    }
-    let pie = [];
-    pieFormatting(pie_obj, pie);
-
-    return pie
-  }
+  // function createPieChart(airtableName, data){
+  //   let pie_obj = {}
+  //   for (var record of data){
+  //     let value = getVal(record, airtableName)
+  //     countOccurrences(pie_obj, value)
+  //   }
+  //   let pie = [];
+  //   pieFormatting(pie_obj, pie);
+  //
+  //   return pie
+  // }
 
   // CREATE LINE CHART
   function createLineChart(airtable_xAxis, airtable_yAxis, data){
@@ -824,12 +825,14 @@ function createSunburst(level1, level2, level3, data) {
 
   // outcomes charts original varible
   const [outcomesTop10ParentBarChartData, setOutcomesTop10ParentBarChartData] = useState({data: [], group_keys: []})
+  const [outcomesAreaBump, setOutcomesAreaBump] = useState([])
   const [primaryOutcomesPieData, setPrimaryOutcomesPieData] = useState([])
 
   // intervention charts original variables
   const [interventionsTop10BarChartData, setInterventionsTop10BarChartData] = useState({data: [], group_keys: []})
   const [interventionTypesPieChartData, setInterventionTypesPieChartData] = useState([])
   const [interventionArmsPieChartData, setInterventionArmsPieChartData] = useState([])
+  const [interventionsAreaBumpChart, setInterventionsAreaBumpChart] = useState([])
 
   // sponsors charts original variables
   const [sponsorsTop10ByTrialsBarChartData, setSponsorsTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
@@ -928,16 +931,45 @@ function createSunburst(level1, level2, level3, data) {
       pie_data.push(new_dict)
     }
   }
-  function pieFormatting(dictionary, pie_data){
-    var keys = Object.keys(dictionary);
-    var value = Object.values(dictionary);
-    for (var i=0; i<keys.length; i++){
-      var new_dict = {};
-      new_dict["id"] = keys[i];
-      new_dict["label"] = keys[i];
-      new_dict["value"] = value[i];
-      pie_data.push(new_dict)
+
+  function areaBumpFormatting(dict, ids, new_list, years) {
+
+    // console.log("neew list: ", new_list)
+
+    for (let id of ids){
+      // console.log("id: ", id)
+      let data = []
+      let data_keys = []
+      let area_formatted = {}
+      for (let item of Object.keys(dict)){
+
+        let ind = Object.keys(dict).indexOf(item)
+
+        if (item.slice(0, item.indexOf(":")) === id){
+          let col = item.indexOf(":")
+          let x = item.slice(col+2, item.length)
+          // let ob = {x, Object.values(dict)}
+
+          data.push({"x": x, "y": Object.values(dict)[ind]})
+          data_keys.push(x)
+        }
+      }
+      for (let year of years){
+        if (data_keys.indexOf(year)===-1){
+          data.push({"x": year, "y": 0})
+        }
+      }
+      data.sort(function(first, second) {
+        return first.x - second.x;
+      });
+      area_formatted["id"] = id
+      area_formatted["data"] = data
+      // console.log("area formatted: ", area_formatted)
+      new_list.push(area_formatted)
+      // console.log("new list: ", new_list)
     }
+    // console.log("new List: ", new_list)
+
   }
 
   // this creates the data for a bar chart given a dictionary of name and number
@@ -1634,6 +1666,8 @@ function createSunburst(level1, level2, level3, data) {
       })
   }// end of get trialStatusPieChartData
 
+
+
   function getOutcomesLandscapeChartData() {
     // data list
     let data_list = []
@@ -1649,8 +1683,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
           records.forEach(function(record) {
-            //statuses.add(record.get('Status'))
-            // get all status
+
             let status = record.get('Status')
             let allx = String(record.get('Intervention_Types'))
             let ally = String(record.get('Outcome_Concepts'))
@@ -1727,10 +1760,15 @@ function createSunburst(level1, level2, level3, data) {
             all_data.push(cleaned)
           }
           // setLandscapeChartHeight(ys.size * 50 + 300)
+
+
+
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
+
+
           resolve(landscape_result)
 
         })
@@ -1955,10 +1993,18 @@ function createSunburst(level1, level2, level3, data) {
   // Outcomes Variables for airtable
   var outcomes_dict = {}
   var outcomes_bar = []
-  var outcomes_bar_formatted = {}
+  var outcomes_bar_formatted = []
   var outcomes_result = {}
   let outcomes_pie_dict = {}
   let primary_outcomes_pie = []
+
+  let outcome_areabump_result = []
+  let outcome_area_bump = []
+  let outcome_area_unique = new Set()
+  let outcome_area_dict = {}
+  let years = new Set()
+
+
 
 
   // Get Outcomes data from airtable
@@ -1973,6 +2019,9 @@ function createSunburst(level1, level2, level3, data) {
 
           records.forEach(function(record) {
             // OUTCOMES FILTERS
+            let year = String(record.get("Start_Year"))
+            years.add(year)
+
 
             var outcome = record.get('Outcome_Concepts')
             if (typeof(outcome)==='object'){
@@ -1984,6 +2033,8 @@ function createSunburst(level1, level2, level3, data) {
                   for (var j of itemlist){
 
                     pie_collection(outcomes_dict, j)
+                    pie_collection(outcome_area_dict, j + ": " + String(year))
+                    outcome_area_unique.add(j)
                   }
                 }
               }
@@ -1991,6 +2042,8 @@ function createSunburst(level1, level2, level3, data) {
 
               pie_collection(outcomes_dict, outcome)
             }
+
+
 
             let primary_outcome = record.get('Num_Primary_Outcomes')
             if (primary_outcome >= 5){
@@ -2026,10 +2079,13 @@ function createSunburst(level1, level2, level3, data) {
             updated_outcomes_dict[item[0]] = item[1]
           }
 
+          areaBumpFormatting(outcome_area_dict, [...outcome_area_unique].sort(), outcome_areabump_result, years)
+          //console.log("AREA BUMP CHECK: ", outcome_areabump_result)
           pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
           bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
           outcomes_result["outcome_bar"] = outcomes_bar_formatted
           outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
+          outcomes_result["area_bump"] = outcome_areabump_result
           //console.log("OUTCOME data: ", outcomes_bar_formatted)
 
           resolve(outcomes_result)
@@ -2044,7 +2100,8 @@ function createSunburst(level1, level2, level3, data) {
 
     const result = await getOutcomesChartsData()
     setPrimaryOutcomesPieData(result.primary_outcomes_pie)
-    setOutcomesTop10ParentBarChartData(result.outcome_bar);
+    setOutcomesTop10ParentBarChartData(result.outcome_bar)
+    setOutcomesAreaBump(result.area_bump)
     setLoadingOutcomesData(false)
   }
 
@@ -2055,6 +2112,12 @@ function createSunburst(level1, level2, level3, data) {
   var interventions_arms_dict = {}
   var intervention_arms_pie = []
   var interventions_line = []
+
+  let interventions_areabump_result = []
+  let interventions_area_bump = []
+  let interventions_area_unique = new Set()
+  let intervention_area_dict = {}
+  let int_years = new Set()
   // var interventions_bar_formatted = {}
   var interventions_result = {}
   // Get Intervention data from airtable
@@ -2068,13 +2131,18 @@ function createSunburst(level1, level2, level3, data) {
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
+            let year = String(record.get("Start_Year"))
+            int_years.add(year)
 
             var interventions = record.get('Intervention_Types').split(", ")
             for (var item of interventions){
               pie_collection(interventions_types_dict, item)
-
+              pie_collection(intervention_area_dict, item + ": " + String(year))
+              interventions_area_unique.add(item)
             }
             pie_collection(interventions_arms_dict, record.get('Interventions_Count'))
+
+
 
 
           });
@@ -2086,11 +2154,13 @@ function createSunburst(level1, level2, level3, data) {
             console.error(err);
             return reject({});
           }
-
+          areaBumpFormatting(intervention_area_dict, [...interventions_area_unique].sort(), interventions_areabump_result, int_years)
+          // console.log("AREA BUMP CHECK: ", outcome_areabump_result)
           pie_formatting(interventions_types_dict, intervention_types_pie)
           pie_formatting(interventions_arms_dict, intervention_arms_pie)
           interventions_result["intervention_types_pie"] = intervention_types_pie
           interventions_result["intervention_arms_pie"] = intervention_arms_pie
+          interventions_result["interventions_areabump_result"] = interventions_areabump_result
 
           resolve(interventions_result)
 
@@ -2105,6 +2175,7 @@ function createSunburst(level1, level2, level3, data) {
     // console.log("compare this bar: ", result.interventions_bar)
     setInterventionTypesPieChartData(result.intervention_types_pie)
     setInterventionArmsPieChartData(result.intervention_arms_pie)
+    setInterventionsAreaBumpChart(result.interventions_areabump_result)
     setLoadingInterventionsData(false)
   }
 
@@ -2740,6 +2811,21 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
+                  <Row>
+                    <Col>
+                      <PrismAreaBump
+                        colors="rainbow"
+                        title="Interventions Use Over Time"
+                        chartData={interventionsAreaBumpChart}
+                        xAxisLabel="Year"
+                        yAxisLabel=""
+                        loading={loadingInterventionsData}
+                      />
+                    </Col>
+                  </Row>
+
+
+
 
                   <Row>
                   <Col>
@@ -2792,6 +2878,20 @@ function createSunburst(level1, level2, level3, data) {
                       />
                     </Col>
                   </Row>
+
+                  <Row>
+                    <Col>
+                      <PrismAreaBump
+                        colors="rainbow"
+                        title="Outcome Use Over Time"
+                        chartData={outcomesAreaBump}
+                        xAxisLabel="Year"
+                        yAxisLabel=""
+                        loading={loadingOutcomesData}
+                      />
+                    </Col>
+                  </Row>
+
 
                   <Row>
                   <Col>
