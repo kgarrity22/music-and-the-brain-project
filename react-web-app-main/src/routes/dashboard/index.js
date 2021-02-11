@@ -246,18 +246,7 @@ function DashboardRoute(props) {
   //INTERVENTIONS SETS
   var intervention_set = new Set();
 
-  // var drugs_set = new Set();
-  // var devices_set = new Set();
-  // var drugs_set = new Set();
-  // var biological_set = new Set();
-  // var procedures_set = new Set();
-  // var radiation_set = new Set();
-  // var behavioral_set = new Set();
-  // var genetic_set = new Set();
-  // var dietarySupplements_set = new Set();
-  // var combProds_set = new Set();
-  // var diagnostic_set = new Set();
-  // var otherInt_set = new Set();
+
 
   // OUTCOMES SETS
   var outcomes_set = new Set();
@@ -846,6 +835,8 @@ function createSunburst(level1, level2, level3, data) {
 
   // geography charts original variables
   const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
+  const [countriesTop10BarChartData, setCountriesTop10BarChartData] = useState({data: [], group_keys: []})
+  const [regionsPieChartData, setRegionsPieChartData] = useState([])
 
   const [sponsorsSunburstChart, setSponsorsSunburstChart] = useState({})
   const [loadingSponsorsSunburstChart, setLoadingSponsorsSunburstChart] = useState(true)
@@ -857,18 +848,26 @@ function createSunburst(level1, level2, level3, data) {
   /*/////////////////////////////////////////////////////////
 
   *//////////////////////////////////////////////////////////
-  const [landscapeChartData, setLandscapeChartData] = useState([])
-  const [landscapeChartHeight, setLandscapeChartHeight] = useState(100)
+  const [trialsLandscapeChartData, setTrialsLandscapeChartData] = useState([])
+  const [populationsLandscapeChartData, setPopulationsLandscapeChartData] = useState([])
+  const [interventionsLandscapeChartData, setInterventionsLandscapeChartData] = useState([])
+  const [outcomesLandscapeChartData, setOutcomesLandscapeChartData] = useState([])
+  const [sponsorsLandscapeChartData, setSponsorsLandscapeChartData] = useState([])
 
-  const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
-  const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
-  const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
-  const [landscapeYAxis, setLandscapeYAxis] = useState("Phase")
-  const [landscapeZAxis, setLandscapeZAxis] = useState("Trial Volume")
+  // const [landscapeChartHeight, setLandscapeChartHeight] = useState(100)
 
-  const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
-  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Settings")
-  const [landscapeVisZAxis, setLandscapeVisZAxis] = useState("Enrollment")
+  const [trialsLandscapeMinNodeSize, setTrialsLandscapeMinNodeSize] = useState(0)
+  const [trialsLandscapeMaxNodeSize, setTrialsLandscapeMaxNodeSize] = useState(1)
+  const [populationsLandscapeMinNodeSize, setPopulationsLandscapeMinNodeSize] = useState(0)
+  const [populationsLandscapeMaxNodeSize, setPopulationsLandscapeMaxNodeSize] = useState(1)
+  const [interventionsLandscapeMinNodeSize, setInterventionsLandscapeMinNodeSize] = useState(0)
+  const [interventionsLandscapeMaxNodeSize, setInterventionsLandscapeMaxNodeSize] = useState(1)
+  const [outcomesLandscapeMinNodeSize, setOutcomesLandscapeMinNodeSize] = useState(0)
+  const [outcomesLandscapeMaxNodeSize, setOutcomesLandscapeMaxNodeSize] = useState(1)
+  const [sponsorsLandscapeMinNodeSize, setSponsorsLandscapeMinNodeSize] = useState(0)
+  const [sponsorsLandscapeMaxNodeSize, setSponsorsLandscapeMaxNodeSize] = useState(1)
+
+
 
   const [allTableData, setAllTableData] = useState([])
   const [loadingAllTableData, setLoadingAllTableData] = useState(true)
@@ -1310,7 +1309,7 @@ function createSunburst(level1, level2, level3, data) {
     "Interventions": "Intervention_Types"
   }
 
-  function getLandscapeChartData() {
+  function getTrialsLandscapeChartData() {
     // data list
     let data_list = []
     let uni = new Set()
@@ -1328,27 +1327,13 @@ function createSunburst(level1, level2, level3, data) {
             //statuses.add(record.get('Status'))
             // get all status
             let status = record.get('Status')
-            let allx = String(record.get(landscapeXAxis))
-            let ally = String(record.get([landscapeYAxis]))
-            let z = record.get(landscapeZAxis)
-            if (landscapeZAxis === "Trial Volume") {
-              z = 1
-            }
+            let allx = String(record.get('Start_Year'))
+            let ally = String(record.get('Phase'))
+            //let z = record.get('landscapeZAxis')
+            let z = 1
 
-            let y_list = []
-            if ( landscapeYAxis === "Intervention_Types"){
-              y_list = ally.split(", ")
-            } else {
-              y_list = ally.split(",")
-            }
-            let x_list = []
-            if ( landscapeXAxis === "Intervention_Types"){
-              x_list = allx.split(", ")
-            } else {
-              x_list = allx.split(",")
-            }
-
-
+            let y_list = ally.split(",")
+            let x_list = allx.split(",")
 
             // need to do each y with each x
             for (var y of y_list){
@@ -1364,9 +1349,114 @@ function createSunburst(level1, level2, level3, data) {
               }
             }
 
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          let new_data_list = []
+          let clean_data = {}
+          let zs = []
+          //console.log("Ys: ", ys)
+          for (var i of uni){
+
+            var ids = i.split("; ")
+            let z = 0;
+            for (var arr of data_list){
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                z += arr[3]
+              }
+            }
+            let item = {}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+
+            new_data_list.push(item)
+          }
+
+          for (var j of new_data_list){
+            let stat = Object.keys(j)[0]
+            let val = Object.values(j)
+
+            if (isNaN(val[0]["z"])){
+              val[0]["z"] = 0
+            }
+            zs.push(val[0]["z"])
+            // console.log("val: ", val[0]["z"])
+            if (stat in clean_data){
+              clean_data[stat].push(val[0])
+            } else {
+              clean_data[stat] = val
+            }
+          }
+          //console.log("zs: ", zs)
+
+          //console.log("clean data: ", clean_data)
+          var all_data=[]
+          for (var item of Object.keys(clean_data)){
+            var cleaned = {}
+            cleaned["id"] = item
+            cleaned["data"] = clean_data[item]
+            all_data.push(cleaned)
+          }
+          // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
+          var landscape_result={}
+          landscape_result["data"] = all_data
+          landscape_result["max"] = Math.max(...zs)
+          landscape_result["min"] = Math.min(...zs)
+          resolve(landscape_result)
+
+        })
+      })
+  }// end of get trialStatusPieChartData
+
+  function getPopulationsLandscapeChartData() {
+    // data list
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
 
 
+          records.forEach(function(record) {
+            //statuses.add(record.get('Status'))
+            // get all status
+            let status = record.get('Status')
+            let allx = String(record.get('Enrollment'))
+            let ally = String(record.get('Phase'))
+            // let z = record.get(landscapeZAxis)
+            // if (landscapeZAxis === "Trial Volume") {
+            //   z = 1
+            // }
+            let z = 1
 
+            let y_list = []
+            y_list = ally.split(",")
+            let x_list = []
+            x_list = allx.split(",")
+
+            // need to do each y with each x
+            for (var y of y_list){
+              if (y !== ""){
+                for (var x of x_list){
+                  if (x !== "") {
+                    data_list.push([status, x, y, z])
+                    let as_string = status + "; " + x + "; " + y
+                    uni.add(as_string)
+                  }
+                }
+                ys.add(y)
+              }
+            }
 
           });
 
@@ -1426,7 +1516,316 @@ function createSunburst(level1, level2, level3, data) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
-          setLandscapeChartHeight(ys.size * 50 + 300)
+          // setPopulationsLandscapeChartHeight(ys.size * 50 + 300)
+          var landscape_result={}
+          landscape_result["data"] = all_data
+          landscape_result["max"] = Math.max(...zs)
+          landscape_result["min"] = Math.min(...zs)
+          resolve(landscape_result)
+
+        })
+      })
+  }// end of get trialStatusPieChartData
+
+  function getInterventionsLandscapeChartData() {
+    // data list
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+
+          records.forEach(function(record) {
+            //statuses.add(record.get('Status'))
+            // get all status
+            let status = record.get('Status')
+            let allx = String(record.get('Intervention_Types'))
+            let ally = String(record.get('Phase'))
+            let z = 1
+
+            let y_list = ally.split(",")
+            let x_list  = allx.split(", ")
+            // need to do each y with each x
+            for (var y of y_list){
+              if (y !== ""){
+                for (var x of x_list){
+                  if (x !== "") {
+                    data_list.push([status, x, y, z])
+                    let as_string = status + "; " + x + "; " + y
+                    uni.add(as_string)
+                  }
+                }
+                ys.add(y)
+              }
+            }
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          let new_data_list = []
+          let clean_data = {}
+          let zs = []
+          //console.log("Ys: ", ys)
+          for (var i of uni){
+
+            var ids = i.split("; ")
+            let z = 0;
+            for (var arr of data_list){
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                z += arr[3]
+              }
+            }
+            let item = {}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+
+            new_data_list.push(item)
+          }
+
+
+          for (var j of new_data_list){
+            let stat = Object.keys(j)[0]
+            let val = Object.values(j)
+
+            if (isNaN(val[0]["z"])){
+              val[0]["z"] = 0
+            }
+            zs.push(val[0]["z"])
+            // console.log("val: ", val[0]["z"])
+            if (stat in clean_data){
+              clean_data[stat].push(val[0])
+            } else {
+              clean_data[stat] = val
+            }
+          }
+          //console.log("zs: ", zs)
+
+          //console.log("clean data: ", clean_data)
+          var all_data=[]
+          for (var item of Object.keys(clean_data)){
+            var cleaned = {}
+            cleaned["id"] = item
+            cleaned["data"] = clean_data[item]
+            all_data.push(cleaned)
+          }
+          // setLandscapeChartHeight(ys.size * 50 + 300)
+          var landscape_result={}
+          landscape_result["data"] = all_data
+          landscape_result["max"] = Math.max(...zs)
+          landscape_result["min"] = Math.min(...zs)
+          resolve(landscape_result)
+
+        })
+      })
+  }// end of get trialStatusPieChartData
+
+  function getOutcomesLandscapeChartData() {
+    // data list
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+
+          records.forEach(function(record) {
+            //statuses.add(record.get('Status'))
+            // get all status
+            let status = record.get('Status')
+            let allx = String(record.get('Intervention_Types'))
+            let ally = String(record.get('Outcome_Concepts'))
+            let z = 1
+
+            let y_list = ally.split(",")
+            let x_list = allx.split(", ")
+
+            // need to do each y with each x
+            for (var y of y_list){
+              if (y !== ""){
+                for (var x of x_list){
+                  if (x !== "") {
+                    data_list.push([status, x, y, z])
+                    let as_string = status + "; " + x + "; " + y
+                    uni.add(as_string)
+                  }
+                }
+                ys.add(y)
+              }
+            }
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          let new_data_list = []
+          let clean_data = {}
+          let zs = []
+          //console.log("Ys: ", ys)
+          for (var i of uni){
+
+            var ids = i.split("; ")
+            let z = 0;
+            for (var arr of data_list){
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                z += arr[3]
+              }
+            }
+            let item = {}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+
+            new_data_list.push(item)
+          }
+
+          for (var j of new_data_list){
+            let stat = Object.keys(j)[0]
+            let val = Object.values(j)
+
+            if (isNaN(val[0]["z"])){
+              val[0]["z"] = 0
+            }
+            zs.push(val[0]["z"])
+            // console.log("val: ", val[0]["z"])
+            if (stat in clean_data){
+              clean_data[stat].push(val[0])
+            } else {
+              clean_data[stat] = val
+            }
+          }
+          //console.log("zs: ", zs)
+
+          //console.log("clean data: ", clean_data)
+          var all_data=[]
+          for (var item of Object.keys(clean_data)){
+            var cleaned = {}
+            cleaned["id"] = item
+            cleaned["data"] = clean_data[item]
+            all_data.push(cleaned)
+          }
+          // setLandscapeChartHeight(ys.size * 50 + 300)
+          var landscape_result={}
+          landscape_result["data"] = all_data
+          landscape_result["max"] = Math.max(...zs)
+          landscape_result["min"] = Math.min(...zs)
+          resolve(landscape_result)
+
+        })
+      })
+  }// end of get trialStatusPieChartData
+
+  function getSponsorsLandscapeChartData() {
+    // data list
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+
+    return new Promise((resolve, reject) => {
+      base('Trials').select({
+
+          filterByFormula: airtableFilters,
+          view: "Raw View"
+      }).eachPage(function page(records, fetchNextPage) {
+
+
+          records.forEach(function(record) {
+            //statuses.add(record.get('Status'))
+            // get all status
+            let status = record.get('Status')
+            let allx = String(record.get('Sponsor'))
+            let ally = String(record.get('Start_Year'))
+            let z = record.get("Enrollment")
+
+            let y_list = ally.split(",")
+            let x_list = allx.split(",")
+
+            // need to do each y with each x
+            for (var y of y_list){
+              if (y !== ""){
+                for (var x of x_list){
+                  if (x !== "") {
+                    data_list.push([status, x, y, z])
+                    let as_string = status + "; " + x + "; " + y
+                    uni.add(as_string)
+                  }
+                }
+                ys.add(y)
+              }
+            }
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+          let new_data_list = []
+          let clean_data = {}
+          let zs = []
+          //console.log("Ys: ", ys)
+          for (var i of uni){
+
+            var ids = i.split("; ")
+            let z = 0;
+            for (var arr of data_list){
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                z += arr[3]
+              }
+            }
+            let item = {}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+
+            new_data_list.push(item)
+          }
+
+          for (var j of new_data_list){
+            let stat = Object.keys(j)[0]
+            let val = Object.values(j)
+
+            if (isNaN(val[0]["z"])){
+              val[0]["z"] = 0
+            }
+            zs.push(val[0]["z"])
+            // console.log("val: ", val[0]["z"])
+            if (stat in clean_data){
+              clean_data[stat].push(val[0])
+            } else {
+              clean_data[stat] = val
+            }
+          }
+          //console.log("zs: ", zs)
+
+          //console.log("clean data: ", clean_data)
+          var all_data=[]
+          for (var item of Object.keys(clean_data)){
+            var cleaned = {}
+            cleaned["id"] = item
+            cleaned["data"] = clean_data[item]
+            all_data.push(cleaned)
+          }
+          // setLandscapeChartHeight(ys.size * 50 + 300)
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
@@ -1438,16 +1837,38 @@ function createSunburst(level1, level2, level3, data) {
   }// end of get trialStatusPieChartData
 
 
+
 // convert this to add the landscape chart
   const fetchLandscapeChartData = async () => {
 
-    const result = await getLandscapeChartData()
-    console.log("LANDSCAPE result: ", result)
+    const trials = await getTrialsLandscapeChartData()
+    // console.log("LANDSCAPE result: ", result)
+    const pops = await getPopulationsLandscapeChartData()
+    const interventions = await getInterventionsLandscapeChartData()
+    const outcomes = await getOutcomesLandscapeChartData()
+    const sponsors = await getSponsorsLandscapeChartData()
 
-    setLandscapeChartData(result.data);
-    // setLandscapeChartHeight(result.data.length * 100)
-    setLandscapeMinNodeSize(result.min);
-    setLandscapeMaxNodeSize(result.max);
+    setTrialsLandscapeChartData(trials.data);
+    setTrialsLandscapeMinNodeSize(trials.min);
+    setTrialsLandscapeMaxNodeSize(trials.max);
+
+    setPopulationsLandscapeChartData(pops.data);
+    setPopulationsLandscapeMinNodeSize(pops.min);
+    setPopulationsLandscapeMaxNodeSize(pops.max);
+
+    setInterventionsLandscapeChartData(interventions.data);
+    setInterventionsLandscapeMinNodeSize(interventions.min);
+    setInterventionsLandscapeMaxNodeSize(interventions.max);
+
+    setOutcomesLandscapeChartData(outcomes.data);
+    setOutcomesLandscapeMinNodeSize(outcomes.min);
+    setOutcomesLandscapeMaxNodeSize(outcomes.max);
+
+    setSponsorsLandscapeChartData(sponsors.data);
+    setTrialsLandscapeMinNodeSize(sponsors.min);
+    setTrialsLandscapeMaxNodeSize(sponsors.max);
+
+
     setLoadingLandscapeData(false)
   }
 
@@ -1457,8 +1878,8 @@ function createSunburst(level1, level2, level3, data) {
 
   var single_multi_site_dict = {}
   var single_multi_site_pie = [];
-  var enrollment_dict = {}
-  var enrollment_pie = []
+  var settings_dict = {}
+  var settings_pie = []
   var population_result = {}
   var volunteers_pie_dict = {}
   var volunteers_pie = [];
@@ -1477,7 +1898,17 @@ function createSunburst(level1, level2, level3, data) {
           records.forEach(function(record) {
 
             pie_collection(single_multi_site_dict, record.get('Single_Multi_Site'))
-            pie_collection(enrollment_dict, record.get('Enrollment_Target'))
+
+
+            let settings = record.get('Facility_Settings')
+            if (typeof(settings)==='object'){
+              for (var item of settings){
+                //console.log("item: ", item)
+                pie_collection(settings_dict, item)
+              }
+            } else {
+              pie_collection(settings_dict, settings)
+            }
             pie_collection(volunteers_pie_dict, record.get('Healthy_Volunteers'))
 
           });
@@ -1492,11 +1923,11 @@ function createSunburst(level1, level2, level3, data) {
 
           pie_formatting(single_multi_site_dict, single_multi_site_pie)
           pie_formatting(volunteers_pie_dict, volunteers_pie)
-          pie_formatting(enrollment_dict, enrollment_pie)
+          pie_formatting(settings_dict, settings_pie)
 
           population_result["sites_pie"] = single_multi_site_pie;
           population_result["volunteers_pie"] = volunteers_pie
-          population_result["enrollment_pie"] = enrollment_pie
+          population_result["settings_pie"] = settings_pie
 
           resolve(population_result)
 
@@ -1511,7 +1942,7 @@ function createSunburst(level1, level2, level3, data) {
 
     setSingleMultiSitePieChartData(result.sites_pie);
     setPopulationVolunteersPieChartData(result.volunteers_pie);
-    setPopulationEnrollmentPieChartData(result.enrollment_pie)
+    setPopulationEnrollmentPieChartData(result.settings_pie)
     setLoadingPopulationData(false)
   }
 
@@ -1668,7 +2099,7 @@ function createSunburst(level1, level2, level3, data) {
 
     const result = await getInterventionsChartsData()
     setInterventionsTop10BarChartData(result.interventions_bar);
-
+    console.log("compare this bar: ", result.interventions_bar)
     setLoadingInterventionsData(false)
   }
 
@@ -1729,8 +2160,14 @@ function createSunburst(level1, level2, level3, data) {
         setLoadingSponsorsData(false)
       }
 
-      var geography_result = []
-      var geography_country_dict = {}
+      let geography = {}
+      let geography_result = []
+      let geography_country_dict = {}
+      let regions_dict = {}
+      let regions_pie = []
+      let countries_bar = []
+      let countries_bar_formatted = {}
+
 
       function geog_formatting(dictionary, geog_data){
         var keys = Object.keys(dictionary);
@@ -1761,8 +2198,15 @@ function createSunburst(level1, level2, level3, data) {
 
                 var country = record.get('Countries_Rollup_Unique')
                 var trial_NCT = record.get('NCT')
-                //console.log("NCT: ", trial_NCT, " Country: ", country)
-              //  console.log("country 0: ", country[0])
+
+                let region = record.get('Geography_Regions')
+                if (typeof(region)==='object'){
+                  for (let i of region){
+                    pie_collection(regions_dict, i)
+                  }
+                } else {
+                  pie_collection(regions_dict, region)
+                }
 
                 if (typeof(country)==='object'){
                   for (var item of country){
@@ -1787,9 +2231,29 @@ function createSunburst(level1, level2, level3, data) {
                 return reject({});
               }
 
-              console.log("geog data; ", geography_country_dict)
+              pie_formatting(regions_dict, regions_pie)
               geog_formatting(geography_country_dict, geography_result)
-              resolve(geography_result)
+              var items = Object.keys(geography_country_dict).map(function(key) {
+                return [key, geography_country_dict[key]];
+              });
+
+              // Sort the array based on the second element
+              items.sort(function(first, second) {
+                return second[1] - first[1];
+              });
+
+              var updated_countries_dict = {}
+              for (var item of items.slice(0, 10)){
+                updated_countries_dict[item[0]] = item[1]
+              }
+
+              // console.log("bar original: ", countries_bar_formatted)
+              bar_formatting(updated_countries_dict, countries_bar, countries_bar_formatted, "country")
+              //console.log("bar: ", countries_bar_formatted)
+              geography["countries_bar"] = countries_bar_formatted
+              geography["regions_pie"] = regions_pie
+              geography["map"] = geography_result
+              resolve(geography)
 
           })
         })
@@ -1799,7 +2263,11 @@ function createSunburst(level1, level2, level3, data) {
   const fetchGeographyData = async () => {
 
     const result = await getGeographyData()
-    setGeographyFacilitiesChartData(result);
+    setGeographyFacilitiesChartData(result.map);
+    setRegionsPieChartData(result.regions_pie)
+    setCountriesTop10BarChartData(result.countries_bar)
+    console.log("BAR: ", result.countries_bar)
+
     setLoadingGeographyData(false)
   }
 
@@ -1823,6 +2291,8 @@ function createSunburst(level1, level2, level3, data) {
       setLoadingAllTableData(true)
       setLoadingSponsorsSunburstChart(true)
       fetchAllTableData();
+      setLoadingLandscapeData(true)
+      fetchLandscapeChartData();
       // console.log("tabledata after fetch: ", fetchAllTableData())
       // setLoadingLandscapeData(true)
       // fetchLandscapeChartData();
@@ -1833,39 +2303,12 @@ function createSunburst(level1, level2, level3, data) {
     // eslint-disable-next-line
   }, [updateRequested, initialFilterLoadComplete])
 
-  useEffect(() => {
-  if (initialFilterLoadComplete) {
-    setLoadingLandscapeData(true)
-    fetchLandscapeChartData();
-  }
-  // eslint-disable-next-line
-}, [updateRequested, initialFilterLoadComplete, landscapeXAxis, landscapeYAxis, landscapeZAxis, landscapeMinNodeSize, landscapeMaxNodeSize, landscapeVisXAxis, landscapeVisYAxis, landscapeVisZAxis])
-
 
   if (currentUser === undefined) {
     return <Redirect to="/login" />
   }
 
-  const setLandscapeAxis = (axis, value) => {
-    console.log("landscape axis: ", axis, value)
-    console.log("checking this: ", dropdownItems[value])
-    switch (axis) {
-      case "x":
-        setLandscapeXAxis(dropdownItems[value])
-        setLandscapeVisXAxis(value)
-        break;
-      case "y":
-        setLandscapeYAxis(dropdownItems[value])
-        setLandscapeVisYAxis(value)
-        break;
-      case "z":
-        setLandscapeZAxis(value)
-        //setLandscapeVisZAxis(dropdownItems[value])
-        break;
-      default:
-        break;
-    }
-  }
+
 
   // closes the sidebar when you click away
   const closeSidebar = () => {
@@ -2170,14 +2613,13 @@ function createSunburst(level1, level2, level3, data) {
                     <PrismStaticScatterplot
                       title="Trial Volume: Phase vs. Start Date"
                       colors="rainbow"
-                      chartData={landscapeChartData}
-                      chartHeight={landscapeChartHeight}
-                      minNodeSize={landscapeMinNodeSize}
-                      maxNodeSize={landscapeMaxNodeSize}
-                      xAxisLabel={landscapeVisXAxis}
-                      yAxisLabel={landscapeVisYAxis}
-                      zAxisLabel={landscapeZAxis}
-                      setLandscapeAxis={setLandscapeAxis}
+                      chartData={trialsLandscapeChartData}
+                      chartHeight={500}
+                      minNodeSize={trialsLandscapeMinNodeSize}
+                      maxNodeSize={trialsLandscapeMaxNodeSize}
+                      xAxisLabel={"Start Date"}
+                      yAxisLabel={"Phase"}
+                      zAxisLabel={"Trial Volume"}
                       loading={loadingLandscapeData}
                     />
                   </Col>
@@ -2201,7 +2643,7 @@ function createSunburst(level1, level2, level3, data) {
                     <Col lg={{span: 6}}>
                       <PrismPieChart
                         colors="orange"
-                        title="Site Types"
+                        title="Single or Multi-Site"
                         chartData={singleMultiSitePieChartData}
                         loading={loadingPopulationData}
                       />
@@ -2219,12 +2661,34 @@ function createSunburst(level1, level2, level3, data) {
                   <Col lg={{span: 6}}>
                     <PrismPieChart
                       colors="orange"
-                      title="Target Enrollment"
+                      title="Settings"
                       chartData={populationEnrollmentPieChartData}
                       loading={loadingPopulationData}
                     />
                   </Col>
                   </Row>
+
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="Phase vs. Trial Enrollment"
+                      colors="rainbow"
+                      chartData={populationsLandscapeChartData}
+                      chartHeight={500}
+                      minNodeSize={populationsLandscapeMinNodeSize}
+                      maxNodeSize={populationsLandscapeMaxNodeSize}
+                      xAxisLabel={"Enrollment"}
+                      yAxisLabel={"Phase"}
+                      zAxisLabel={"Trial Volume"}
+
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+
+
                   <Row>
                     <Col>
                       <SectionTitle title="Interventions" color="yellow" />
@@ -2245,6 +2709,25 @@ function createSunburst(level1, level2, level3, data) {
                       />
                     </Col>
                   </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="Phase vs. Intervention Type"
+                      colors="rainbow"
+                      chartData={interventionsLandscapeChartData}
+                      chartHeight={500}
+                      minNodeSize={interventionsLandscapeMinNodeSize}
+                      maxNodeSize={interventionsLandscapeMaxNodeSize}
+                      xAxisLabel={"Start Date"}
+                      yAxisLabel={"Phase"}
+                      zAxisLabel={"Trial Volume"}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+
                   <Row>
                     <Col>
                       <SectionTitle title="Outcomes" color="green" />
@@ -2265,6 +2748,24 @@ function createSunburst(level1, level2, level3, data) {
                       />
                     </Col>
                   </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="Intervention Type vs. Outcome Type"
+                      colors="rainbow"
+                      chartData={outcomesLandscapeChartData}
+                      chartHeight={600}
+                      minNodeSize={outcomesLandscapeMinNodeSize}
+                      maxNodeSize={outcomesLandscapeMaxNodeSize}
+                      xAxisLabel={"Intervention Type"}
+                      yAxisLabel={"Outcomes"}
+                      zAxisLabel={"Trial Volume"}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
                   <Row>
                     <Col>
                       <SectionTitle title="Sponsors" color="blue" />
@@ -2298,10 +2799,57 @@ function createSunburst(level1, level2, level3, data) {
                       />
                     </Col>
                   </Row>
+
+
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="Sponsor Activity Over Time"
+                      colors="rainbow"
+                      chartData={sponsorsLandscapeChartData}
+                      chartHeight={500}
+                      minNodeSize={sponsorsLandscapeMinNodeSize}
+                      maxNodeSize={sponsorsLandscapeMaxNodeSize}
+                      xAxisLabel={"Start Date"}
+                      yAxisLabel={"Sponsor"}
+                      zAxisLabel={"Enrollment"}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+
                   <Row>
                     <Col>
                       <SectionTitle title="Geography" color="indigo" />
                     </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <PrismBarChart
+                        color="indigo"
+                        layout="horizontal"
+                        title="Top 10 Countries"
+                        chartData={countriesTop10BarChartData.data}
+                        groupKeys={countriesTop10BarChartData.group_keys}
+                        indexKey="country"
+                        yAxisLabel=""
+                        xAxisLabel=""
+                        showLegend={false}
+                        loading={loadingSponsorsData}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                  <Col>
+                    <PrismPieChart
+                      colors="indigo"
+                      title="Regions"
+                      chartData={regionsPieChartData}
+                      loading={loadingGeographyData}
+                    />
+                  </Col>
                   </Row>
                   <Row>
                     <Col>
@@ -2313,6 +2861,10 @@ function createSunburst(level1, level2, level3, data) {
                       />
                     </Col>
                   </Row>
+
+
+
+
 
                   <Row>
                     <Col>
