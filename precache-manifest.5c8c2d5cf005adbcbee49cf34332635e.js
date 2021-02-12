@@ -1,27 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "9825ac3966666792978b3285f1f014a7",
+    "revision": "84ea60003469a85afd08728bdf66cb70",
     "url": "/Prism-Generic-Canvas/index.html"
   },
   {
-    "revision": "48bcb9033e52c5dd7b9a",
+    "revision": "ff9ad95470f31909161c",
     "url": "/Prism-Generic-Canvas/static/css/2.880185b9.chunk.css"
   },
   {
-    "revision": "573fbe8578b4841ebc2e",
+    "revision": "bb3084e2745e6094caa5",
     "url": "/Prism-Generic-Canvas/static/css/main.7ce3fbc6.chunk.css"
   },
   {
-    "revision": "48bcb9033e52c5dd7b9a",
-    "url": "/Prism-Generic-Canvas/static/js/2.7df0af3b.chunk.js"
+    "revision": "ff9ad95470f31909161c",
+    "url": "/Prism-Generic-Canvas/static/js/2.10a86fab.chunk.js"
   },
   {
     "revision": "be9391143ee7fe83d537f1c335ccd33b",
-    "url": "/Prism-Generic-Canvas/static/js/2.7df0af3b.chunk.js.LICENSE.txt"
+    "url": "/Prism-Generic-Canvas/static/js/2.10a86fab.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "573fbe8578b4841ebc2e",
-    "url": "/Prism-Generic-Canvas/static/js/main.14d2a134.chunk.js"
+    "revision": "bb3084e2745e6094caa5",
+    "url": "/Prism-Generic-Canvas/static/js/main.f0f83307.chunk.js"
   },
   {
     "revision": "441b07ab7db77c990843",
