@@ -44,7 +44,7 @@ const PrismStaticScatterplot = (props) => {
             data={ props.chartData }
             height={props.chartHeight}
             margin={{ top: 100, right: 140, bottom: 200, left: 200 }}
-            xScale={{ type: props.type, format: props.format, precision: props.precision }}
+            xScale={{ type: props.type, format: props.format, precision: props.precision, min: props.xMin, max: props.xMax  }}
             xFormat={ props.xFormat }
             yScale={{ type: 'point' }}
             blendMode="multiply"

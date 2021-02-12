@@ -1487,9 +1487,10 @@ function createSunburst(level1, level2, level3, data) {
             //statuses.add(record.get('Status'))
             // get all status
             let status = record.get('Status')
-            let allx = String(record.get('Enrollment'))
+            let allx = [record.get('Enrollment')]
             let ally = String(record.get('Phase'))
             // let z = record.get(landscapeZAxis)
+          //  console.log("enrollment: ", allx)
             // if (landscapeZAxis === "Trial Volume") {
             //   z = 1
             // }
@@ -1497,16 +1498,21 @@ function createSunburst(level1, level2, level3, data) {
 
             let y_list = []
             y_list = ally.split(",")
-            let x_list = []
-            x_list = allx.split(",")
+            // let x_list = []
+            //console.log("y list: ", y_list)
+            // x_list = allx.split(",")
 
             // need to do each y with each x
             for (var y of y_list){
               if (y !== ""){
-                for (var x of x_list){
-                  if (x !== "") {
+                for (var x of allx){
+                  // console.log("x: ", x)
+                  // console.log("type: ", typeof(x))
+                  if (typeof(x) === "number") {
+                    //console.log("made it in")
                     data_list.push([status, x, y, z])
-                    let as_string = status + "; " + x + "; " + y
+                    let as_string = status + "; " + String(x) + "; " + y
+                    console.log("As tring: ", as_string)
                     uni.add(as_string)
                   }
                 }
@@ -1532,15 +1538,18 @@ function createSunburst(level1, level2, level3, data) {
             var ids = i.split("; ")
             let z = 0;
             for (var arr of data_list){
-              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+              //console.log("CHECK THIS: ", String(ids[1]), String(arr[1]))
+              if (ids[0] === arr[0] && String(ids[1])===String(arr[1]) && ids[2]===arr[2]){
                 z += arr[3]
               }
             }
             let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            //console.log("ids[1]: ", ids[1])
+            item[ids[0]] = {"x": parseInt(ids[1]), "y": ids[2], "z": z}
 
             new_data_list.push(item)
           }
+          console.log("new_data_list: ", new_data_list)
 
 
           //console.log("data list: ", data_list)
@@ -2853,8 +2862,11 @@ function createSunburst(level1, level2, level3, data) {
                       title="Phase vs. Trial Enrollment"
                       colors="rainbow"
                       chartData={populationsLandscapeChartData}
-                      chartHeight={800}
-                      type={'point'}
+                      chartHeight={600}
+                      type={'linear'}
+                      xMax={1000}
+                      xMin={0}
+                      // type: 'linear', min: 0, max: 'auto'
                       minNodeSize={populationsLandscapeMinNodeSize}
                       maxNodeSize={populationsLandscapeMaxNodeSize}
                       xAxisLabel={"Enrollment"}
