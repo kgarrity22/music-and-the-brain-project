@@ -44,7 +44,8 @@ const PrismStaticScatterplot = (props) => {
             data={ props.chartData }
             height={props.chartHeight}
             margin={{ top: 100, right: 140, bottom: 200, left: 200 }}
-            xScale={{ type: 'point' }}
+            xScale={{ type: props.type, format: props.format, precision: props.precision }}
+            xFormat={ props.xFormat }
             yScale={{ type: 'point' }}
             blendMode="multiply"
             colors={ COLOR_SCHEMES['rainbow'] }
@@ -58,7 +59,10 @@ const PrismStaticScatterplot = (props) => {
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: -45,
-                legend: null
+                legend: null,
+                format: props.axisBottomFormat,
+                tickValues: props.tickValues
+
             }}
             axisLeft={{
                 orient: 'left',

@@ -1363,21 +1363,38 @@ function createSunburst(level1, level2, level3, data) {
             //statuses.add(record.get('Status'))
             // get all status
             let status = record.get('Status')
-            let allx = String(record.get('Start_Year'))
+            let month = String(record.get('Start_Month'))
+            let year = String(record.get('Start_Year'))
+            //console.log("month check: ", month)
+            let date = ''
+            if (month.length === 1){
+              date = year + "-0" + month
+            } else {
+              date = year + "-" + month
+            }
+            //console.log("DATE: ", date)
+            //console.log("date.split(,): ", date.split(","))
+
+            // let allx = date.split(",")
             let ally = String(record.get('Phase'))
+            // console.log("alls: ", allx, ally)
             //let z = record.get('landscapeZAxis')
             let z = 1
 
             let y_list = ally.split(",")
-            let x_list = allx.split(",")
+            let x_list = date.split(",")
 
             // need to do each y with each x
             for (var y of y_list){
+              //console.log("y: ", y)
               if (y !== ""){
                 for (var x of x_list){
+                  //console.log("x: ", x)
                   if (x !== "") {
+
                     data_list.push([status, x, y, z])
                     let as_string = status + "; " + x + "; " + y
+                  //  console.log("as string: ", as_string)
                     uni.add(as_string)
                   }
                 }
@@ -1412,6 +1429,7 @@ function createSunburst(level1, level2, level3, data) {
 
             new_data_list.push(item)
           }
+          console.log("new LIST: ", new_data_list)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1444,7 +1462,7 @@ function createSunburst(level1, level2, level3, data) {
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
-          console.log("landscape res; ", landscape_result)
+          console.log("LANDscape RESul; ", landscape_result)
           resolve(landscape_result)
 
         })
@@ -1584,6 +1602,7 @@ function createSunburst(level1, level2, level3, data) {
             //statuses.add(record.get('Status'))
             // get all status
             let status = record.get('Status')
+
             let allx = String(record.get('Intervention_Types'))
             let ally = String(record.get('Phase'))
             let z = 1
@@ -1796,13 +1815,25 @@ function createSunburst(level1, level2, level3, data) {
             //statuses.add(record.get('Status'))
             // get all status
             let status = record.get('Status')
-            let allx = String(record.get('Start_Year'))
+            let month = String(record.get('Start_Month'))
+            let year = String(record.get('Start_Year'))
+            //console.log("month check: ", month)
+            let date = ''
+            if (month.length === 1){
+              date = year + "-0" + month
+            } else {
+              date = year + "-" + month
+            }
+
+            // let allx = date.split(",")
+
+
             let ally = String(record.get('Sponsor'))
             pie_collection(sponsors_dict, ally)
             let z = record.get("Enrollment")
 
             let y_list = ally.split(",")
-            let x_list = allx.split(",")
+            let x_list = date.split(",")
 
             // need to do each y with each x
             for (var y of y_list){
@@ -1903,7 +1934,7 @@ function createSunburst(level1, level2, level3, data) {
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
-          console.log("Sponsors: ", all_data)
+          console.log("SPONSORS LANDSCAPE: ", all_data)
           resolve(landscape_result)
 
         })
@@ -2155,7 +2186,7 @@ function createSunburst(level1, level2, level3, data) {
   let interventions_area_bump = []
   let interventions_area_unique = new Set()
   let intervention_area_dict = {}
-  let int_years = new Set()
+  let int_dates = new Set()
   // var interventions_bar_formatted = {}
   var interventions_result = {}
   // Get Intervention data from airtable
@@ -2170,7 +2201,14 @@ function createSunburst(level1, level2, level3, data) {
 
           records.forEach(function(record) {
             let year = String(record.get("Start_Year"))
-            int_years.add(year)
+            let month = String(record.get("Start_Month"))
+            let date = ""
+            if (month.length === 1){
+              date = year + "-" + "0" + month
+            } else {
+              date = year + "-" + month
+            }
+            int_dates.add(year)
 
             var interventions = record.get('Intervention_Types').split(", ")
             for (var item of interventions){
@@ -2192,7 +2230,7 @@ function createSunburst(level1, level2, level3, data) {
             console.error(err);
             return reject({});
           }
-          areaBumpFormatting(intervention_area_dict, [...interventions_area_unique].sort(), interventions_areabump_result, int_years)
+          areaBumpFormatting(intervention_area_dict, [...interventions_area_unique].sort(), interventions_areabump_result, int_dates)
           // console.log("AREA BUMP CHECK: ", outcome_areabump_result)
           pie_formatting(interventions_types_dict, intervention_types_pie)
           pie_formatting(interventions_arms_dict, intervention_arms_pie)
@@ -2750,6 +2788,11 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
                       chartHeight={500}
+                      type={'time'}
+                      format={'%Y-%m'}
+                      precision={'month'}
+                      axisBottomFormat={'%Y'}
+                      tickValues={'every 1 year'}
                       minNodeSize={trialsLandscapeMinNodeSize}
                       maxNodeSize={trialsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
@@ -2811,6 +2854,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={populationsLandscapeChartData}
                       chartHeight={800}
+                      type={'point'}
                       minNodeSize={populationsLandscapeMinNodeSize}
                       maxNodeSize={populationsLandscapeMaxNodeSize}
                       xAxisLabel={"Enrollment"}
@@ -2872,6 +2916,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="yellow"
                       chartData={interventionsLandscapeChartData}
                       chartHeight={500}
+                      type={"point"}
                       minNodeSize={interventionsLandscapeMinNodeSize}
                       maxNodeSize={interventionsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
@@ -2935,6 +2980,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="green"
                       chartData={outcomesLandscapeChartData}
                       chartHeight={1000}
+                      type={"point"}
                       minNodeSize={outcomesLandscapeMinNodeSize}
                       maxNodeSize={outcomesLandscapeMaxNodeSize}
                       xAxisLabel={"Intervention Type"}
@@ -2993,6 +3039,12 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={sponsorsLandscapeChartData}
                       chartHeight={900}
+                      type={'time'}
+                      format={'%Y-%m'}
+                      precision={'month'}
+                      xFormat="time:%Y-%m"
+                      axisBottomFormat={'%Y'}
+                      tickValues={'every 1 year'}
                       minNodeSize={sponsorsLandscapeMinNodeSize}
                       maxNodeSize={sponsorsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
