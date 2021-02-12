@@ -968,7 +968,7 @@ function createSunburst(level1, level2, level3, data) {
       new_list.push(area_formatted)
       // console.log("new list: ", new_list)
     }
-    // console.log("new List: ", new_list)
+    //console.log("new List: ", new_list)
 
   }
 
@@ -2071,7 +2071,8 @@ function createSunburst(level1, level2, level3, data) {
                 }
               }
             } else {
-
+              pie_collection(outcome_area_dict, outcome + ": " + String(year))
+              outcome_area_unique.add(outcome)
               pie_collection(outcomes_dict, outcome)
             }
 
@@ -2107,18 +2108,23 @@ function createSunburst(level1, level2, level3, data) {
           });
 
           var updated_outcomes_dict = {}
+          let updated = []
           for (var item of items.slice(0, 10)){
             updated_outcomes_dict[item[0]] = item[1]
           }
+          for (var item of items.slice(0, 20)){
+            updated.push(item[0])
+          }
 
-          areaBumpFormatting(outcome_area_dict, [...outcome_area_unique].sort(), outcome_areabump_result, years)
-          //console.log("AREA BUMP CHECK: ", outcome_areabump_result)
+          console.log('updated:', updated_outcomes_dict)
+
+          areaBumpFormatting(outcome_area_dict, updated, outcome_areabump_result, years)
           pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
           bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
           outcomes_result["outcome_bar"] = outcomes_bar_formatted
           outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
           outcomes_result["area_bump"] = outcome_areabump_result
-          //console.log("OUTCOME data: ", outcomes_bar_formatted)
+          console.log("OUTCOME data: ", outcome_areabump_result)
 
           resolve(outcomes_result)
 
