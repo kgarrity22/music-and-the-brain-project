@@ -1488,6 +1488,9 @@ function createSunburst(level1, level2, level3, data) {
             // get all status
             let status = record.get('Status')
             let allx = [record.get('Enrollment')]
+            if (allx[0]>10000){
+              allx[0] = "10000+"
+            }
             let ally = String(record.get('Phase'))
             // let z = record.get(landscapeZAxis)
           //  console.log("enrollment: ", allx)
@@ -1512,7 +1515,7 @@ function createSunburst(level1, level2, level3, data) {
                     //console.log("made it in")
                     data_list.push([status, x, y, z])
                     let as_string = status + "; " + String(x) + "; " + y
-                    console.log("As tring: ", as_string)
+                    //console.log("As tring: ", as_string)
                     uni.add(as_string)
                   }
                 }
@@ -1549,7 +1552,7 @@ function createSunburst(level1, level2, level3, data) {
 
             new_data_list.push(item)
           }
-          console.log("new_data_list: ", new_data_list)
+          //console.log("new_data_list: ", new_data_list)
 
 
           //console.log("data list: ", data_list)
@@ -1849,8 +1852,8 @@ function createSunburst(level1, level2, level3, data) {
               if (y !== ""){
                 for (var x of x_list){
                   if (x !== "") {
-                    data_list.push([status, x, y, z])
-                    let as_string = status + "; " + x + "; " + y
+                    data_list.push([y, x, status, z])
+                    let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
                   }
                 }
@@ -1878,15 +1881,20 @@ function createSunburst(level1, level2, level3, data) {
           });
 
           var updated_sponsors_dict = {}
+          //console.log("items to sort: ", items.slice(0, 20).sort())
+
           for (var item of items.slice(0, 20)){
             updated_sponsors_dict[item[0]] = item[1]
           }
+          //console.log("updated sponsors: ", updated_sponsors_dict)
 
           let new_data_list = []
           let clean_data = {}
           let zs = []
           //console.log("Ys: ", ys)
-          for (var i of uni){
+          let sorted = [...uni].sort()
+          console.log("UNI: ", sorted)
+          for (var i of sorted){
 
             var ids = i.split("; ")
             let z = 0;
@@ -1897,8 +1905,8 @@ function createSunburst(level1, level2, level3, data) {
             }
             let item = {}
             // console.log("IDS2: ", ids[2])
-            if (Object.keys(updated_sponsors_dict).indexOf(ids[2])!==-1){
-              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            if (Object.keys(updated_sponsors_dict).indexOf(ids[0])!==-1){
+              item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z}
               new_data_list.push(item)
             }
 
@@ -1911,7 +1919,7 @@ function createSunburst(level1, level2, level3, data) {
             //console.log("first.keyname1, first.keyname2: ", first[keyname1].x, second[keyname2].x)
             return second[keyname2] - first[keyname1];
           });
-          console.log("NEW DATA LIST: ", new_data_list)
+          //console.log("NEW DATA LIST: ", new_data_list)
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
             let val = Object.values(j)
@@ -2864,7 +2872,7 @@ function createSunburst(level1, level2, level3, data) {
                       chartData={populationsLandscapeChartData}
                       chartHeight={600}
                       type={'linear'}
-                      xMax={1000}
+                      xMax={'auto'}
                       xMin={0}
                       // type: 'linear', min: 0, max: 'auto'
                       minNodeSize={populationsLandscapeMinNodeSize}
