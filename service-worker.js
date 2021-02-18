@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/Prism-Generic-Canvas/precache-manifest.5c8c2d5cf005adbcbee49cf34332635e.js"
+  "/Prism-Generic-Canvas/precache-manifest.eb2ce55ba9fe85badd5c9d26dc340b08.js"
 );
 
 self.addEventListener('message', (event) => {
