@@ -1625,8 +1625,12 @@ function createSunburst(level1, level2, level3, data) {
             // need to do each y with each x
             for (var y of y_list){
               if (y !== ""){
+                if (y === "N/A"){
+                  y = " N/A"
+                }
                 for (var x of x_list){
                   if (x !== "") {
+
                     data_list.push([y, x, status, z])
                     let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
@@ -1648,6 +1652,19 @@ function createSunburst(level1, level2, level3, data) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
+
+          let xs = ["Behavioral", "Device", "Diagnostic Test", "Other", "Procedure"]
+
+          for (let i = 0; i < ys.size; i++){
+            let item = {}
+            if (i < 5){
+              item["Completed"] = {"x": xs[i], "y": [...ys].sort().reverse()[i], "z": 0}
+              new_data_list.push(item)
+            } else {
+              item["Completed"] = {"x": xs[0], "y": [...ys].sort().reverse()[i], "z": 0}
+              new_data_list.push(item)
+            }
+          }
 
 
           //console.log("Ys: ", ys)
@@ -1744,6 +1761,7 @@ function createSunburst(level1, level2, level3, data) {
                     if (y[0]===" "){
                       y = y.slice(1, y.length)
                     }
+
                     data_list.push([y, x, status, z])
                     let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
@@ -1779,7 +1797,7 @@ function createSunburst(level1, level2, level3, data) {
             }
           }
 
-          console.log("OUTCOMES: ", [...uni].sort())
+          //console.log("OUTCOMES: ", [...uni].sort())
           for (var i of [...uni].sort()){
 
             var ids = i.split("; ")
