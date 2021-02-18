@@ -43,7 +43,7 @@ const PrismStaticScatterplot = (props) => {
           <ResponsiveScatterPlot
             data={ props.chartData }
             height={props.chartHeight}
-            margin={{ top: 100, right: 140, bottom: 200, left: 200 }}
+            margin={{ top: 100, right: 140, bottom: 200, left: 230 }}
             xScale={{ type: props.type, format: props.format, precision: props.precision, min: props.xMin, max: props.xMax  }}
             xFormat={ props.xFormat }
             yScale={{ type: 'point' }}
@@ -51,6 +51,8 @@ const PrismStaticScatterplot = (props) => {
             colors={ COLOR_SCHEMES['rainbow'] }
             nodeSize={{ key: 'z', values: [props.minNodeSize, props.maxNodeSize], sizes: [10, 150] }}
             tooltip={ (e) => <ChartTooltip text={e.node.data.y} value={e.node.data.z} /> }
+            gridXValues={ props.xVals }
+            gridYValues={ props.yVals }
             animate={ false }
             axisTop={ null }
             axisRight={ null }

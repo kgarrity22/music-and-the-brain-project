@@ -327,7 +327,7 @@ function createSunburst(level1, level2, level3, data) {
     var rollupdata = d3.rollup(data, g => g.length, d => d[level1], d => d[level2], d => d[level3])
   }
 
-  console.log("Rollup: ", rollupdata)
+  //console.log("Rollup: ", rollupdata)
   // now take this and reformat it for as arrays rather than maps
   let wholedata = []
 
@@ -360,7 +360,7 @@ function createSunburst(level1, level2, level3, data) {
   let sunburst_data = {}
   sunburst_data["name"] = "data"
   sunburst_data["children"] = wholedata
-  console.log("SUNBURST DATA: ", sunburst_data)
+  //console.log("SUNBURST DATA: ", sunburst_data)
   return sunburst_data
 }
 
@@ -869,6 +869,7 @@ function createSunburst(level1, level2, level3, data) {
   const [populationsLandscapeMaxNodeSize, setPopulationsLandscapeMaxNodeSize] = useState(1)
   const [interventionsLandscapeMinNodeSize, setInterventionsLandscapeMinNodeSize] = useState(0)
   const [interventionsLandscapeMaxNodeSize, setInterventionsLandscapeMaxNodeSize] = useState(1)
+  const [interventionsYs, setInterventionsYs] = useState([])
   const [outcomesLandscapeMinNodeSize, setOutcomesLandscapeMinNodeSize] = useState(0)
   const [outcomesLandscapeMaxNodeSize, setOutcomesLandscapeMaxNodeSize] = useState(1)
   const [sponsorsLandscapeMinNodeSize, setSponsorsLandscapeMinNodeSize] = useState(0)
@@ -1055,7 +1056,7 @@ function createSunburst(level1, level2, level3, data) {
               }
 
               // alldata = table_data
-              console.log("ALL data: ", alldata)
+              //console.log("ALL data: ", alldata)
 
 
               var tabledata = {}
@@ -1429,7 +1430,7 @@ function createSunburst(level1, level2, level3, data) {
 
             new_data_list.push(item)
           }
-          console.log("new LIST: ", new_data_list)
+          //console.log("new LIST: ", new_data_list)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1626,8 +1627,8 @@ function createSunburst(level1, level2, level3, data) {
               if (y !== ""){
                 for (var x of x_list){
                   if (x !== "") {
-                    data_list.push([status, x, y, z])
-                    let as_string = status + "; " + x + "; " + y
+                    data_list.push([y, x, status, z])
+                    let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
                   }
                 }
@@ -1647,8 +1648,10 @@ function createSunburst(level1, level2, level3, data) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
+
+
           //console.log("Ys: ", ys)
-          for (var i of uni){
+          for (var i of [...uni].sort()){
 
             var ids = i.split("; ")
             let z = 0;
@@ -1658,7 +1661,7 @@ function createSunburst(level1, level2, level3, data) {
               }
             }
             let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z}
 
             new_data_list.push(item)
           }
@@ -1689,11 +1692,18 @@ function createSunburst(level1, level2, level3, data) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
+
+          all_data.sort(function(first, second) {
+            return second.data.length - first.data.length;
+          });
           // setLandscapeChartHeight(ys.size * 50 + 300)
+
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
+          landscape_result["ys"] = [...ys].sort()
+          console.log("INTERventions LAnd: ", landscape_result)
           resolve(landscape_result)
 
         })
@@ -1731,8 +1741,11 @@ function createSunburst(level1, level2, level3, data) {
               if (y !== ""){
                 for (var x of x_list){
                   if (x !== "") {
-                    data_list.push([status, x, y, z])
-                    let as_string = status + "; " + x + "; " + y
+                    if (y[0]===" "){
+                      y = y.slice(1, y.length)
+                    }
+                    data_list.push([y, x, status, z])
+                    let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
                   }
                 }
@@ -1753,7 +1766,21 @@ function createSunburst(level1, level2, level3, data) {
           let clean_data = {}
           let zs = []
           //console.log("Ys: ", ys)
-          for (var i of uni){
+          let xs = ["Behavioral", "Device", "Diagnostic Test", "Other", "Procedure"]
+
+          for (let i = 0; i < ys.size; i++){
+            let item = {}
+            if (i < 5){
+              item["Completed"] = {"x": xs[i], "y": [...ys].sort()[i], "z": 0}
+              new_data_list.push(item)
+            } else {
+              item["Completed"] = {"x": xs[0], "y": [...ys].sort()[i], "z": 0}
+              new_data_list.push(item)
+            }
+          }
+
+          console.log("OUTCOMES: ", [...uni].sort())
+          for (var i of [...uni].sort()){
 
             var ids = i.split("; ")
             let z = 0;
@@ -1763,7 +1790,7 @@ function createSunburst(level1, level2, level3, data) {
               }
             }
             let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z}
 
             new_data_list.push(item)
           }
@@ -1785,7 +1812,7 @@ function createSunburst(level1, level2, level3, data) {
           }
           //console.log("zs: ", zs)
 
-          //console.log("clean data: ", clean_data)
+          console.log("clean data: ", clean_data)
           var all_data=[]
           for (var item of Object.keys(clean_data)){
             var cleaned = {}
@@ -1794,13 +1821,23 @@ function createSunburst(level1, level2, level3, data) {
             all_data.push(cleaned)
           }
           // setLandscapeChartHeight(ys.size * 50 + 300)
+          //console.log("OUTCOMES LAND: ", alldata)
+          //console.log("landsape all data: ", all_data)
 
+          // Sort the array based on the second element
+          // items.sort(function(first, second) {
+          //   return second[1] - first[1];
+          // });
+          all_data.sort(function(first, second) {
+            return second.data.length - first.data.length;
+          });
 
 
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           landscape_result["min"] = Math.min(...zs)
+          console.log("outcome landscape res: ", landscape_result)
 
 
           resolve(landscape_result)
@@ -1893,7 +1930,7 @@ function createSunburst(level1, level2, level3, data) {
           let zs = []
           //console.log("Ys: ", ys)
           let sorted = [...uni].sort()
-          console.log("UNI: ", sorted)
+          //console.log("UNI: ", sorted)
           for (var i of sorted){
 
             var ids = i.split("; ")
@@ -1981,6 +2018,7 @@ function createSunburst(level1, level2, level3, data) {
     setInterventionsLandscapeChartData(interventions.data);
     setInterventionsLandscapeMinNodeSize(interventions.min);
     setInterventionsLandscapeMaxNodeSize(interventions.max);
+    setInterventionsYs(interventions.ys)
 
     setOutcomesLandscapeChartData(outcomes.data);
     setOutcomesLandscapeMinNodeSize(outcomes.min);
@@ -2107,7 +2145,7 @@ function createSunburst(level1, level2, level3, data) {
             if (typeof(outcome)==='object'){
               for (var item of outcome){
                 if (item === null){
-                  console.log()
+                  //console.log()
                 } else {
                   var itemlist = item.split(", ")
                   for (var j of itemlist){
@@ -2164,7 +2202,7 @@ function createSunburst(level1, level2, level3, data) {
             updated.push(item[0])
           }
 
-          console.log('updated:', updated_outcomes_dict)
+          //console.log('updated:', updated_outcomes_dict)
 
           areaBumpFormatting(outcome_area_dict, updated, outcome_areabump_result, years)
           pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
@@ -2172,7 +2210,7 @@ function createSunburst(level1, level2, level3, data) {
           outcomes_result["outcome_bar"] = outcomes_bar_formatted
           outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
           outcomes_result["area_bump"] = outcome_areabump_result
-          console.log("OUTCOME data: ", outcome_areabump_result)
+          //console.log("OUTCOME data: ", outcome_areabump_result)
 
           resolve(outcomes_result)
 
@@ -2456,7 +2494,7 @@ function createSunburst(level1, level2, level3, data) {
     setGeographyFacilitiesChartData(result.map);
     setRegionsPieChartData(result.regions_pie)
     setCountriesTop10BarChartData(result.countries_bar)
-    console.log("BAR: ", result.countries_bar)
+    //console.log("BAR: ", result.countries_bar)
 
     setLoadingGeographyData(false)
   }
@@ -2874,6 +2912,8 @@ function createSunburst(level1, level2, level3, data) {
                       type={'linear'}
                       xMax={'auto'}
                       xMin={0}
+                      xVals={["Behavioral", "Device", "Diagnostic Test", "Other", "Procedure"]}
+                      yVals={["Early Phase 1", "Phase 1", "Phase 1/Phase 2", "Phase 2", "Phase2/Phase3", "Phase 3", "Phase 4", "N/A"]}
                       // type: 'linear', min: 0, max: 'auto'
                       minNodeSize={populationsLandscapeMinNodeSize}
                       maxNodeSize={populationsLandscapeMaxNodeSize}
@@ -2941,6 +2981,8 @@ function createSunburst(level1, level2, level3, data) {
                       maxNodeSize={interventionsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
                       yAxisLabel={"Phase"}
+
+                      yVals={interventionsYs}
                       zAxisLabel={"Trial Volume"}
                       loading={loadingLandscapeData}
                     />
