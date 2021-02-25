@@ -494,9 +494,9 @@ function createSunburst(level1, level2, level3, data) {
           create_filter_dict([...type_set].sort(), unique_type)
 
 
-
-          trials_filts["Design"] = unique_type;
           trials_filts["Comparator"] = unique_status;
+          trials_filts["Design"] = unique_type;
+
 
 
           // POPULATIONS
@@ -504,10 +504,11 @@ function createSunburst(level1, level2, level3, data) {
           create_filter_dict([...healthyVolunteers_set].sort(), unique_healthyVolunteers)
           create_filter_dict([...singleMultiSite_set].sort(), unique_singleMultiSite)
 
-
-          populations_filts["Race/Ethnicity"] = unique_ageGroups;
-          populations_filts["Gender"] = unique_healthyVolunteers;
           populations_filts["Broad Categories"] = unique_singleMultiSite;
+          populations_filts["Gender"] = unique_healthyVolunteers;
+          populations_filts["Race/Ethnicity"] = unique_ageGroups;
+
+
 
 
 
