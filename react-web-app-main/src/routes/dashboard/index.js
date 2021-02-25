@@ -137,7 +137,7 @@ function DashboardRoute(props) {
               } else if (sub_section === "Intervention Type"){
                 var new_dict = {"Intervention_Type": key}
                 store.push(new_dict)
-              } else if (sub_section === "Study Population"){
+              } else if (sub_section === "Broad Categories"){
                 var new_dict = {"Study_Pop_Stnd": key}
                 store.push(new_dict)
               } else if (sub_section === "Activity Type"){
@@ -507,7 +507,7 @@ function createSunburst(level1, level2, level3, data) {
 
           populations_filts["Race/Ethnicity"] = unique_ageGroups;
           populations_filts["Gender"] = unique_healthyVolunteers;
-          populations_filts["Study Population"] = unique_singleMultiSite;
+          populations_filts["Broad Categories"] = unique_singleMultiSite;
 
 
 
