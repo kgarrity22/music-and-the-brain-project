@@ -732,8 +732,6 @@ function createSunburst(level1, level2, level3, data) {
     const result = await getairtable()
     console.log("***FILTERS****: ", result)
 
-
-
     setTrialsFilters(result.trials)
     setInterventionsFilters(result.interventions)
     setOutcomesFilters(result.outcomes)
@@ -1422,7 +1420,9 @@ function createSunburst(level1, level2, level3, data) {
           // console.log("CHECK THIS DATA: ", all_data)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
-          landscape_result["min"] = Math.min(...zs)
+          let filtered = zs.filter(item => item !== 0)
+          console.log("filtered: ", filtered)
+          landscape_result["min"] = Math.min(...filtered)
           console.log("LANDscape RESul; ", landscape_result)
           resolve(landscape_result)
 
@@ -1538,7 +1538,9 @@ function createSunburst(level1, level2, level3, data) {
           // console.log("CHECK THIS DATA: ", all_data)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
-          landscape_result["min"] = Math.min(...zs)
+          let filtered = zs.filter(item => item !== 0)
+          console.log("filtered: ", filtered)
+          landscape_result["min"] = Math.min(...filtered)
           resolve(landscape_result)
 
         })
@@ -1669,7 +1671,9 @@ function createSunburst(level1, level2, level3, data) {
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
-          landscape_result["min"] = Math.min(...zs)
+          let filtered = zs.filter(item => item !== 0)
+          console.log("filtered: ", filtered)
+          landscape_result["min"] = Math.min(...filtered)
           landscape_result["ys"] = [...ys].sort()
           console.log("INTERventions LAnd: ", landscape_result)
           resolve(landscape_result)
@@ -1810,8 +1814,9 @@ function createSunburst(level1, level2, level3, data) {
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
-
-          landscape_result["min"] = Math.min(...zs)
+          let filtered = zs.filter(item => item !== 0)
+          console.log("filtered: ", filtered)
+          landscape_result["min"] = Math.min(...filtered)
 
           console.log("outcome landscape res: ", landscape_result)
 
@@ -1964,7 +1969,9 @@ function createSunburst(level1, level2, level3, data) {
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
-          landscape_result["min"] = Math.min(...zs)
+          let filtered = zs.filter(item => item !== 0)
+          console.log("filtered: ", filtered)
+          landscape_result["min"] = Math.min(...filtered)
           console.log("SPONSORS LANDSCAPE: ", all_data)
           resolve(landscape_result)
 
@@ -2725,9 +2732,6 @@ function createSunburst(level1, level2, level3, data) {
 
               <Row className="dashboard-charts-container">
                 <Col>
-
-
-
 
                   <Row className="first-block">
                   <Col>
