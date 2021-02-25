@@ -26,11 +26,13 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "d3": "^6.5.0",
+
     "direction": "^1.0.4",
     "marked": "^1.2.7",
     "material-table": "^1.69.2",
     "mdbreact": "^5.0.1",
     "mobx-react": "^7.0.5",
+    "nivo": "^0.31.0",
     "package.json": "^2.0.1",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.0",

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Redirect, withRouter } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap'
-import axios from 'axios';
 import { Auth } from 'aws-amplify';
 import * as d3 from 'd3'
 
-import CsvDownloader from 'react-csv-downloader';
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -19,6 +17,7 @@ import PrismPieChart from './components/pie-chart'
 import PrismAreaBump from './components/area-bump'
 import PrismLineChart from './components/line-chart'
 import PrismBarChart from './components/bar-chart'
+import PrismAreaBump from './components/area-bump'
 import PrismSunburst from './components/sunburst-chart'
 import PrismScatterplot from './components/scatterplot'
 import PrismStaticScatterplot from './components/scatterplot-static'
@@ -75,9 +74,6 @@ const initialStats = [
 
 
 
-
-
-
 function DashboardRoute(props) {
   //console.log("is this legal?")
 
@@ -95,25 +91,225 @@ function DashboardRoute(props) {
     getCurrentAuthenticatedUser()
   }, [currentUser])
 
+
   const [airtableFilters, setAirtableFilters] = useState("")
 
 
   const [updateRequested, setUpdatedRequested] = useState("")
-  // sets filters
+
+  // Handles The Update Button
   const onUpdateButtonClicked = (e) => {
-    //console.log(e)
+
     setUpdatedRequested(Date())
     closeSidebar()
-    console.log("Filters?", generateFiltersPostBody())
-    var filters_list = getAirtableFilters()
-    var filts_final = formatFiltersForAirtable(filters_list)
 
+    let filters_list = getAirtableFilters()
+    let filts_final = formatFiltersForAirtable(filters_list)
     setAirtableFilters(filts_final)
 
 
   }
 
+  // Dictionary responsible for normalizing names - airtable key is the value and regular text name is the key
+  const dropdownItems = {
+    "Start Year": "Start_Year",
+    "Age Groups": "Age_Groups",
+    "Sponsors": "Sponsor",
+    "Sponsor Types": "Sponsor_Type",
+    "Study Types": "Study_Type",
+    "Outcomes": "Outcome_Concepts",
+    "Settings": "Facility_Settings",
+    "Regions": "Geography_Regions",
+    "Interventions": "Intervention_Types",
+    "Type": "Study_Type",
+    "Masking": "Masking_Clean",
+    "Single/Multi Site": "Single_Multi_Site",
+    "Healthy Volunteers": "Healthy_Volunteers",
+    "Target Enrollment": "Enrollment_Target",
+    "Randomization": "Randomization",
+    "Phase": "Phase",
+    "Status": "Status",
+    "Purpose": "Purpose"
+  }
 
+
+
+
+
+
+  const [trialsFilters, setTrialsFilters] = useState({})
+  const [populationFilters, setPopulationFilters] = useState({})
+  const [interventionsFilters, setInterventionsFilters] = useState({})
+  const [outcomesFilters, setOutcomesFilters] = useState({})
+  const [sponsorsFilters, setSponsorsFilters] = useState({})
+  const [geographyFilters, setGeographyFilters] = useState({})
+  const [initialFilterLoadComplete, setInitialFilterLoadComplete] = useState(false)
+
+
+  var Airtable = require('airtable');
+  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+
+
+////////////////////////////////////////////////////////////////////////
+
+// HELPER FUNCTION SECTION
+
+//////////////////////////////////////////////////////////////////////
+
+  // funtion that sums the values of a list
+  function sum(list1){
+    const total = list1.reduce(
+        (previousScore, currentScore, index)=>previousScore+currentScore,
+        0);
+        //console.log(total);
+      return total;
+  }
+
+  // takes a full dictionary and an empty dictionary and sorts the full one into the empty one
+  function sortDictionary(dictionary, new_dict){
+    var items = Object.keys(dictionary).map(function(key) {
+      return [key, dictionary[key]];
+    });
+
+    items.sort();
+
+    for (var item of items){
+      new_dict[item[0]] = item[1]
+    }
+  }
+
+  // formats a dictionary correctly for the filters
+  function create_filter_dict(set, unique_dict){
+    for (var i of set) {
+        i = String(i)
+        unique_dict[i] = true;
+    }
+  }
+
+  // bascially an accumulator where 'dictionary' holds the key 'key' and the value is the occurences of key
+  function countOccurrences(dictionary, key){
+    if(key in dictionary){
+      dictionary[key]+=1;
+    } else {
+      dictionary[key] = 1
+    }
+  }
+
+  // helper that formats a dictionary for a pie chart
+  function pieFormatting(dictionary, pie_data){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["id"] = keys[i];
+      new_dict["label"] = keys[i];
+      new_dict["value"] = value[i];
+      pie_data.push(new_dict)
+    }
+  }
+
+  // this creates the data for a bar chart given a dictionary of name and number
+  function barFormatting(dictionary, bar_data, bar_formatted, bar_type){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict[[bar_type]] = keys[i];
+      new_dict[[keys[i]]] = value[i];
+      bar_data.push(new_dict)
+    }
+
+    bar_formatted["data"] = bar_data;
+    bar_formatted["group_keys"] = keys
+  }
+
+  function getAllYears(data){
+    let unique_years = new Set()
+    for (let record of data){
+      unique_years.add(parseInt(record["Start_Year"]))
+    }
+    let all_years = []
+    let years_list = [...unique_years].sort()
+    // get max and min
+    let min = years_list[0]
+    let max = years_list[years_list.length-1]
+
+    for (let i = min; i <= max; i++) {
+        all_years.push(i);
+    }
+    console.log("ALL YEarRS: ", all_years)
+    return all_years
+  }
+
+  function lineFormatting(dictionary, line_data, line_formatted){
+    var keys = Object.keys(dictionary);
+    console.log("keys: ", keys.sort())
+    let value = Object.values(dictionary)
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["x"] = keys[i];
+      new_dict["y"] = value[i];
+      line_data.push(new_dict)
+    }
+    line_formatted["id"] = 0;
+    line_formatted["data"] = line_data;
+  }
+
+  function areaBumpFormatting(dictionary, years, idInput) {
+    let area_formatted = {}
+    let area_list = []
+    //console.log("YEARS: ", years)
+    console.log("Dictionary Keys: ", Object.keys(dictionary))
+    for (let year of years){
+      let new_dict = {}
+      new_dict["x"] = year
+      if (Object.keys(dictionary).includes(String(year))){
+        new_dict["y"] = dictionary[year]
+      } else {
+        new_dict["y"] = 0
+      }
+      area_list.push(new_dict)
+    }
+    area_formatted["id"] = idInput
+    area_formatted["data"] = area_list
+    return area_formatted
+  }
+
+  function geogFormatting(dictionary, geog_data){
+    var keys = Object.keys(dictionary);
+    var value = Object.values(dictionary);
+    for (var i=0; i<keys.length; i++){
+      var new_dict = {};
+      new_dict["id"] = keys[i];
+      new_dict["value"] = value[i];
+      geog_data.push(new_dict)
+    }
+  }
+
+  // helper function to get the value related to a specified key
+  function getVal(dictionary, key){
+    return dictionary[key];
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////
+
+  // FILTER HANDLING SECTION
+
+  //////////////////////////////////////////////////////////////////////
+
+  // to add new filters
+  const all_filters = {
+    "Trials": ['Masking_Clean', 'Phase', 'Purpose', 'Randomization', 'Status',  'Study_Type'],
+    "Populations": ['Age_Groups', "Enrollment_Target", "Facility_Settings", 'Healthy_Volunteers', 'Single_Multi_Site'],
+    "Interventions": ["Intervention_Types"],
+    "Outcomes": ['Outcome_Concepts'],
+    "Sponsors": ['Sponsor_Type'],
+    "Geography": ["Geography_Regions"]
+  }
+
+  // this creates and returns a dictionary list of dictionaries
+  // there is one dictionary for every checkbox that has been unchecked
   function getAirtableFilters(){
     console.log("getAirtableFilters")
     var filter_dict = generateFiltersPostBody()
@@ -131,41 +327,14 @@ function DashboardRoute(props) {
 
             if (filter_dict[section][sub_section][key] === false) {
 
-              if (sub_section === "Type") {
-                var new_dict = {"Study_Type": key}
-                store.push(new_dict)
-              } else if (sub_section === "Age Groups"){
-                var new_dict = {"Age_Groups": key}
-                store.push(new_dict)
-              } else if (sub_section === "Masking"){
-                var new_dict = {"Masking_Clean": key}
-                store.push(new_dict)
-              } else if (sub_section === "Healthy Volunteers"){
-                var new_dict = {"Healthy_Volunteers": key}
-                store.push(new_dict)
-              } else if (sub_section === "Single/Multi Site"){
-                var new_dict = {"Single_Multi_Site": key}
-                store.push(new_dict)
-              } else if (sub_section === "Target Enrollment"){
-                var new_dict = {"Enrollment_Target": key}
-                store.push(new_dict)
-              } else if (sub_section === "Settings"){
-                var new_dict = {"Facility_Settings": key}
-                store.push(new_dict)
-              } else if (sub_section === "Interventions"){
-                var new_dict = {"Intervention_Types": key}
-                store.push(new_dict)
-              } else if (sub_section === "Outcomes"){
-                var new_dict = {"Outcome_Concepts": key}
-                store.push(new_dict)
-              } else if (sub_section === "Sponsors"){
-                var new_dict = {"Sponsor_Type": key}
+              if (sub_section === "Sponsors"){
+                let new_dict = {"Sponsor_Type": key}
                 store.push(new_dict)
               } else if (section === "Geography"){
-                var new_dict = {"Geography_Countries": key}
+                let new_dict = {"Geography_Countries": key}
                 store.push(new_dict)
               } else {
-                var new_dict = {[sub_section]: key}
+                let new_dict = {[dropdownItems[sub_section]]: key}
                 store.push(new_dict)
               }
             }
@@ -173,10 +342,11 @@ function DashboardRoute(props) {
       }
     }
 
-    console.log("filters that have been stored: ", store)
+    //console.log("filters that have been stored: ", store)
     return store
   }
-//var filters = "NOT(OR({Phase} = 'Phase 1'))"
+
+
 // formats the filter string to give airtable the filterbyformula
   function formatFiltersForAirtable(filter_list){
     console.log("formatFiltersForAirtable")
@@ -219,6 +389,8 @@ function DashboardRoute(props) {
   }
 
 
+  // creating a single function to help make creating dynamic filters much simpler
+  // TODO: need to put in conditions to handle geography
 
   const [trialsFilters, setTrialsFilters] = useState({})
   const [populationFilters, setPopulationFilters] = useState({})
@@ -686,8 +858,10 @@ function createSunburst(level1, level2, level3, data) {
   //   return pie
   // }
 
+
   // CREATE LINE CHART
-  function createLineChart(airtable_xAxis, airtable_yAxis, data){
+  // airtable x axis is the column name of whatever you want the xaxis to be, data is the whole data set after filtering
+  function createLineChart(airtable_xAxis, data){
     var line_obj = {};
     for (var record of data){
       let value = getVal(record, airtable_xAxis)
@@ -695,15 +869,17 @@ function createSunburst(level1, level2, level3, data) {
     }
     let line_list = [];
     let line_formatted = {};
-    line_formatting(line_obj, line_list, line_formatted)
-    line_formatted.id = airtable_yAxis
-
-    return line_formatted
+    lineFormatting(line_obj, line_list, line_formatted)
+    line_formatted.id = 0
+    //console.log('LINE FORMATTED: ', line_formatted)
+    console.log("Line Formatted: ", [line_formatted])
+    return [line_formatted]
   }
 
-  // numbars is if you want top 10 bars or all bars or top 20 bars etc
-  // indexKey - this is bar of the props of the bar charts
-
+  // CREATE BAR CHART
+  // airtable name is the column name in airtable of the data you want the pie chart to show
+  // numBars is the number of bars you want (i.e. 10 will give you top 10 bars)
+  // indexkey is a nivo specific item - doesn't matter what you make this as long as it matches the value for indexKey in the html
   function createBarChart(airtableName, numBars, indexKey, data){
     let bar_obj = {};
     for (var record of data){
@@ -715,6 +891,7 @@ function createSunburst(level1, level2, level3, data) {
             var itemlist = item.split(", ")
             for (var j of itemlist){
               countOccurrences(bar_obj, j)
+
             }
           }
         }
@@ -1433,12 +1610,10 @@ function createSunburst(level1, level2, level3, data) {
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
               }
-            }
-            let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
 
-            new_data_list.push(item)
+            }
           }
+
           //console.log("new LIST: ", new_data_list)
 
           for (var j of new_data_list){
@@ -1455,17 +1630,18 @@ function createSunburst(level1, level2, level3, data) {
             } else {
               clean_data[stat] = val
             }
-          }
-          //console.log("zs: ", zs)
+        }
+      } else {
+          if (airtableName === "Intervention_Types"){
+            var itemlist = value.split(", ")
+          } else {
+            var itemlist = value.split(",")
 
-          //console.log("clean data: ", clean_data)
-          var all_data=[]
-          for (var item of Object.keys(clean_data)){
-            var cleaned = {}
-            cleaned["id"] = item
-            cleaned["data"] = clean_data[item]
-            all_data.push(cleaned)
           }
+          for (var j of itemlist){
+            countOccurrences(bar_obj, j)
+          }
+
           // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
           let landscape_result={}
           // console.log("CHECK THIS DATA: ", all_data)
@@ -2102,15 +2278,40 @@ function createSunburst(level1, level2, level3, data) {
             }
             pie_collection(volunteers_pie_dict, record.get('Healthy_Volunteers'))
 
-          });
 
-          fetchNextPage();
 
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
+  // CREATE SUNBURST CHART
+  // level1 is the data you want at the inner level, level2 at middle and level3 at outer
+  // each level name should match the name of an airtable column
+  function createSunburst(level1, level2, level3, data) {
+    if (typeof(data[0][level1]) === 'object'){
+      var rollupdata = d3.rollup(data, g => g.length, d => d[level1][0], d => d[level2], d => d[level3])
+    } else {
+      var rollupdata = d3.rollup(data, g => g.length, d => d[level1], d => d[level2], d => d[level3])
+    }
+
+    console.log("Rollup: ", rollupdata)
+    // now take this and reformat it for as arrays rather than maps
+    let wholedata = []
+
+    for (var key of rollupdata.keys()){
+
+      let name0 = key
+      let children0 = []
+      for (var element1 of rollupdata.get(key)){
+          let name1 = element1[0]
+          let children1 = []
+          let middle = {}
+          for (var element2 of element1[1].keys()){
+            let map = element1[1]
+            let name2 = element2
+            let value = map.get(element2)
+            let outer = {}
+            outer["name"] = name2
+            outer["value"] = value
+            children1.push(outer)
           }
+
 
           pie_formatting(single_multi_site_dict, single_multi_site_pie)
           pie_formatting(volunteers_pie_dict, volunteers_pie)
@@ -2135,8 +2336,36 @@ function createSunburst(level1, level2, level3, data) {
     setPopulationVolunteersPieChartData(result.volunteers_pie);
     setPopulationEnrollmentPieChartData(result.settings_pie)
     setLoadingPopulationData(false)
+
   }
 
+  // CREATE CHLOROPETH CHART
+  // airtable name is the column you want to use for countries and data is the whole data set after filtering
+  function createChloropeth(airtableName, data){
+      const cc = require('@genyus/country-code');
+      let geography_result = []
+      let geography_country_dict = {}
+      for (let record of data){
+        let country = record[airtableName]
+        //console.log("COUNTRY: ", country)
+        if (typeof(country)!=='object'){
+          for (let item of country.split(",")){
+            if (item === "Czechia") {
+              countOccurrences(geography_country_dict, "CZE")
+            } else if (item === ""){
+
+            } else {
+              var code = cc.nameIncludes(item)[0].alpha3
+              countOccurrences(geography_country_dict, code)
+            }
+          }
+        }
+      } // end for record loop
+      //console.log("Geog dict: ", geography_country_dict)
+      geogFormatting(geography_country_dict, geography_result)
+      //console.log("Geography REsult: ", geography_result)
+      return geography_result
+    }
 
 
   // Outcomes Variables for airtable
@@ -2191,8 +2420,33 @@ function createSunburst(level1, level2, level3, data) {
               pie_collection(outcome_area_dict, outcome + ": " + String(year))
               outcome_area_unique.add(outcome)
               pie_collection(outcomes_dict, outcome)
-            }
 
+            }
+          } else {
+            //console.log("Run a check: ", value, typeof(value))
+          }
+        }
+        //console.log("Stir list: ", strList)
+        //console.log("Num List: ", airtableName, numList)
+        return doSum ? sum(numList) : strList.length
+      }
+
+    }
+
+  // CREATE LANDSCAPE CHART
+  function createLandscapeChart(data){
+    let data_list = []
+    let uni = new Set()
+    let ys = new Set()
+    for (let record of data){
+      let status = getVal(record, "Status")
+      let allx = getVal(record, landscapeXAxis)
+      let ally = getVal(record, landscapeYAxis)
+      let z = getVal(record, landscapeZAxis)
+
+      if (landscapeZAxis === "Trial Volume") {
+        z = 1
+      }
 
 
             let primary_outcome = record.get('Num_Primary_Outcomes')
@@ -2208,21 +2462,38 @@ function createSunburst(level1, level2, level3, data) {
 
           fetchNextPage();
 
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
+
+      for (var y of y_list){
+        if (y !== ""){
+          for (var x of x_list){
+            if (x !== "") {
+              data_list.push([x, status, y, z])
+              let as_string = x + "; " + status + "; " + y
+              uni.add(as_string)
+            }
           }
-          //console.log("OUTCOMES DICT: ", outcomes_dict)
+        // we use this to calculate the height of the landscape
+          ys.add(y)
+        }
+      }
+    } // end of looping through the records
 
-          var items = Object.keys(outcomes_dict).map(function(key) {
-            return [key, outcomes_dict[key]];
-          });
+    let new_data_list = []
+    let clean_data = {}
+    let zs = []
+    console.log("UNI: ", uni)
+    for (var i of uni){
 
-          // Sort the array based on the second element
-          items.sort(function(first, second) {
-            return second[1] - first[1];
-          });
+      var ids = i.split("; ")
+      let z = 0;
+      for (var arr of data_list){
+        if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+          z += parseInt(arr[3])
+        }
+      }
+      let item = {}
+      item[ids[1]] = {"x": ids[0], "y": ids[2], "z": z}
+
 
           var updated_outcomes_dict = {}
           let updated = []
@@ -2243,9 +2514,18 @@ function createSunburst(level1, level2, level3, data) {
           outcomes_result["area_bump"] = outcome_areabump_result
           //console.log("OUTCOME data: ", outcome_areabump_result)
 
-          resolve(outcomes_result)
 
+    var all_data=[]
+    for (var item of Object.keys(clean_data)){
+      var cleaned = {}
+      cleaned["id"] = item
+      let sorted = clean_data[item]
+
+      sorted.sort(function(first, second) {
+        //console.log("first, second: ", first, second)
+        return isNaN(parseInt(first.x)) ? first.x - second.x : parseInt(first.x) - parseInt(second.x)
       })
+
     })
   }// end
 
@@ -2342,6 +2622,17 @@ function createSunburst(level1, level2, level3, data) {
   }
 
 
+  // trials charts original vars
+  const [trialStatusPieChartData, setTrialStatusPieChartData] = useState([])
+  const [trialPurposePieChartData, setTrialPurposePieChartData] = useState([])
+  const [trialRandomizationPieChartData, setTrialRandomizationPieChartData] = useState([])
+  const [trialMaskingPieChartData, setTrialMaskingPieChartData] = useState([])
+  const [trialTypePieChartData, setTrialTypePieChartData] = useState([])
+  const [cumulativeTrialsLineChartData, setCumulativeTrialsLineChartData] = useState([])
+  const [singleMultiSitePieChartData, setSingleMultiSitePieChartData] = useState([])
+  const [trialAgeGroupsPieChartData, setTrialAgeGroupsPieChartData] = useState([])
+
+
   // Sponsors variables for airtable
   var sponsor_types_dict = {}
   let sponsors_dict = {}
@@ -2360,22 +2651,36 @@ function createSunburst(level1, level2, level3, data) {
       }).eachPage(function page(records, fetchNextPage) {
 
 
+  // sponsors charts original variables
+  const [sponsorsTop10ByTrialsBarChartData, setSponsorsTop10ByTrialsBarChartData] = useState({data: [], group_keys: []})
+  const [sponsorsTop10ByEnrollmentBarChartData, setSponsorsTop10ByEnrollmentBarChartData] = useState({data: [], group_keys: []})
+  const [sponsorsBreakdownChartData, setSponsorsBreakdownChartData] = useState([])
 
-          records.forEach(function(record) {
+  // geography charts original variables
+  const [geographyFacilitiesChartData, setGeographyFacilitiesChartData] = useState([])
+
+
 
             pie_collection(sponsor_types_dict, record.get('Sponsor_Type'))
             pie_collection(sponsors_dict, record.get('Sponsor'))
 
 
-          });
+  const [landscapeChartData, setLandscapeChartData] = useState([])
+  const [landscapeChartHeight, setLandscapeChartHeight] = useState(100)
 
-          fetchNextPage();
+  const [landscapeMinNodeSize, setLandscapeMinNodeSize] = useState(0)
+  const [landscapeMaxNodeSize, setLandscapeMaxNodeSize] = useState(1)
+  const [landscapeXAxis, setLandscapeXAxis] = useState("Start_Year")
+  const [landscapeYAxis, setLandscapeYAxis] = useState("Age_Groups")
+  const [landscapeZAxis, setLandscapeZAxis] = useState("Enrollment")
 
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
+  const [landscapeVisXAxis, setLandscapeVisXAxis] = useState("Start Year")
+  const [landscapeVisYAxis, setLandscapeVisYAxis] = useState("Age Groups")
+  const [landscapeVisZAxis, setLandscapeVisZAxis] = useState("Enrollment")
+
+  const [allTableData, setAllTableData] = useState([])
+  const [loadingAllTableData, setLoadingAllTableData] = useState(true)
+
 
           pie_formatting(sponsor_types_dict, sponsors_pie)
           var items = Object.keys(sponsors_dict).map(function(key) {
@@ -2399,13 +2704,21 @@ function createSunburst(level1, level2, level3, data) {
           sponsors_result["sponsors_pie"] = sponsors_pie
           //console.log("SPONSOR data: ", sponsors_bar_formatted)
 
-          resolve(sponsors_result)
 
-      })
-    })
-}// end of get trialStatusPieChartData
+  const [interventionsAreaBumpChart, setInterventionsAreaBumpChart] = useState([])
 
 
+
+
+  // loading variables - set the loading icons until the data has fully loaded
+  const [loadingStatsData, setLoadingStatsData] = useState(true)
+  const [loadingTrialsData, setLoadingTrialsData] = useState(true)
+  const [loadingPopulationData, setLoadingPopulationData] = useState(true)
+  const [loadingInterventionsData, setLoadingInterventionsData] = useState(true)
+  const [loadingOutcomesData, setLoadingOutcomesData] = useState(true)
+  const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
+  const [loadingGeographyData, setLoadingGeographyData] = useState(true)
+  const [loadingLandscapeData, setLoadingLandscapeData] = useState(true)
 
 
   const fetchSponsorsData = async () => {
@@ -2417,8 +2730,8 @@ function createSunburst(level1, level2, level3, data) {
         // setSponsorsTop10ByEnrollmentBarChartData(result.data.sponsors_top_10_by_enrollment);
         //setSponsorsBreakdownChartData(result.data.sponsors_breakdown);
 
-        setLoadingSponsorsData(false)
-      }
+
+
 
       let geography = {}
       let geography_result = []
@@ -2441,19 +2754,25 @@ function createSunburst(level1, level2, level3, data) {
       }
 
 
+  // this is now the only function that pulls in data from airtable
+  // it returns a dictionary with keys "tabledata" (properly formatted for the tabulator table)
+  // and "alldata", the data used to pass to the createChart functions
+  function getTableData(){
+
+
       const cc = require('@genyus/country-code');
       function getGeographyData() {
         console.log("getGeographyData")
         return new Promise((resolve, reject) => {
           base('Studies').select({
               // Selecting the first 3 records in Raw View:
+
               filterByFormula: airtableFilters,
               view: "Grid view"
           }).eachPage(function page(records, fetchNextPage) {
-              // This function (`page`) will get called for each page of records.
-
 
               records.forEach(function(record) {
+
                 // countries_list.push(record.get('Geography_Countries'))
 
                 var country = record.get('Countries_Rollup_Unique')
@@ -2481,15 +2800,15 @@ function createSunburst(level1, level2, level3, data) {
                   }
                 }
 
+
               });
-
               fetchNextPage();
-
           }, function done(err) {
               if (err) {
                 console.error(err);
                 return reject({});
               }
+
 
               pie_formatting(regions_dict, regions_pie)
               geog_formatting(geography_country_dict, geography_result)
@@ -2515,9 +2834,11 @@ function createSunburst(level1, level2, level3, data) {
               geography["map"] = geography_result
               resolve(geography)
 
+
           })
         })
-    }// end of get geographyData
+    }
+
 
 
   const fetchGeographyData = async () => {
@@ -2564,6 +2885,7 @@ function createSunburst(level1, level2, level3, data) {
     // eslint-disable-next-line
   }, [])
   //[updateRequested, initialFilterLoadComplete])
+
 
 
   if (currentUser === undefined) {
@@ -2613,15 +2935,10 @@ function createSunburst(level1, level2, level3, data) {
         case 'Outcomes':
           setActiveParentFilterSections(outcomesFilters)
           break;
-
         case 'Sponsors':
-          // const sponsorParentFilterSections = { ...sponsorsFilters};
-          // delete sponsorParentFilterSections.Children
           setActiveParentFilterSections(sponsorsFilters)
           break;
         case 'Geography':
-          // const geographyParentFilterSections = { ...geographyFilters};
-          // delete geographyParentFilterSections.Children
           setActiveParentFilterSections(geographyFilters)
           break;
         default:
@@ -2650,18 +2967,14 @@ function createSunburst(level1, level2, level3, data) {
   }
 
   const onParentFilterClicked = (section, filter, shouldSelect=true) => {
-    console.log("first filter: ", filter)
-    console.log("first section: ", section)
+    //console.log("first filter: ", filter)
+    //console.log("first section: ", section)
     if (filter) {
-      //console.log('inside PFC and filter is: ', filter)
       switch (activeCategoryFilter) {
         case 'Trials':
           setTrialsFilters(filters => updateFilters(filters, section, filter))
           setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
           if ((filter || trialsFilters[section][filter] === false) && shouldSelect === true){
-            //console.log("FILTER: ", filter)
-            //console.log("section: ", section)
-            //console.log("what is this: ", trialsFilters[section])
             setActiveParentFilter(filter)
             setActiveChildFilterSections({})
           }
@@ -2779,6 +3092,17 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingLandscapeData}
                     />
                   </Col>
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <PrismSunburst
+                        colors="rainbow"
+                        title="Trials Breakdown"
+                        chartData={trialsSunburstChart}
+                        loading={loadingTrialsSunburstChart}
+                      />
+                    </Col>
                   </Row>
 
 
