@@ -2693,7 +2693,7 @@ function createSunburst(level1, level2, level3, data) {
     'Populations': 'orange',
     'Interventions': 'yellow',
     'Outcomes': 'green',
-    'Sponsors': 'blue',
+    'Conditions': 'blue',
     'Geography': 'violet',
   }
 

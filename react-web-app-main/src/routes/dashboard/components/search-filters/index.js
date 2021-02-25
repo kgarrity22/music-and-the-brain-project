@@ -101,7 +101,7 @@ function SearchFilters(props) {
     'Populations': 'orange',
     'Interventions': 'yellow',
     'Outcomes': 'green',
-    'Sponsors': 'blue',
+    'Conditions': 'blue',
     'Geography': 'indigo',
   }
   // console.log("props.sections: ", Object.keys(props.sections))
