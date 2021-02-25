@@ -1605,16 +1605,16 @@ function createSunburst(level1, level2, level3, data) {
 
           let xs = []
 
-          for (let i = 0; i < ys.size; i++){
-            let item = {}
-            if (i < 5){
-              item["Completed"] = {"x": xs[i], "y": [...ys].sort().reverse()[i], "z": 0}
-              new_data_list.push(item)
-            } else {
-              item["Completed"] = {"x": xs[0], "y": [...ys].sort().reverse()[i], "z": 0}
-              new_data_list.push(item)
-            }
-          }
+          // for (let i = 0; i < ys.size; i++){
+          //   let item = {}
+          //   if (i < 5){
+          //     item["Completed"] = {"x": xs[i], "y": [...ys].sort().reverse()[i], "z": 0}
+          //     new_data_list.push(item)
+          //   } else {
+          //     item["Completed"] = {"x": xs[0], "y": [...ys].sort().reverse()[i], "z": 0}
+          //     new_data_list.push(item)
+          //   }
+          // }
 
 
           //console.log("Ys: ", ys)
@@ -1739,16 +1739,16 @@ function createSunburst(level1, level2, level3, data) {
           //console.log("Ys: ", ys)
           let xs = []
 
-          for (let i = 0; i < ys.size; i++){
-            let item = {}
-            if (i < 5){
-              item["Completed"] = {"x": xs[i], "y": [...ys].sort()[i], "z": 0}
-              new_data_list.push(item)
-            } else {
-              item["Completed"] = {"x": xs[0], "y": [...ys].sort()[i], "z": 0}
-              new_data_list.push(item)
-            }
-          }
+          // for (let i = 0; i < ys.size; i++){
+          //   let item = {}
+          //   if (i < 5){
+          //     item["Completed"] = {"x": xs[i], "y": [...ys].sort()[i], "z": 0}
+          //     new_data_list.push(item)
+          //   } else {
+          //     item["Completed"] = {"x": xs[0], "y": [...ys].sort()[i], "z": 0}
+          //     new_data_list.push(item)
+          //   }
+          // }
 
           //console.log("OUTCOMES: ", [...uni].sort())
           for (var i of [...uni].sort()){
