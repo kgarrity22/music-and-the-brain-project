@@ -1492,10 +1492,10 @@ function createSunburst(level1, level2, level3, data) {
           // get all status
           let status = record.get('Results')
 
-          let ally = String(record.get('Conditions'))
+          let allx = String(record.get('Conditions'))
 
-          let allx = String(record.get('Comparator'))
-          console.log("COMPARATOR: ", allx)
+          let ally = String(record.get('Comparator'))
+          // console.log("COMPARATOR: ", allx)
           // console.log("alls: ", allx, ally)
           //let z = record.get('landscapeZAxis')
           let z = parseInt(record.get('Sample_Size'))
@@ -1610,11 +1610,11 @@ function createSunburst(level1, level2, level3, data) {
             let allx = String(record.get('Conditions'))
 
             let ally = String(record.get('Interventions'))
-            console.log("INTERVEN: ", ally)
+            // console.log("INTERVEN: ", ally)
             let z = parseInt(record.get('Sample_Size'))
 
             let y_list = ally.split(",")
-            let x_list  = allx.split(", ")
+            let x_list  = allx.split(",")
             // need to do each y with each x
             for (var y of y_list){
               if (y !== ""){
@@ -1745,7 +1745,9 @@ function createSunburst(level1, level2, level3, data) {
             let z = parseInt(record.get('Sample_Size'))
 
             let y_list = ally.split(",")
-            let x_list = allx.split(", ")
+
+            let x_list = allx.split(",")
+            console.log("X-LIST: ", x_list)
 
             // need to do each y with each x
             for (var y of y_list){
