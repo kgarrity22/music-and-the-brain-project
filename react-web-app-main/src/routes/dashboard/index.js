@@ -375,201 +375,201 @@ function createSunburst(level1, level2, level3, data) {
 
 
 
-//   function getairtable() {
-//
-//     return new Promise((resolve, reject) => {
-//       base('Studies').select({
-//           // Selecting the first 3 records in Raw View:
-//           filterByFormula: airtableFilters,
-//           view: "Grid view"
-//       }).eachPage(function page(records, fetchNextPage) {
-//           // This function (`page`) will get called for each page of records.
-//
-//
-//           records.forEach(function(record) {
-//             // TRIALS FILTERS
-//             phases_set.add(record.get('Phase'))
-//             status_set.add(record.get('Status'))
-//             purpose_set.add(record.get('Purpose'))
-//             type_set.add(record.get('Study_Type'))
-//             randomization_set.add(record.get('Randomization'))
-//             masking_set.add(record.get('Masking_Clean'))
-//             // console.log("hERE!")
-//
-//             // POPULATIONS FILTERS
-//
-//             var age = record.get('Age_Groups')[0].split(", ")
-//             for (var item of age){
-//               //console.log("item: ", item)
-//               ageGroups_set.add(item)
-//             }
-//             healthyVolunteers_set.add(record.get('Healthy_Volunteers'))
-//             singleMultiSite_set.add(record.get('Single_Multi_Site'))
-//             targEnrollment_set.add(record.get('Enrollment_Target'))
-//
-//             var settings = record.get('Facility_Settings')
-//             //console.log("settings: ", settings)
-//             if (typeof(settings)==='object'){
-//               for (var item of settings){
-//                 //console.log("item: ", item)
-//                 settings_set.add(item)
-//               }
-//             } else {
-//               settings_set.add(settings)
-//             }
-//
-//
-//             // INTERVENTIONS FILTERS
-//
-//             var interventions = record.get('Intervention_Types').split(", ")
-//             for (var item of interventions){
-//               intervention_set.add(item)
-//             }
-//
-//
-//
-//             // OUTCOMES FILTERS
-//
-//             var outcome = record.get('Outcome_Concepts')
-//             if (typeof(outcome)==='object'){
-//               for (var item of outcome){
-//                 if (item === null){
-//                   // console.log("null")
-//                 } else {
-//                   var itemlist = item.split(", ")
-//                   for (var j of itemlist){
-//                     outcomes_set.add(j)
-//                   }
-//                 }
-//               }
-//             } else {
-//               outcomes_set.add(outcome)
-//             }
-//
-//
-//
-//             // SPONSORS FILTERS
-//             sponsors_set.add(record.get('Sponsor_Type'))
-//
-//
-//             // GEOGRAPHY FILTERs
-//             regions_set.add(record.get('Geography_Regions'))
-//             regions_list.push(record.get('Geography_Regions'))
-//             countries_list.push(record.get('Geography_Countries'))
-//
-//
-//           });
-//
-//           // To fetch the next page of records, call `fetchNextPage`.
-//           // If there are more records, `page` will get called again.
-//           // If there are no more records, `done` will get called.
-//           fetchNextPage();
-//
-//       }, function done(err) {
-//           if (err) {
-//             console.error(err);
-//             return reject({});
-//           }
-//
-//
-//           // TRIALS
-//           create_filter_dict([...phases_set].sort(), unique_phases)
-//           create_filter_dict([...status_set].sort(), unique_status)
-//           create_filter_dict([...purpose_set].sort(), unique_purpose)
-//           create_filter_dict([...type_set].sort(), unique_type)
-//           create_filter_dict([...randomization_set].sort(), unique_random)
-//           create_filter_dict([...masking_set].sort(), unique_masking)
-//
-//
-//           trials_filts["Type"] = unique_type;
-//           trials_filts["Status"] = unique_status;
-//           trials_filts["Purpose"] = unique_purpose;
-//           trials_filts["Randomization"] = unique_random;
-//           trials_filts["Masking"] = unique_masking;
-//           trials_filts["Phase"] = unique_phases;
-//
-//           // POPULATIONS
-//           create_filter_dict([...ageGroups_set].sort(), unique_ageGroups)
-//           create_filter_dict([...healthyVolunteers_set].sort(), unique_healthyVolunteers)
-//           create_filter_dict([...singleMultiSite_set].sort(), unique_singleMultiSite)
-//           create_filter_dict([...targEnrollment_set].sort(), unique_targEnrollment)
-//           create_filter_dict([...settings_set].sort(), unique_settings)
-//
-//
-//           populations_filts["Age Groups"] = unique_ageGroups;
-//           populations_filts["Healthy Volunteers"] = unique_healthyVolunteers;
-//           populations_filts["Single/Multi Site"] = unique_singleMultiSite;
-//           populations_filts["Target Enrollment"] = unique_targEnrollment;
-//           populations_filts["Settings"] = unique_settings;
-//
-//
-//           // INTERVENTIONS
-//           create_filter_dict([...intervention_set].sort(), unique_interventions)
-//           interventions_filts["Interventions"] = unique_interventions
-//
-//
-//           // OUTCOMES
-//           create_filter_dict([...outcomes_set].sort(), unique_outcomes)
-//           outcome_filts["Outcomes"] = unique_outcomes
-//
-//
-//           // SPONSORS
-//
-//           create_filter_dict([...sponsors_set].sort(), unique_sponsors)
-//           sponsor_filts["Sponsors"] = unique_sponsors
-//
-//
-//           // GEOGRAPHY
-//
-//           for (var trial_regions of regions_list){
-//             var region_list_index = regions_list.indexOf(trial_regions)
-//             var country_names = countries_list[region_list_index]
-//
-//             if (typeof(trial_regions) === 'object'){
-//
-//               for (var region of trial_regions){
-//
-//                 if (Object.keys(unique_regions).indexOf(region)!==-1){
-//
-//                       unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
-//
-//                 } else {
-//
-//                       unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
-//                 }
-//               }
-//             }
-//           }
-//           var sorted_regions = {}
-//
-//           for (var region of Object.keys(unique_regions)){
-//             var sorted_countries = {}
-//             sortDictionary(unique_regions[region], sorted_countries)
-//             unique_regions[region] = sorted_countries
-//           }
-//           sortDictionary(unique_regions, sorted_regions)
-//
-//           geography_filts["Regions"] = sorted_regions
-//
-//
-//
-//           var result = {}
-//           result["trials"] = trials_filts
-//           result["populations"] = populations_filts
-//           result["interventions"] = interventions_filts
-//           result["outcomes"] = outcome_filts
-//           result["sponsors"] = sponsor_filts
-//           result["geography"] = geography_filts
-//           //console.log("HOWs THIS LOOK: ", trials_filts)
-//
-//
-//           resolve(result);
-//
-//       });
-//     })
-//
-//
-// }// end of promise
+  function getairtable() {
+
+    return new Promise((resolve, reject) => {
+      base('Studies').select({
+          // Selecting the first 3 records in Raw View:
+          filterByFormula: airtableFilters,
+          view: "Grid view"
+      }).eachPage(function page(records, fetchNextPage) {
+          // This function (`page`) will get called for each page of records.
+
+
+          records.forEach(function(record) {
+            // TRIALS FILTERS
+            // phases_set.add(record.get('Phase'))
+            // purpose_set.add(record.get('Purpose'))
+            // randomization_set.add(record.get('Randomization'))
+            // masking_set.add(record.get('Masking_Clean'))
+
+            let comp = record.get('Comparator')
+            console.log("comp: ", comp)
+            if (comp.includes(", ")){
+              for (let item of comp.split(", ")){
+                status_set.add(item)
+              }
+            } else {
+              status_set.add(comp)
+            }
+
+
+
+            // console.log("status set: ", status_set)
+            type_set.add(record.get('Design'))
+
+            // console.log("hERE!")
+
+            // POPULATIONS FILTERS
+
+            // var age = record.get('Age_Groups')[0].split(", ")
+            // for (var item of age){
+            //   //console.log("item: ", item)
+            //   ageGroups_set.add(item)
+            // }
+            ageGroups_set.add(record.get('Race_Eth'))
+            healthyVolunteers_set.add(record.get('Gender'))
+            singleMultiSite_set.add(record.get('Study_Pop_Stnd'))
+            // targEnrollment_set.add(record.get('Enrollment_Target'))
+
+
+
+
+
+            // INTERVENTIONS FILTERS
+
+            let intervention = record.get('Interventions')
+            // console.log("intervention: ", intervention)
+            if (intervention !== undefined){
+              console.log("intervention: ", intervention)
+              if (intervention.includes(", ")){
+                for (let item of intervention.split(", ")){
+                  intervention_set.add(item)
+                }
+              } else {
+                intervention_set.add(intervention)
+              }
+            }
+
+            // console.log("interventions set: ", intervention_set)
+
+            phases_set.add(record.get('Intervention_Type'))
+            purpose_set.add(record.get('Activity_Type'))
+
+
+
+
+            // OUTCOMES FILTERS
+            outcomes_set.add(record.get('Outcomes'))
+
+
+
+
+
+            // SPONSORS FILTERS
+            let conditions = record.get('Conditions')
+            // console.log("condition: ", condition)
+            for (let condition of conditions){
+              console.log("conditions; ", condition)
+              sponsors_set.add(condition)
+            }
+
+            // console.log("CONDItions: ", sponsors_set)
+
+
+
+            //console.log("got heree!!!")
+
+
+
+            // GEOGRAPHY FILTERs
+            // regions_set.add(record.get('Geography_Regions'))
+            // regions_list.push(record.get('Geography_Regions'))
+            // countries_list.push(record.get('Geography_Countries'))
+            regions_set.add(record.get('Location'))
+
+            // console.log("record.get('Location')", record.get('Location'))
+            // console.log("record.get('Conditions')", record.get('Conditions'))
+            // console.log("record.get('Outcomes')", record.get('Outcomes'))
+            // console.log("record.get('Inteerventions')", record.get('Interventions'))
+            // console.log("record.get('Intervention_Type')", record.get('Intervention_Type'))
+            // console.log("record.get('Activity_Type')", record.get('Activity_Type'))
+
+
+
+
+          });
+
+          // To fetch the next page of records, call `fetchNextPage`.
+          // If there are more records, `page` will get called again.
+          // If there are no more records, `done` will get called.
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+
+
+          // TRIALS
+
+          create_filter_dict([...status_set].sort(), unique_status)
+          create_filter_dict([...type_set].sort(), unique_type)
+
+
+
+          trials_filts["Design"] = unique_type;
+          trials_filts["Comparator"] = unique_status;
+
+
+          // POPULATIONS
+          create_filter_dict([...ageGroups_set].sort(), unique_ageGroups)
+          create_filter_dict([...healthyVolunteers_set].sort(), unique_healthyVolunteers)
+          create_filter_dict([...singleMultiSite_set].sort(), unique_singleMultiSite)
+
+
+          populations_filts["Race/Ethnicity"] = unique_ageGroups;
+          populations_filts["Gender"] = unique_healthyVolunteers;
+          populations_filts["Study Population"] = unique_singleMultiSite;
+
+
+
+          // INTERVENTIONS
+          create_filter_dict([...intervention_set].sort(), unique_interventions)
+          create_filter_dict([...phases_set].sort(), unique_phases)
+          create_filter_dict([...purpose_set].sort(), unique_purpose)
+
+          interventions_filts["Interventions"] = unique_interventions
+          interventions_filts["Intervention Type"] = unique_phases
+          interventions_filts["Activity Type"] = unique_purpose
+
+
+          // OUTCOMES
+          create_filter_dict([...outcomes_set].sort(), unique_outcomes)
+          outcome_filts["Outcomes"] = unique_outcomes
+
+
+          // SPONSORS
+
+          create_filter_dict([...sponsors_set].sort(), unique_sponsors)
+          sponsor_filts["Conditions"] = unique_sponsors
+
+
+          // GEOGRAPHY
+
+          create_filter_dict([...regions_set], unique_regions)
+          geography_filts["Regions"] = unique_regions
+
+
+
+          var result = {}
+          result["trials"] = trials_filts
+          result["populations"] = populations_filts
+          result["interventions"] = interventions_filts
+          result["outcomes"] = outcome_filts
+          result["conditions"] = sponsor_filts
+          result["geography"] = geography_filts
+          //console.log("HOWs THIS LOOK: ", trials_filts)
+
+
+          resolve(result);
+
+      });
+    })
+
+
+}// end of promise
 
 
 
@@ -773,25 +773,25 @@ function createSunburst(level1, level2, level3, data) {
 
 
 
-  // const fetchFilters = async () => {
-  //
-  //   // const result = await getairtable()
-  //   // console.log("***FILTERS****: ", result)
-  //
-  //
-  //
-  //   // setTrialsFilters(result.trials)
-  //   // setInterventionsFilters(result.interventions)
-  //   // setOutcomesFilters(result.outcomes)
-  //   // setSponsorsFilters(result.sponsors)
-  //   // setPopulationFilters(result.populations)
-  //   // setGeographyFilters(result.geography.Regions)
-  //   // setInitialFilterLoadComplete(true)
-  //   // setUpdatedRequested(Date.now())
-  // }
-  // useEffect(() => {
-  //   fetchFilters();
-  // }, [])
+  const fetchFilters = async () => {
+    console.log("made it here in fetch")
+    const result = await getairtable()
+    console.log("***FILTERS****: ", result)
+
+
+
+    setTrialsFilters(result.trials)
+    setInterventionsFilters(result.interventions)
+    setOutcomesFilters(result.outcomes)
+    setSponsorsFilters(result.sponsors)
+    setPopulationFilters(result.populations)
+    setGeographyFilters(result.geography.Regions)
+    // setInitialFilterLoadComplete(true)
+    // setUpdatedRequested(Date.now())
+  }
+  useEffect(() => {
+    fetchFilters();
+  }, [])
 
   const generateFiltersPostBody = () => {
     console.log("generateFiltersPostBody")
@@ -1747,7 +1747,7 @@ function createSunburst(level1, level2, level3, data) {
             let y_list = ally.split(",")
 
             let x_list = allx.split(",")
-            console.log("X-LIST: ", x_list)
+            //console.log("X-LIST: ", x_list)
 
             // need to do each y with each x
             for (var y of y_list){
