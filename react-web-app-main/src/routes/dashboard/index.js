@@ -749,7 +749,7 @@ function createSunburst(level1, level2, level3, data) {
     console.log("generateFiltersPostBody")
 
     return {
-      "Trials": trialsFilters,
+      "Studies": trialsFilters,
       "Populations": populationFilters,
       "Interventions": interventionsFilters,
       "Outcomes": outcomesFilters,
@@ -2577,7 +2577,7 @@ function createSunburst(level1, level2, level3, data) {
       setActiveCategoryFilter(title)
       setActiveParentFilter("")
       switch (title) {
-        case 'Trials':
+        case 'Studies':
           setActiveParentFilterSections(trialsFilters)
           break;
         case 'Populations':
@@ -2631,7 +2631,7 @@ function createSunburst(level1, level2, level3, data) {
     if (filter) {
       //console.log('inside PFC and filter is: ', filter)
       switch (activeCategoryFilter) {
-        case 'Trials':
+        case 'Studies':
           setTrialsFilters(filters => updateFilters(filters, section, filter))
           setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
           if ((filter || trialsFilters[section][filter] === false) && shouldSelect === true){
@@ -2703,7 +2703,7 @@ function createSunburst(level1, level2, level3, data) {
   const showDoubleSideBar = (activeParentFilter || hoveredParentFilter) && [].includes(activeCategoryFilter)
 
   const colors = {
-    'Trials': 'red',
+    'Studies': 'red',
     'Populations': 'orange',
     'Interventions': 'yellow',
     'Outcomes': 'green',

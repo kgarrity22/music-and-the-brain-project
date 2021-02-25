@@ -22,7 +22,7 @@ function Navbar(props) {
   const tabs = [
     {
       icon: <FiGrid />,
-      title: 'Trials',
+      title: 'Studies',
       activeColor: 'red'
     },
     {
