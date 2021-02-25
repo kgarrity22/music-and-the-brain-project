@@ -23,7 +23,7 @@ import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme
 
   let columns = [
     { title: "Authors", field: "Authors", hozAlign: "left", width: 150 },
-    { title: "Start Year", field: "Year", hozAlign: "left", width: 150 },
+    { title: "Year", field: "Year", hozAlign: "left", width: 150 },
     { title: "Title", field: "Title", hozAlign: "left", width: 150 },
     { title: "Location", field: "Location", hozAlign: "left", width: 150 },
     { title: "Conditions", field: "Conditions", hozAlign: "left", width: 150 },
