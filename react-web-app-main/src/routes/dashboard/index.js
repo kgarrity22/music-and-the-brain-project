@@ -1723,7 +1723,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   function getOutcomesLandscapeChartData() {
-    console.log("getOutcomesLandscapeChartData")
+    //console.log("getOutcomesLandscapeChartData")
     // data list
     let data_list = []
     let uni = new Set()
@@ -2017,7 +2017,7 @@ function createSunburst(level1, level2, level3, data) {
     // console.log("LANDSCAPE trials: ", trials)
     const pops = await getPopulationsLandscapeChartData()
     const interventions = await getInterventionsLandscapeChartData()
-    // const outcomes = await getOutcomesLandscapeChartData()
+    const outcomes = await getOutcomesLandscapeChartData()
     // const sponsors = await getSponsorsLandscapeChartData()
 
     setTrialsLandscapeChartData(trials.data);
@@ -2033,9 +2033,9 @@ function createSunburst(level1, level2, level3, data) {
     setInterventionsLandscapeMaxNodeSize(interventions.max);
     // setInterventionsYs(interventions.ys)
     //
-    // setOutcomesLandscapeChartData(outcomes.data);
-    // setOutcomesLandscapeMinNodeSize(outcomes.min);
-    // setOutcomesLandscapeMaxNodeSize(outcomes.max);
+    setOutcomesLandscapeChartData(outcomes.data);
+    setOutcomesLandscapeMinNodeSize(outcomes.min);
+    setOutcomesLandscapeMaxNodeSize(outcomes.max);
     //
     // setSponsorsLandscapeChartData(sponsors.data);
     // setSponsorsLandscapeMinNodeSize(sponsors.min);
