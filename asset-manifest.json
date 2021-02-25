@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/Prism-Generic-Canvas/static/css/main.7ce3fbc6.chunk.css",
-    "main.js": "/Prism-Generic-Canvas/static/js/main.135c4ff0.chunk.js",
-    "runtime-main.js": "/Prism-Generic-Canvas/static/js/runtime-main.3dfdaea3.js",
-    "static/css/2.880185b9.chunk.css": "/Prism-Generic-Canvas/static/css/2.880185b9.chunk.css",
-    "static/js/2.711f6d5c.chunk.js": "/Prism-Generic-Canvas/static/js/2.711f6d5c.chunk.js",
-    "index.html": "/Prism-Generic-Canvas/index.html",
-    "precache-manifest.eb2ce55ba9fe85badd5c9d26dc340b08.js": "/Prism-Generic-Canvas/precache-manifest.eb2ce55ba9fe85badd5c9d26dc340b08.js",
-    "service-worker.js": "/Prism-Generic-Canvas/service-worker.js",
-    "static/js/2.711f6d5c.chunk.js.LICENSE.txt": "/Prism-Generic-Canvas/static/js/2.711f6d5c.chunk.js.LICENSE.txt"
+    "main.css": "/music-and-the-brain-project/static/css/main.d82f365a.chunk.css",
+    "main.js": "/music-and-the-brain-project/static/js/main.ddd0e674.chunk.js",
+    "runtime-main.js": "/music-and-the-brain-project/static/js/runtime-main.3f2f2f89.js",
+    "static/css/2.880185b9.chunk.css": "/music-and-the-brain-project/static/css/2.880185b9.chunk.css",
+    "static/js/2.b70ff257.chunk.js": "/music-and-the-brain-project/static/js/2.b70ff257.chunk.js",
+    "index.html": "/music-and-the-brain-project/index.html",
+    "precache-manifest.ef732a7b52be29e8338fced5b9e66156.js": "/music-and-the-brain-project/precache-manifest.ef732a7b52be29e8338fced5b9e66156.js",
+    "service-worker.js": "/music-and-the-brain-project/service-worker.js",
+    "static/js/2.b70ff257.chunk.js.LICENSE.txt": "/music-and-the-brain-project/static/js/2.b70ff257.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.3dfdaea3.js",
+    "static/js/runtime-main.3f2f2f89.js",
     "static/css/2.880185b9.chunk.css",
-    "static/js/2.711f6d5c.chunk.js",
-    "static/css/main.7ce3fbc6.chunk.css",
-    "static/js/main.135c4ff0.chunk.js"
+    "static/js/2.b70ff257.chunk.js",
+    "static/css/main.d82f365a.chunk.css",
+    "static/js/main.ddd0e674.chunk.js"
   ]
 }
