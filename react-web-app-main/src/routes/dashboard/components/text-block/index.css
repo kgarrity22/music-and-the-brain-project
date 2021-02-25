@@ -1,0 +1,15 @@
+
+.text-block-container {
+  margin-left: 5px;
+  padding-left: 10px;
+  padding: 30px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #323338;
+  background: #F5F6F8;
+}
+
+.text-block-container p {
+
+}

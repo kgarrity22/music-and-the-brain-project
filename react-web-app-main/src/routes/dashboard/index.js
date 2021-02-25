@@ -24,6 +24,7 @@ import PrismScatterplot from './components/scatterplot'
 import PrismStaticScatterplot from './components/scatterplot-static'
 import PrismChoropleth from './components/choropleth'
 import MainTable from './components/tabulator'
+import PrismTextBlock from './components/text-block'
 
 
 import './index.css'
@@ -1700,6 +1701,7 @@ function createSunburst(level1, level2, level3, data) {
             let allx = String(record.get('Conditions'))
             let ally = String(record.get('Outcomes'))
             let z = parseInt(record.get('Sample_Size'))
+            // console.log("Z: ", z)
 
             let y_list = ally.split(",")
 
@@ -1716,7 +1718,7 @@ function createSunburst(level1, level2, level3, data) {
                     }
 
                     data_list.push([y, x, status, z])
-                    let as_string = y + "; " + x + "; " + status
+                    let as_string = y + "; " + x + "; " + status + "; " + z
                     uni.add(as_string)
                   }
                 }
@@ -1754,14 +1756,14 @@ function createSunburst(level1, level2, level3, data) {
           for (var i of [...uni].sort()){
 
             var ids = i.split("; ")
-            let z = 0;
-            for (var arr of data_list){
-              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
-                z += arr[3]
-              }
-            }
+            // let z = 0;
+            // for (var arr of data_list){
+            //   if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+            //     z += arr[3]
+            //   }
+            // }
             let item = {}
-            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z}
+            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": ids[3]}
 
             new_data_list.push(item)
           }
@@ -1771,6 +1773,7 @@ function createSunburst(level1, level2, level3, data) {
             let val = Object.values(j)
 
             if (isNaN(val[0]["z"])){
+              // console.log("z: ", val[0]["z"])
               val[0]["z"] = 0
             }
             zs.push(val[0]["z"])
@@ -1807,7 +1810,9 @@ function createSunburst(level1, level2, level3, data) {
           var landscape_result={}
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
+
           landscape_result["min"] = Math.min(...zs)
+
           console.log("outcome landscape res: ", landscape_result)
 
 
@@ -2723,6 +2728,15 @@ function createSunburst(level1, level2, level3, data) {
 
 
 
+
+                  <Row>
+                  <Col>
+                    <PrismTextBlock
+                      textTitle={ 'How has the evidence evolved over time?' }
+                      mainText={ " Although scientists have been exploring music’s effects on the brain for a long time, research activities have spiked dramatically in recent years. Explore our dashboard below showing the history of this field." }
+                    />
+                  </Col>
+                  </Row>
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
@@ -2741,6 +2755,17 @@ function createSunburst(level1, level2, level3, data) {
                       yAxisLabel={"Condition"}
                       zAxisLabel={"Sample Size"}
                       loading={loadingTrialsLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismTextBlock
+                      textTitle={ 'Understanding the complexity of evidence' }
+                      mainText={ "The effects of music on the brain have been studied in myriad ways. For example, there are many different types of music-based interventions (e.g., listening vs. performing; singing vs. drumming) and many different types of patients for whom music may be beneficial (e.g., patients with major depression, PTSD, or schizophrenia). When evaluating the evidence for any particular intervention, it is also important to know what that intervention was compared to (e.g., was it compared to a placebo or some form of cognitive behavioral therapy?). It is also important to know the outcome measure that was used to assess if/how the intervention worked." }
+                      moreText={"The graphs below depict these dimensions of the existing evidence. see how the evidence is arranged for different (1) conditions and interventions, (2) conditions and comparators, and (3) conditions and outcomes. In each tab, the bubbles all correspond to a published study report, placed on the landscape to show the particular combination of factors that it studied.The size of the bubble corresponds to the number of patients/participants in the study (i.e., larger bubbles means more patients). The color of the bubble codes the study’s outcome. The legends to the right of each chart show which results correspond to each color."}
+                      evenMoreText={"If you'd like to look at more specific categories in each of these charts, use the filter menu to the left."}
                     />
                   </Col>
                   </Row>
