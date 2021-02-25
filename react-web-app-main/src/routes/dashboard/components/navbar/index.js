@@ -31,7 +31,7 @@ function Navbar(props) {
       activeColor: 'orange'
     },
     {
-      icon: <CgPill />,
+      icon: <FiMusic />,
       title: 'Interventions',
       activeColor: 'yellow'
     },
@@ -55,7 +55,7 @@ function Navbar(props) {
   return (
     <Nav className="filter-nav">
       <div className="header-container">
-      <FiMusic />
+
         <p>
           Music & The Brain
           <br />
