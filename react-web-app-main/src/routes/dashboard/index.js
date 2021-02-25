@@ -131,38 +131,17 @@ function DashboardRoute(props) {
 
             if (filter_dict[section][sub_section][key] === false) {
 
-              if (sub_section === "Type") {
-                var new_dict = {"Study_Type": key}
+              if (sub_section === "Race/Ethnicity") {
+                var new_dict = {"Race_Eth": key}
                 store.push(new_dict)
-              } else if (sub_section === "Age Groups"){
-                var new_dict = {"Age_Groups": key}
+              } else if (sub_section === "Intervention Type"){
+                var new_dict = {"Intervention_Type": key}
                 store.push(new_dict)
-              } else if (sub_section === "Masking"){
-                var new_dict = {"Masking_Clean": key}
+              } else if (sub_section === "Study Population"){
+                var new_dict = {"Study_Pop_Stnd": key}
                 store.push(new_dict)
-              } else if (sub_section === "Healthy Volunteers"){
-                var new_dict = {"Healthy_Volunteers": key}
-                store.push(new_dict)
-              } else if (sub_section === "Single/Multi Site"){
-                var new_dict = {"Single_Multi_Site": key}
-                store.push(new_dict)
-              } else if (sub_section === "Target Enrollment"){
-                var new_dict = {"Enrollment_Target": key}
-                store.push(new_dict)
-              } else if (sub_section === "Settings"){
-                var new_dict = {"Facility_Settings": key}
-                store.push(new_dict)
-              } else if (sub_section === "Interventions"){
-                var new_dict = {"Intervention_Types": key}
-                store.push(new_dict)
-              } else if (sub_section === "Outcomes"){
-                var new_dict = {"Outcome_Concepts": key}
-                store.push(new_dict)
-              } else if (sub_section === "Sponsors"){
-                var new_dict = {"Sponsor_Type": key}
-                store.push(new_dict)
-              } else if (section === "Geography"){
-                var new_dict = {"Geography_Countries": key}
+              } else if (sub_section === "Activity Type"){
+                var new_dict = {"Activity_Type": key}
                 store.push(new_dict)
               } else {
                 var new_dict = {[sub_section]: key}
@@ -394,7 +373,7 @@ function createSunburst(level1, level2, level3, data) {
             // masking_set.add(record.get('Masking_Clean'))
 
             let comp = record.get('Comparator')
-            console.log("comp: ", comp)
+            //console.log("comp: ", comp)
             if (comp.includes(", ")){
               for (let item of comp.split(", ")){
                 status_set.add(item)
@@ -408,15 +387,6 @@ function createSunburst(level1, level2, level3, data) {
             // console.log("status set: ", status_set)
             type_set.add(record.get('Design'))
 
-            // console.log("hERE!")
-
-            // POPULATIONS FILTERS
-
-            // var age = record.get('Age_Groups')[0].split(", ")
-            // for (var item of age){
-            //   //console.log("item: ", item)
-            //   ageGroups_set.add(item)
-            // }
             ageGroups_set.add(record.get('Race_Eth'))
             healthyVolunteers_set.add(record.get('Gender'))
             singleMultiSite_set.add(record.get('Study_Pop_Stnd'))
@@ -431,7 +401,7 @@ function createSunburst(level1, level2, level3, data) {
             let intervention = record.get('Interventions')
             // console.log("intervention: ", intervention)
             if (intervention !== undefined){
-              console.log("intervention: ", intervention)
+              //console.log("intervention: ", intervention)
               if (intervention.includes(", ")){
                 for (let item of intervention.split(", ")){
                   intervention_set.add(item)
@@ -460,7 +430,7 @@ function createSunburst(level1, level2, level3, data) {
             let conditions = record.get('Conditions')
             // console.log("condition: ", condition)
             for (let condition of conditions){
-              console.log("conditions; ", condition)
+              //console.log("conditions; ", condition)
               sponsors_set.add(condition)
             }
 
@@ -737,41 +707,6 @@ function createSunburst(level1, level2, level3, data) {
     bar_formatting(updated_bars, [], bar_formatted, indexKey)
   }
 
-  // function createSunburst(level1, level2, level3, data) {
-  //   let whole = {}
-  //   whole["name"] = "data"
-  //   // whole["Children"] = []
-  //   let first_children = {}
-  //
-  //   for (var record of data){
-  //     let lev1 = record[level1].toString()
-  //     let lev2 = record[level2].toString()
-  //     let lev3 = record[level3].toString()
-  //     if (Object.keys(first_children).includes(lev1)){
-  //       for (var i of lev2.split(", ")){
-  //         if (first_children[lev1].includes(i)){
-  //         } else {
-  //           first_children[lev1].push({i})
-  //         }
-  //       }
-  //     } else {
-  //       first_children[lev1] = []
-  //       for (var j of lev2.split(", ")){
-  //         var dict = {j: j}
-  //         first_children[lev1].push(dict)
-  //       }
-  //     }
-  //   }
-  //   console.log("First Children: ", first_children)
-  //
-  //   // go through each record
-  //   // if
-  //
-  //
-  //
-  // }
-
-
 
   const fetchFilters = async () => {
     console.log("made it here in fetch")
@@ -783,10 +718,10 @@ function createSunburst(level1, level2, level3, data) {
     setTrialsFilters(result.trials)
     setInterventionsFilters(result.interventions)
     setOutcomesFilters(result.outcomes)
-    setSponsorsFilters(result.sponsors)
+    setSponsorsFilters(result.conditions)
     setPopulationFilters(result.populations)
     setGeographyFilters(result.geography.Regions)
-    // setInitialFilterLoadComplete(true)
+    setInitialFilterLoadComplete(true)
     // setUpdatedRequested(Date.now())
   }
   useEffect(() => {
@@ -801,7 +736,7 @@ function createSunburst(level1, level2, level3, data) {
       "Populations": populationFilters,
       "Interventions": interventionsFilters,
       "Outcomes": outcomesFilters,
-      "Sponsors": sponsorsFilters,
+      "Conditions": sponsorsFilters,
       "Geography": geographyFilters,
 
     }
@@ -900,7 +835,11 @@ function createSunburst(level1, level2, level3, data) {
   const [loadingOutcomesData, setLoadingOutcomesData] = useState(true)
   const [loadingSponsorsData, setLoadingSponsorsData] = useState(true)
   const [loadingGeographyData, setLoadingGeographyData] = useState(true)
-  const [loadingLandscapeData, setLoadingLandscapeData] = useState(true)
+
+  const [loadingTrialsLandscapeData, setLoadingTrialsLandscapeData] = useState(true)
+  const [loadingPopulationsLandscapeData, setLoadingPopulationsLandscapeData] = useState(true)
+  const [loadingInterventionsLandscapeData, setLoadingInterventionsLandscapeData] = useState(true)
+  const [loadingOutcomesLandscapeData, setLoadingOutcomesLandscapeData] = useState(true)
 
 
 
@@ -1646,7 +1585,7 @@ function createSunburst(level1, level2, level3, data) {
           let clean_data = {}
           let zs = []
 
-          let xs = ["Behavioral", "Device", "Diagnostic Test", "Other", "Procedure"]
+          let xs = []
 
           for (let i = 0; i < ys.size; i++){
             let item = {}
@@ -1780,7 +1719,7 @@ function createSunburst(level1, level2, level3, data) {
           let clean_data = {}
           let zs = []
           //console.log("Ys: ", ys)
-          let xs = ["Behavioral", "Device", "Diagnostic Test", "Other", "Procedure"]
+          let xs = []
 
           for (let i = 0; i < ys.size; i++){
             let item = {}
@@ -2013,38 +1952,70 @@ function createSunburst(level1, level2, level3, data) {
 
 
 // convert this to add the landscape chart
-  const fetchLandscapeChartData = async () => {
+  // const fetchLandscapeChartData = async () => {
+  //   console.log("are we getting into fetch landscape chart data?")
+  //   const trials = await getTrialsLandscapeChartData()
+  //   // console.log("LANDSCAPE trials: ", trials)
+  //   const pops = await getPopulationsLandscapeChartData()
+  //   const interventions = await getInterventionsLandscapeChartData()
+  //   const outcomes = await getOutcomesLandscapeChartData()
+  //   // const sponsors = await getSponsorsLandscapeChartData()
+  //
+  //   setTrialsLandscapeChartData(trials.data);
+  //   setTrialsLandscapeMinNodeSize(trials.min);
+  //   setTrialsLandscapeMaxNodeSize(trials.max);
+  //
+  //   setPopulationsLandscapeChartData(pops.data);
+  //   setPopulationsLandscapeMinNodeSize(pops.min);
+  //   setPopulationsLandscapeMaxNodeSize(pops.max);
+  //   //
+  //   setInterventionsLandscapeChartData(interventions.data);
+  //   setInterventionsLandscapeMinNodeSize(interventions.min);
+  //   setInterventionsLandscapeMaxNodeSize(interventions.max);
+  //   // setInterventionsYs(interventions.ys)
+  //   //
+  //   setOutcomesLandscapeChartData(outcomes.data);
+  //   setOutcomesLandscapeMinNodeSize(outcomes.min);
+  //   setOutcomesLandscapeMaxNodeSize(outcomes.max);
+  //   //
+  //
+  //   setLoadingLandscapeData(false)
+  // }
+
+  const fetchTrialsLandscapeChartData = async () => {
     console.log("are we getting into fetch landscape chart data?")
     const trials = await getTrialsLandscapeChartData()
-    // console.log("LANDSCAPE trials: ", trials)
-    const pops = await getPopulationsLandscapeChartData()
-    const interventions = await getInterventionsLandscapeChartData()
-    const outcomes = await getOutcomesLandscapeChartData()
-    // const sponsors = await getSponsorsLandscapeChartData()
 
     setTrialsLandscapeChartData(trials.data);
     setTrialsLandscapeMinNodeSize(trials.min);
     setTrialsLandscapeMaxNodeSize(trials.max);
 
+    setLoadingTrialsLandscapeData(false)
+  }
+
+  const fetchPopulationsLandscapeChartData = async () => {
+    const pops = await getPopulationsLandscapeChartData()
+
     setPopulationsLandscapeChartData(pops.data);
     setPopulationsLandscapeMinNodeSize(pops.min);
     setPopulationsLandscapeMaxNodeSize(pops.max);
-    //
+    setLoadingPopulationsLandscapeData(false)
+  }
+
+  const fetchInterventionsLandscapeChartData = async () => {
+    const interventions = await getInterventionsLandscapeChartData()
     setInterventionsLandscapeChartData(interventions.data);
     setInterventionsLandscapeMinNodeSize(interventions.min);
     setInterventionsLandscapeMaxNodeSize(interventions.max);
-    // setInterventionsYs(interventions.ys)
-    //
+    setLoadingInterventionsLandscapeData(false)
+  }
+
+  const fetchOutcomesLandscapeChartData = async () => {
+    const outcomes = await getOutcomesLandscapeChartData()
     setOutcomesLandscapeChartData(outcomes.data);
     setOutcomesLandscapeMinNodeSize(outcomes.min);
     setOutcomesLandscapeMaxNodeSize(outcomes.max);
-    //
-    // setSponsorsLandscapeChartData(sponsors.data);
-    // setSponsorsLandscapeMinNodeSize(sponsors.min);
-    // setSponsorsLandscapeMaxNodeSize(sponsors.max);
-
-
-    setLoadingLandscapeData(false)
+    setLoadingOutcomesLandscapeData(false)
   }
 
 
@@ -2517,25 +2488,16 @@ function createSunburst(level1, level2, level3, data) {
 
 
   useEffect(() => {
-    if (initialFilterLoadComplete || !initialFilterLoadComplete) {
-      // setLoadingStatsData(true)
-      // fetchSingleStatMetrics();
-      // setLoadingTrialsData(true)
-      // fetchTrialsMetricData();
-      // setLoadingPopulationData(true)
-      // fetchPopulationData();
-      // setLoadingOutcomesData(true)
-      // fetchOutcomesData();
-      // setLoadingInterventionsData(true)
-      // fetchInterventionsData();
-      // setLoadingSponsorsData(true)
-      // fetchSponsorsData();
-      // setLoadingGeographyData(true)
-      // fetchGeographyData();
-      // setLoadingAllTableData(true)
-      // setLoadingSponsorsSunburstChart(true)
-      setLoadingLandscapeData(true)
-      fetchLandscapeChartData();
+    if (initialFilterLoadComplete) {
+
+      setLoadingTrialsLandscapeData(true)
+      fetchTrialsLandscapeChartData();
+      setLoadingPopulationsLandscapeData(true)
+      fetchPopulationsLandscapeChartData();
+      setLoadingInterventionsLandscapeData(true)
+      fetchInterventionsLandscapeChartData();
+      setLoadingOutcomesLandscapeData(true)
+      fetchOutcomesLandscapeChartData();
       fetchAllTableData();
 
       // console.log("tabledata after fetch: ", fetchAllTableData())
@@ -2546,8 +2508,8 @@ function createSunburst(level1, level2, level3, data) {
 
     }
     // eslint-disable-next-line
-  }, [])
-  //[updateRequested, initialFilterLoadComplete])
+  }, [updateRequested, initialFilterLoadComplete])
+  // [updateRequested, initialFilterLoadComplete])
 
 
   if (currentUser === undefined) {
@@ -2598,7 +2560,7 @@ function createSunburst(level1, level2, level3, data) {
           setActiveParentFilterSections(outcomesFilters)
           break;
 
-        case 'Sponsors':
+        case 'Conditions':
           // const sponsorParentFilterSections = { ...sponsorsFilters};
           // delete sponsorParentFilterSections.Children
           setActiveParentFilterSections(sponsorsFilters)
@@ -2674,7 +2636,7 @@ function createSunburst(level1, level2, level3, data) {
               setActiveChildFilterSections({})
             }
             break;
-        case 'Sponsors':
+        case 'Conditions':
           setSponsorsFilters(filters => updateFilters(filters, section, filter))
           setActiveParentFilterSections(filters => updateFilters(filters, section, filter))
           if ((filter || sponsorsFilters[section][filter] === false) && shouldSelect === true){
@@ -2760,7 +2722,7 @@ function createSunburst(level1, level2, level3, data) {
                       xAxisLabel={"Start Date"}
                       yAxisLabel={"Condition"}
                       zAxisLabel={"Sample Size"}
-                      loading={loadingLandscapeData}
+                      loading={loadingTrialsLandscapeData}
                     />
                   </Col>
                   </Row>
@@ -2778,7 +2740,7 @@ function createSunburst(level1, level2, level3, data) {
                       xAxisLabel={"Condition"}
                       yAxisLabel={"Interventions"}
                       zAxisLabel={"Sample Size"}
-                      loading={loadingLandscapeData}
+                      loading={loadingInterventionsLandscapeData}
                     />
                   </Col>
                   </Row>
@@ -2796,7 +2758,7 @@ function createSunburst(level1, level2, level3, data) {
                       xAxisLabel={"Condition"}
                       yAxisLabel={"Comparator"}
                       zAxisLabel={"Sample Size"}
-                      loading={loadingLandscapeData}
+                      loading={loadingPopulationsLandscapeData}
                     />
                   </Col>
                   </Row>
@@ -2814,7 +2776,7 @@ function createSunburst(level1, level2, level3, data) {
                       xAxisLabel={"Condition"}
                       yAxisLabel={"Outcomes"}
                       zAxisLabel={"Sample Size"}
-                      loading={loadingLandscapeData}
+                      loading={loadingOutcomesLandscapeData}
                     />
                   </Col>
                   </Row>

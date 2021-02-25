@@ -41,7 +41,7 @@ function Navbar(props) {
     },
     {
       icon: <FiDollarSign />,
-      title: 'Sponsors',
+      title: 'Conditions',
       activeColor: 'blue'
     },
     {
