@@ -82,19 +82,19 @@ const initialStats = [
 function DashboardRoute(props) {
   //console.log("is this legal?")
 
-  const [currentUser, setCurrentUser] = useState("")
-
-  useEffect((props) => {
-    const getCurrentAuthenticatedUser = async () => {
-      try {
-        const user = await Auth.currentAuthenticatedUser()
-        setCurrentUser(user)
-      } catch (error) {
-        setCurrentUser(undefined)
-      }
-    }
-    getCurrentAuthenticatedUser()
-  }, [currentUser])
+  // const [currentUser, setCurrentUser] = useState("")
+  //
+  // useEffect((props) => {
+  //   const getCurrentAuthenticatedUser = async () => {
+  //     try {
+  //       const user = await Auth.currentAuthenticatedUser()
+  //       setCurrentUser(user)
+  //     } catch (error) {
+  //       setCurrentUser(undefined)
+  //     }
+  //   }
+  //   getCurrentAuthenticatedUser()
+  // }, [currentUser])
 
   const [airtableFilters, setAirtableFilters] = useState("")
 
@@ -2547,9 +2547,9 @@ function createSunburst(level1, level2, level3, data) {
   // [updateRequested, initialFilterLoadComplete])
 
 
-  if (currentUser === undefined) {
-    return <Redirect to="/login" />
-  }
+  // if (currentUser === undefined) {
+  //   return <Redirect to="/login" />
+  // }
 
 
 
