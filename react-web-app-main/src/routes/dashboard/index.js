@@ -2729,7 +2729,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
 
-                  <Row>
+                  <Row className="first-block">
                   <Col>
                     <PrismTextBlock
                       textTitle={ 'How has the evidence evolved over time?' }

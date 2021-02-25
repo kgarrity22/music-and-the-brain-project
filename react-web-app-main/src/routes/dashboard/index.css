@@ -138,3 +138,7 @@
 .tabulator-cell{
   font-family:monospace;
 }
+
+.first-block{
+  margin-top: 50px;
+}
