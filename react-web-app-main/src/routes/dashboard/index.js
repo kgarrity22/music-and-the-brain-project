@@ -420,7 +420,19 @@ function createSunburst(level1, level2, level3, data) {
 
 
             // OUTCOMES FILTERS
-            outcomes_set.add(record.get('Outcomes'))
+            let outcomes = record.get('Outcomes')
+            for (let outcome of outcomes){
+              if (outcome.includes(",")){
+                for (let item of outcome.split(",")){
+                  outcomes_set.add(item)
+                }
+              } else {
+                outcomes_set.add(outcome)
+              }
+            }
+            //console.log("OUTCOMES: ", outcomes)
+
+
 
 
 
@@ -446,7 +458,11 @@ function createSunburst(level1, level2, level3, data) {
             // regions_set.add(record.get('Geography_Regions'))
             // regions_list.push(record.get('Geography_Regions'))
             // countries_list.push(record.get('Geography_Countries'))
-            regions_set.add(record.get('Location'))
+            let loc = record.get('Location')
+            if (loc.slice(0, 1)===" "){
+              loc = loc.slice(1, loc.length)
+            }
+            regions_set.add(loc)
 
             // console.log("record.get('Location')", record.get('Location'))
             // console.log("record.get('Conditions')", record.get('Conditions'))
@@ -518,8 +534,8 @@ function createSunburst(level1, level2, level3, data) {
 
           // GEOGRAPHY
 
-          create_filter_dict([...regions_set], unique_regions)
-          geography_filts["Regions"] = unique_regions
+          create_filter_dict([...regions_set].sort(), unique_regions)
+          geography_filts["Locations"] = unique_regions
 
 
 
@@ -720,7 +736,7 @@ function createSunburst(level1, level2, level3, data) {
     setOutcomesFilters(result.outcomes)
     setSponsorsFilters(result.conditions)
     setPopulationFilters(result.populations)
-    setGeographyFilters(result.geography.Regions)
+    setGeographyFilters(result.geography)
     setInitialFilterLoadComplete(true)
     // setUpdatedRequested(Date.now())
   }
