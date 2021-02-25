@@ -56,7 +56,7 @@ function Navbar(props) {
       <div className="header-container">
       <CanvasIcon />
         <p>
-          IMPACT Collaboratory
+          ALZHEIMERS
           <br />
           Landscape
         </p>

@@ -1,0 +1,92 @@
+.scatterplot-chart-container {
+  margin-left: 5px;
+}
+
+.scatterplot-chart-container .chart-title-container {
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  background: #F5F6F8;
+}
+
+.scatterplot-chart-container .chart-title-container .chart-title {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #323338;
+  margin-bottom: 0px;
+}
+
+.scatterplot-chart-container .no-data-label {
+  color: #323338;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.scatterplot-chart-container .dropdown-filters-container {
+  display: flex;
+  margin-right: 50px;
+  margin-left: auto;
+}
+
+.scatterplot-chart-container .chart-title-container .dropdown-container {
+  display: flex;
+  align-items: center;
+}
+
+.scatterplot-chart-container .chart-title-container .dropdown-container.first {
+  margin-left: auto;
+}
+
+.scatterplot-chart-container .chart-title-container .dropdown-container p {
+  margin-bottom: 0px;
+  color: #ffffff;
+  background-color: #4C5862;
+  min-width: 27px;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
+  letter-spacing: 0.1px;
+}
+
+.scatterplot-chart-container .chart-title-container .dropdown-container .dropdown .btn {
+  height: 32px;
+  font-size: 14px;
+  line-height: 20px;
+  background-color: transparent;
+  border-color: transparent;
+  color: #323338;
+}
+
+.scatterplot-chart-container .chart-title-container .dropdown-container .dropdown .dropdown-toggle::after {
+  margin-left: 10px;
+}
+
+.scatterplot-chart-container .chart-title-container .dropdown-container .dropdown .btn:focus,
+.scatterplot-chart-container .chart-title-container .dropdown-container .dropdown .btn:active{
+    box-shadow:none !important;
+    outline:0px !important;
+}
+
+.scatterplot-chart-container .chart-title-container .dropdown-container .dropdown .dropdown-item.active {
+  background-color: #4C5862;
+  color: #ffffff;
+}
+
+.scatterplot-chart-container .overlay {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9)
+}
+
+.scatterplot-chart-container .overlay .sk-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: #fff;
+}
