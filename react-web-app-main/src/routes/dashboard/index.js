@@ -1315,7 +1315,7 @@ function createSunburst(level1, level2, level3, data) {
   }
 
   function getTrialsLandscapeChartData() {
-    console.log("did we even make it here?")
+    // console.log("did we even make it here?")
     // data list
     let data_list = []
     let uni = new Set()
@@ -1383,6 +1383,7 @@ function createSunburst(level1, level2, level3, data) {
                 z += arr[3]
               }
             }
+
             let item = {}
             item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
 
@@ -1470,7 +1471,7 @@ function createSunburst(level1, level2, level3, data) {
                 if (x !== "") {
 
                   data_list.push([status, x, y, z])
-                  let as_string = status + "; " + x + "; " + y
+                  let as_string = status + "; " + x + "; " + y + "; " + z
                 //  console.log("as string: ", as_string)
                   uni.add(as_string)
                 }
@@ -1495,16 +1496,20 @@ function createSunburst(level1, level2, level3, data) {
           for (var i of uni){
 
             var ids = i.split("; ")
-            let z = 0;
-            for (var arr of data_list){
-              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
-                z += arr[3]
-              }
-            }
-            let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            // let z = 0;
+            // for (var arr of data_list){
+            //   if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+            //     z += arr[3]
+            //   }
+            // }
+            if (!isNaN(ids[3])){
+              // console.log("Z: ", z)
+              let item = {}
+              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": ids[3]}
 
-            new_data_list.push(item)
+              new_data_list.push(item)
+            }
+
           }
           //console.log("new LIST: ", new_data_list)
 
