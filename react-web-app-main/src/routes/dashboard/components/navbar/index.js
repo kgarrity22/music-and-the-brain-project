@@ -1,9 +1,9 @@
 import React from 'react'
 import { Button, Nav } from 'react-bootstrap'
-import { FiActivity, FiDollarSign, FiMap, FiRefreshCcw, FiGrid} from 'react-icons/fi'
+import { FiActivity, FiDollarSign, FiMap, FiRefreshCcw, FiGrid, FiMusic} from 'react-icons/fi'
 import { BsPeople } from 'react-icons/bs'
 import { CgPill } from 'react-icons/cg'
-import { RiMentalHealthFill } from 'react-icons/ri'
+import { RiMentalHealthLine } from 'react-icons/ri'
 
 import './index.css'
 
@@ -41,7 +41,7 @@ function Navbar(props) {
       activeColor: 'green'
     },
     {
-      icon: <RiMentalHealthFill />,
+      icon: <RiMentalHealthLine />,
       title: 'Conditions',
       activeColor: 'blue'
     },
@@ -55,9 +55,9 @@ function Navbar(props) {
   return (
     <Nav className="filter-nav">
       <div className="header-container">
-      <CanvasIcon />
+      <FiMusic />
         <p>
-          ALZHEIMERS
+          Music & The Brain
           <br />
           Landscape
         </p>

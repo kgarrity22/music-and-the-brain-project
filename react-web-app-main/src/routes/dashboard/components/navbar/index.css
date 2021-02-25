@@ -26,6 +26,10 @@
   margin-bottom: 0px;
 }
 
+.filter-nav .header-container {
+  color: #EBEFF2;
+}
+
 .filter-nav .header-container svg {
   margin-left: 20px;
 }
