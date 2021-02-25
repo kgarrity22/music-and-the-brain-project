@@ -230,7 +230,7 @@ function DashboardRoute(props) {
 
 
   var Airtable = require('airtable');
-  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appuxuTiBa9rFJfmp');
+  var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
 
 //   base('Studies').find('recXiQPjblJD1Z45R', function(err, record) {
 //     if (err) { console.error(err); return; }
@@ -1379,16 +1379,9 @@ function createSunburst(level1, level2, level3, data) {
             let status = record.get('Design')
 
             let year = String(record.get('Year'))
-            //console.log("month check: ", month)
             let date = year
-
-            //console.log("DATE: ", date)
-            //console.log("date.split(,): ", date.split(","))
-
-            // let allx = date.split(",")
             let ally = String(record.get('Conditions'))
-            // console.log("alls: ", allx, ally)
-            //let z = record.get('landscapeZAxis')
+
             let z = parseInt(record.get('Sample_Size'))
 
             let y_list = ally.split(",")
@@ -1494,47 +1487,41 @@ function createSunburst(level1, level2, level3, data) {
       }).eachPage(function page(records, fetchNextPage) {
 
 
-          records.forEach(function(record) {
-            //statuses.add(record.get('Status'))
-            // get all status
-            let status = record.get('Design')
-            let allx = [record.get('Enrollment')]
-            if (allx[0]>10000){
-              allx[0] = "10000+"
-            }
-            let ally = String(record.get('Condition'))
-            // let z = record.get(landscapeZAxis)
-          //  console.log("enrollment: ", allx)
-            // if (landscapeZAxis === "Trial Volume") {
-            //   z = 1
-            // }
-            let z = 1
+        records.forEach(function(record) {
+          //statuses.add(record.get('Status'))
+          // get all status
+          let status = record.get('Results')
 
-            let y_list = []
-            y_list = ally.split(",")
-            // let x_list = []
-            //console.log("y list: ", y_list)
-            // x_list = allx.split(",")
+          let ally = String(record.get('Conditions'))
 
-            // need to do each y with each x
-            for (var y of y_list){
-              if (y !== ""){
-                for (var x of allx){
-                  // console.log("x: ", x)
-                  // console.log("type: ", typeof(x))
-                  if (typeof(x) === "number") {
-                    //console.log("made it in")
-                    data_list.push([status, x, y, z])
-                    let as_string = status + "; " + String(x) + "; " + y
-                    //console.log("As tring: ", as_string)
-                    uni.add(as_string)
-                  }
+          let allx = String(record.get('Comparator'))
+          console.log("COMPARATOR: ", allx)
+          // console.log("alls: ", allx, ally)
+          //let z = record.get('landscapeZAxis')
+          let z = parseInt(record.get('Sample_Size'))
+
+          let y_list = ally.split(",")
+          let x_list = allx.split(",")
+
+          // need to do each y with each x
+          for (var y of y_list){
+            //console.log("y: ", y)
+            if (y !== ""){
+              for (var x of x_list){
+                //console.log("x: ", x)
+                if (x !== "") {
+
+                  data_list.push([status, x, y, z])
+                  let as_string = status + "; " + x + "; " + y
+                //  console.log("as string: ", as_string)
+                  uni.add(as_string)
                 }
-                ys.add(y)
               }
+              ys.add(y)
             }
+          }
 
-          });
+        });
 
           fetchNextPage();
 
@@ -1552,23 +1539,16 @@ function createSunburst(level1, level2, level3, data) {
             var ids = i.split("; ")
             let z = 0;
             for (var arr of data_list){
-              //console.log("CHECK THIS: ", String(ids[1]), String(arr[1]))
-              if (ids[0] === arr[0] && String(ids[1])===String(arr[1]) && ids[2]===arr[2]){
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
               }
             }
             let item = {}
-            //console.log("ids[1]: ", ids[1])
-            item[ids[0]] = {"x": parseInt(ids[1]), "y": ids[2], "z": z}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
 
             new_data_list.push(item)
           }
-          //console.log("new_data_list: ", new_data_list)
-
-
-          //console.log("data list: ", data_list)
-          //console.log("new data: ", new_data_list)
-          //console.log('yS; ', ys)
+          //console.log("new LIST: ", new_data_list)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1595,8 +1575,8 @@ function createSunburst(level1, level2, level3, data) {
             cleaned["data"] = clean_data[item]
             all_data.push(cleaned)
           }
-          // setPopulationsLandscapeChartHeight(ys.size * 50 + 300)
-          var landscape_result={}
+          // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
+          let landscape_result={}
           // console.log("CHECK THIS DATA: ", all_data)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
@@ -1625,11 +1605,13 @@ function createSunburst(level1, level2, level3, data) {
           records.forEach(function(record) {
             //statuses.add(record.get('Status'))
             // get all status
-            let status = record.get('Status')
+            let status = record.get('Results')
 
-            let allx = String(record.get('Intervention_Types'))
-            let ally = String(record.get('Phase'))
-            let z = 1
+            let allx = String(record.get('Conditions'))
+
+            let ally = String(record.get('Interventions'))
+            console.log("INTERVEN: ", ally)
+            let z = parseInt(record.get('Sample_Size'))
 
             let y_list = ally.split(",")
             let x_list  = allx.split(", ")
@@ -1757,10 +1739,10 @@ function createSunburst(level1, level2, level3, data) {
 
           records.forEach(function(record) {
 
-            let status = record.get('Status')
-            let allx = String(record.get('Intervention_Types'))
-            let ally = String(record.get('Outcome_Concepts'))
-            let z = 1
+            let status = record.get('Results')
+            let allx = String(record.get('Conditions'))
+            let ally = String(record.get('Outcomes'))
+            let z = parseInt(record.get('Sample_Size'))
 
             let y_list = ally.split(",")
             let x_list = allx.split(", ")
@@ -2033,8 +2015,8 @@ function createSunburst(level1, level2, level3, data) {
     console.log("are we getting into fetch landscape chart data?")
     const trials = await getTrialsLandscapeChartData()
     // console.log("LANDSCAPE trials: ", trials)
-    // const pops = await getPopulationsLandscapeChartData()
-    // const interventions = await getInterventionsLandscapeChartData()
+    const pops = await getPopulationsLandscapeChartData()
+    const interventions = await getInterventionsLandscapeChartData()
     // const outcomes = await getOutcomesLandscapeChartData()
     // const sponsors = await getSponsorsLandscapeChartData()
 
@@ -2042,13 +2024,13 @@ function createSunburst(level1, level2, level3, data) {
     setTrialsLandscapeMinNodeSize(trials.min);
     setTrialsLandscapeMaxNodeSize(trials.max);
 
-    // setPopulationsLandscapeChartData(pops.data);
-    // setPopulationsLandscapeMinNodeSize(pops.min);
-    // setPopulationsLandscapeMaxNodeSize(pops.max);
+    setPopulationsLandscapeChartData(pops.data);
+    setPopulationsLandscapeMinNodeSize(pops.min);
+    setPopulationsLandscapeMaxNodeSize(pops.max);
     //
-    // setInterventionsLandscapeChartData(interventions.data);
-    // setInterventionsLandscapeMinNodeSize(interventions.min);
-    // setInterventionsLandscapeMaxNodeSize(interventions.max);
+    setInterventionsLandscapeChartData(interventions.data);
+    setInterventionsLandscapeMinNodeSize(interventions.min);
+    setInterventionsLandscapeMaxNodeSize(interventions.max);
     // setInterventionsYs(interventions.ys)
     //
     // setOutcomesLandscapeChartData(outcomes.data);
@@ -2780,6 +2762,67 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="Condition vs. Interventions"
+                      colors="rainbow"
+                      chartData={interventionsLandscapeChartData}
+                      chartHeight={1000}
+                      type={"point"}
+                      minNodeSize={interventionsLandscapeMinNodeSize}
+                      maxNodeSize={interventionsLandscapeMaxNodeSize}
+                      xAxisLabel={"Condition"}
+                      yAxisLabel={"Interventions"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="Condition vs. Comparator"
+                      colors="rainbow"
+                      chartData={populationsLandscapeChartData}
+                      chartHeight={1000}
+                      type={"point"}
+                      minNodeSize={populationsLandscapeMinNodeSize}
+                      maxNodeSize={populationsLandscapeMaxNodeSize}
+                      xAxisLabel={"Condition"}
+                      yAxisLabel={"Comparator"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="Condition vs. Outcomes"
+                      colors="rainbow"
+                      chartData={outcomesLandscapeChartData}
+                      chartHeight={1000}
+                      type={"point"}
+                      minNodeSize={outcomesLandscapeMinNodeSize}
+                      maxNodeSize={outcomesLandscapeMaxNodeSize}
+                      xAxisLabel={"Condition"}
+                      yAxisLabel={"Outcomes"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+
+
+
+
+
+
 
 
 
