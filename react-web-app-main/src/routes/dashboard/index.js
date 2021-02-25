@@ -79,6 +79,7 @@ const initialStats = [
 
 
 function DashboardRoute(props) {
+  //console.log("is this legal?")
 
   const [currentUser, setCurrentUser] = useState("")
 
@@ -114,6 +115,7 @@ function DashboardRoute(props) {
 
 
   function getAirtableFilters(){
+    console.log("getAirtableFilters")
     var filter_dict = generateFiltersPostBody()
     var store = []
     var sections = Object.keys(filter_dict)
@@ -177,6 +179,7 @@ function DashboardRoute(props) {
 //var filters = "NOT(OR({Phase} = 'Phase 1'))"
 // formats the filter string to give airtable the filterbyformula
   function formatFiltersForAirtable(filter_list){
+    console.log("formatFiltersForAirtable")
     // basic string
     var openstr = "NOT(OR("
     var closestr = "))"
@@ -227,7 +230,12 @@ function DashboardRoute(props) {
 
 
   var Airtable = require('airtable');
-  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+  var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appuxuTiBa9rFJfmp');
+
+//   base('Studies').find('recXiQPjblJD1Z45R', function(err, record) {
+//     if (err) { console.error(err); return; }
+//     console.log('Retrieved', record.id);
+// });
   //TRIALS SETS
   var phases_set = new Set();
   var status_set = new Set();
@@ -367,201 +375,201 @@ function createSunburst(level1, level2, level3, data) {
 
 
 
-  function getairtable() {
-
-    return new Promise((resolve, reject) => {
-      base('Trials').select({
-          // Selecting the first 3 records in Raw View:
-          filterByFormula: airtableFilters,
-          view: "Raw View"
-      }).eachPage(function page(records, fetchNextPage) {
-          // This function (`page`) will get called for each page of records.
-
-
-          records.forEach(function(record) {
-            // TRIALS FILTERS
-            phases_set.add(record.get('Phase'))
-            status_set.add(record.get('Status'))
-            purpose_set.add(record.get('Purpose'))
-            type_set.add(record.get('Study_Type'))
-            randomization_set.add(record.get('Randomization'))
-            masking_set.add(record.get('Masking_Clean'))
-            // console.log("hERE!")
-
-            // POPULATIONS FILTERS
-
-            var age = record.get('Age_Groups')[0].split(", ")
-            for (var item of age){
-              //console.log("item: ", item)
-              ageGroups_set.add(item)
-            }
-            healthyVolunteers_set.add(record.get('Healthy_Volunteers'))
-            singleMultiSite_set.add(record.get('Single_Multi_Site'))
-            targEnrollment_set.add(record.get('Enrollment_Target'))
-
-            var settings = record.get('Facility_Settings')
-            //console.log("settings: ", settings)
-            if (typeof(settings)==='object'){
-              for (var item of settings){
-                //console.log("item: ", item)
-                settings_set.add(item)
-              }
-            } else {
-              settings_set.add(settings)
-            }
-
-
-            // INTERVENTIONS FILTERS
-
-            var interventions = record.get('Intervention_Types').split(", ")
-            for (var item of interventions){
-              intervention_set.add(item)
-            }
-
-
-
-            // OUTCOMES FILTERS
-
-            var outcome = record.get('Outcome_Concepts')
-            if (typeof(outcome)==='object'){
-              for (var item of outcome){
-                if (item === null){
-                  // console.log("null")
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-                    outcomes_set.add(j)
-                  }
-                }
-              }
-            } else {
-              outcomes_set.add(outcome)
-            }
-
-
-
-            // SPONSORS FILTERS
-            sponsors_set.add(record.get('Sponsor_Type'))
-
-
-            // GEOGRAPHY FILTERs
-            regions_set.add(record.get('Geography_Regions'))
-            regions_list.push(record.get('Geography_Regions'))
-            countries_list.push(record.get('Geography_Countries'))
-
-
-          });
-
-          // To fetch the next page of records, call `fetchNextPage`.
-          // If there are more records, `page` will get called again.
-          // If there are no more records, `done` will get called.
-          fetchNextPage();
-
-      }, function done(err) {
-          if (err) {
-            console.error(err);
-            return reject({});
-          }
-
-
-          // TRIALS
-          create_filter_dict([...phases_set].sort(), unique_phases)
-          create_filter_dict([...status_set].sort(), unique_status)
-          create_filter_dict([...purpose_set].sort(), unique_purpose)
-          create_filter_dict([...type_set].sort(), unique_type)
-          create_filter_dict([...randomization_set].sort(), unique_random)
-          create_filter_dict([...masking_set].sort(), unique_masking)
-
-
-          trials_filts["Type"] = unique_type;
-          trials_filts["Status"] = unique_status;
-          trials_filts["Purpose"] = unique_purpose;
-          trials_filts["Randomization"] = unique_random;
-          trials_filts["Masking"] = unique_masking;
-          trials_filts["Phase"] = unique_phases;
-
-          // POPULATIONS
-          create_filter_dict([...ageGroups_set].sort(), unique_ageGroups)
-          create_filter_dict([...healthyVolunteers_set].sort(), unique_healthyVolunteers)
-          create_filter_dict([...singleMultiSite_set].sort(), unique_singleMultiSite)
-          create_filter_dict([...targEnrollment_set].sort(), unique_targEnrollment)
-          create_filter_dict([...settings_set].sort(), unique_settings)
-
-
-          populations_filts["Age Groups"] = unique_ageGroups;
-          populations_filts["Healthy Volunteers"] = unique_healthyVolunteers;
-          populations_filts["Single/Multi Site"] = unique_singleMultiSite;
-          populations_filts["Target Enrollment"] = unique_targEnrollment;
-          populations_filts["Settings"] = unique_settings;
-
-
-          // INTERVENTIONS
-          create_filter_dict([...intervention_set].sort(), unique_interventions)
-          interventions_filts["Interventions"] = unique_interventions
-
-
-          // OUTCOMES
-          create_filter_dict([...outcomes_set].sort(), unique_outcomes)
-          outcome_filts["Outcomes"] = unique_outcomes
-
-
-          // SPONSORS
-
-          create_filter_dict([...sponsors_set].sort(), unique_sponsors)
-          sponsor_filts["Sponsors"] = unique_sponsors
-
-
-          // GEOGRAPHY
-
-          for (var trial_regions of regions_list){
-            var region_list_index = regions_list.indexOf(trial_regions)
-            var country_names = countries_list[region_list_index]
-
-            if (typeof(trial_regions) === 'object'){
-
-              for (var region of trial_regions){
-
-                if (Object.keys(unique_regions).indexOf(region)!==-1){
-
-                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
-
-                } else {
-
-                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
-                }
-              }
-            }
-          }
-          var sorted_regions = {}
-
-          for (var region of Object.keys(unique_regions)){
-            var sorted_countries = {}
-            sortDictionary(unique_regions[region], sorted_countries)
-            unique_regions[region] = sorted_countries
-          }
-          sortDictionary(unique_regions, sorted_regions)
-
-          geography_filts["Regions"] = sorted_regions
-
-
-
-          var result = {}
-          result["trials"] = trials_filts
-          result["populations"] = populations_filts
-          result["interventions"] = interventions_filts
-          result["outcomes"] = outcome_filts
-          result["sponsors"] = sponsor_filts
-          result["geography"] = geography_filts
-          //console.log("HOWs THIS LOOK: ", trials_filts)
-
-
-          resolve(result);
-
-      });
-    })
-
-
-}// end of promise
+//   function getairtable() {
+//
+//     return new Promise((resolve, reject) => {
+//       base('Studies').select({
+//           // Selecting the first 3 records in Raw View:
+//           filterByFormula: airtableFilters,
+//           view: "Grid view"
+//       }).eachPage(function page(records, fetchNextPage) {
+//           // This function (`page`) will get called for each page of records.
+//
+//
+//           records.forEach(function(record) {
+//             // TRIALS FILTERS
+//             phases_set.add(record.get('Phase'))
+//             status_set.add(record.get('Status'))
+//             purpose_set.add(record.get('Purpose'))
+//             type_set.add(record.get('Study_Type'))
+//             randomization_set.add(record.get('Randomization'))
+//             masking_set.add(record.get('Masking_Clean'))
+//             // console.log("hERE!")
+//
+//             // POPULATIONS FILTERS
+//
+//             var age = record.get('Age_Groups')[0].split(", ")
+//             for (var item of age){
+//               //console.log("item: ", item)
+//               ageGroups_set.add(item)
+//             }
+//             healthyVolunteers_set.add(record.get('Healthy_Volunteers'))
+//             singleMultiSite_set.add(record.get('Single_Multi_Site'))
+//             targEnrollment_set.add(record.get('Enrollment_Target'))
+//
+//             var settings = record.get('Facility_Settings')
+//             //console.log("settings: ", settings)
+//             if (typeof(settings)==='object'){
+//               for (var item of settings){
+//                 //console.log("item: ", item)
+//                 settings_set.add(item)
+//               }
+//             } else {
+//               settings_set.add(settings)
+//             }
+//
+//
+//             // INTERVENTIONS FILTERS
+//
+//             var interventions = record.get('Intervention_Types').split(", ")
+//             for (var item of interventions){
+//               intervention_set.add(item)
+//             }
+//
+//
+//
+//             // OUTCOMES FILTERS
+//
+//             var outcome = record.get('Outcome_Concepts')
+//             if (typeof(outcome)==='object'){
+//               for (var item of outcome){
+//                 if (item === null){
+//                   // console.log("null")
+//                 } else {
+//                   var itemlist = item.split(", ")
+//                   for (var j of itemlist){
+//                     outcomes_set.add(j)
+//                   }
+//                 }
+//               }
+//             } else {
+//               outcomes_set.add(outcome)
+//             }
+//
+//
+//
+//             // SPONSORS FILTERS
+//             sponsors_set.add(record.get('Sponsor_Type'))
+//
+//
+//             // GEOGRAPHY FILTERs
+//             regions_set.add(record.get('Geography_Regions'))
+//             regions_list.push(record.get('Geography_Regions'))
+//             countries_list.push(record.get('Geography_Countries'))
+//
+//
+//           });
+//
+//           // To fetch the next page of records, call `fetchNextPage`.
+//           // If there are more records, `page` will get called again.
+//           // If there are no more records, `done` will get called.
+//           fetchNextPage();
+//
+//       }, function done(err) {
+//           if (err) {
+//             console.error(err);
+//             return reject({});
+//           }
+//
+//
+//           // TRIALS
+//           create_filter_dict([...phases_set].sort(), unique_phases)
+//           create_filter_dict([...status_set].sort(), unique_status)
+//           create_filter_dict([...purpose_set].sort(), unique_purpose)
+//           create_filter_dict([...type_set].sort(), unique_type)
+//           create_filter_dict([...randomization_set].sort(), unique_random)
+//           create_filter_dict([...masking_set].sort(), unique_masking)
+//
+//
+//           trials_filts["Type"] = unique_type;
+//           trials_filts["Status"] = unique_status;
+//           trials_filts["Purpose"] = unique_purpose;
+//           trials_filts["Randomization"] = unique_random;
+//           trials_filts["Masking"] = unique_masking;
+//           trials_filts["Phase"] = unique_phases;
+//
+//           // POPULATIONS
+//           create_filter_dict([...ageGroups_set].sort(), unique_ageGroups)
+//           create_filter_dict([...healthyVolunteers_set].sort(), unique_healthyVolunteers)
+//           create_filter_dict([...singleMultiSite_set].sort(), unique_singleMultiSite)
+//           create_filter_dict([...targEnrollment_set].sort(), unique_targEnrollment)
+//           create_filter_dict([...settings_set].sort(), unique_settings)
+//
+//
+//           populations_filts["Age Groups"] = unique_ageGroups;
+//           populations_filts["Healthy Volunteers"] = unique_healthyVolunteers;
+//           populations_filts["Single/Multi Site"] = unique_singleMultiSite;
+//           populations_filts["Target Enrollment"] = unique_targEnrollment;
+//           populations_filts["Settings"] = unique_settings;
+//
+//
+//           // INTERVENTIONS
+//           create_filter_dict([...intervention_set].sort(), unique_interventions)
+//           interventions_filts["Interventions"] = unique_interventions
+//
+//
+//           // OUTCOMES
+//           create_filter_dict([...outcomes_set].sort(), unique_outcomes)
+//           outcome_filts["Outcomes"] = unique_outcomes
+//
+//
+//           // SPONSORS
+//
+//           create_filter_dict([...sponsors_set].sort(), unique_sponsors)
+//           sponsor_filts["Sponsors"] = unique_sponsors
+//
+//
+//           // GEOGRAPHY
+//
+//           for (var trial_regions of regions_list){
+//             var region_list_index = regions_list.indexOf(trial_regions)
+//             var country_names = countries_list[region_list_index]
+//
+//             if (typeof(trial_regions) === 'object'){
+//
+//               for (var region of trial_regions){
+//
+//                 if (Object.keys(unique_regions).indexOf(region)!==-1){
+//
+//                       unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
+//
+//                 } else {
+//
+//                       unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
+//                 }
+//               }
+//             }
+//           }
+//           var sorted_regions = {}
+//
+//           for (var region of Object.keys(unique_regions)){
+//             var sorted_countries = {}
+//             sortDictionary(unique_regions[region], sorted_countries)
+//             unique_regions[region] = sorted_countries
+//           }
+//           sortDictionary(unique_regions, sorted_regions)
+//
+//           geography_filts["Regions"] = sorted_regions
+//
+//
+//
+//           var result = {}
+//           result["trials"] = trials_filts
+//           result["populations"] = populations_filts
+//           result["interventions"] = interventions_filts
+//           result["outcomes"] = outcome_filts
+//           result["sponsors"] = sponsor_filts
+//           result["geography"] = geography_filts
+//           //console.log("HOWs THIS LOOK: ", trials_filts)
+//
+//
+//           resolve(result);
+//
+//       });
+//     })
+//
+//
+// }// end of promise
 
 
 
@@ -580,85 +588,85 @@ function createSunburst(level1, level2, level3, data) {
 
   // creating a single function to help make creating dynamic filters much simpler
   // TODO: need to put in conditions to handle geography
-  function newgetfilters(allTableData){
-    var result = {}
-    for (var filter_header of Object.keys(all_filters)){
-      // a filter header will be the big title i.e. Trials or Geography
-      // want to create a dictionary for each of these
-      var mainfilters = {}
-      // the subfilter will be like Type or Age Group or Status
-      for (var subfilter of all_filters[filter_header]) {
-        // create a set for the subfilter to get the unique ones
-
-        var unique_subfilters = {}
-        var subfilter_set = new Set()
-        // now we need to go through the alltabledata and get the values that of the subfilter key
-
-        if (subfilter === "Geography") {
-          // create a country list and a region list
-          // create a set of unique regions
-          for (var trial_regions of regions_list){
-            var region_list_index = regions_list.indexOf(trial_regions)
-            var country_names = countries_list[region_list_index]
-            if (typeof(trial_regions) === 'object'){
-              for (var region of trial_regions){
-                if (Object.keys(unique_regions).indexOf(region)!==-1){
-                      unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
-                } else {
-                      unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
-                }
-              }
-            }
-          }
-          var sorted_regions = {}
-          for (var region of Object.keys(unique_regions)){
-            var sorted_countries = {}
-            sortDictionary(unique_regions[region], sorted_countries)
-            unique_regions[region] = sorted_countries
-          }
-          sortDictionary(unique_regions, sorted_regions)
-          geography_filts["Regions"] = sorted_regions
-        }
-
-        else {
-
-        }
-        for (var item of allTableData){
-
-          Object.keys(item).forEach(key => {
-            if (key === subfilter){
-              // now need to check what item[key] is
-              //console.log("key is: ", key)
-              if (typeof(item[key])==='object'){
-                for (var i of item[key]){
-                  if (i === null){
-                  } else {
-                    var itemlist = i.split(", ")
-                    for (var j of itemlist){
-                      subfilter_set.add(j)
-                    }
-                  }
-                }
-              } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
-                var itemlist = item[key].split(", ")
-                for (var j of itemlist){
-                  subfilter_set.add(j)
-                }
-              } else {
-                subfilter_set.add(item[key])
-              }
-            }
-          })
-        }
-        // now when we get here, we will have created the set for one subfilter
-        // need to pass this subfilter to the create filter dictionary function
-        create_filter_dict([...subfilter_set].sort(), unique_subfilters)
-        mainfilters[subfilter] = unique_subfilters
-      }
-      result[filter_header] = mainfilters
-    }
-    return result
-  }
+  // function newgetfilters(allTableData){
+  //   var result = {}
+  //   for (var filter_header of Object.keys(all_filters)){
+  //     // a filter header will be the big title i.e. Trials or Geography
+  //     // want to create a dictionary for each of these
+  //     var mainfilters = {}
+  //     // the subfilter will be like Type or Age Group or Status
+  //     for (var subfilter of all_filters[filter_header]) {
+  //       // create a set for the subfilter to get the unique ones
+  //
+  //       var unique_subfilters = {}
+  //       var subfilter_set = new Set()
+  //       // now we need to go through the alltabledata and get the values that of the subfilter key
+  //
+  //       if (subfilter === "Geography") {
+  //         // create a country list and a region list
+  //         // create a set of unique regions
+  //         for (var trial_regions of regions_list){
+  //           var region_list_index = regions_list.indexOf(trial_regions)
+  //           var country_names = countries_list[region_list_index]
+  //           if (typeof(trial_regions) === 'object'){
+  //             for (var region of trial_regions){
+  //               if (Object.keys(unique_regions).indexOf(region)!==-1){
+  //                     unique_regions[region][country_names[trial_regions.indexOf(region)]] = true;
+  //               } else {
+  //                     unique_regions[region] = {[country_names[trial_regions.indexOf(region)]]: true}
+  //               }
+  //             }
+  //           }
+  //         }
+  //         var sorted_regions = {}
+  //         for (var region of Object.keys(unique_regions)){
+  //           var sorted_countries = {}
+  //           sortDictionary(unique_regions[region], sorted_countries)
+  //           unique_regions[region] = sorted_countries
+  //         }
+  //         sortDictionary(unique_regions, sorted_regions)
+  //         geography_filts["Regions"] = sorted_regions
+  //       }
+  //
+  //       else {
+  //
+  //       }
+  //       for (var item of allTableData){
+  //
+  //         Object.keys(item).forEach(key => {
+  //           if (key === subfilter){
+  //             // now need to check what item[key] is
+  //             //console.log("key is: ", key)
+  //             if (typeof(item[key])==='object'){
+  //               for (var i of item[key]){
+  //                 if (i === null){
+  //                 } else {
+  //                   var itemlist = i.split(", ")
+  //                   for (var j of itemlist){
+  //                     subfilter_set.add(j)
+  //                   }
+  //                 }
+  //               }
+  //             } else if (item[key].includes(", ") && item[key] !== "Active, not recruting"){
+  //               var itemlist = item[key].split(", ")
+  //               for (var j of itemlist){
+  //                 subfilter_set.add(j)
+  //               }
+  //             } else {
+  //               subfilter_set.add(item[key])
+  //             }
+  //           }
+  //         })
+  //       }
+  //       // now when we get here, we will have created the set for one subfilter
+  //       // need to pass this subfilter to the create filter dictionary function
+  //       create_filter_dict([...subfilter_set].sort(), unique_subfilters)
+  //       mainfilters[subfilter] = unique_subfilters
+  //     }
+  //     result[filter_header] = mainfilters
+  //   }
+  //   return result
+  // }
 
   // INSTEAD OF FOR LOOP TO FIND KEY IN DICTIONARY
   function getVal(dictionary, key){
@@ -765,27 +773,28 @@ function createSunburst(level1, level2, level3, data) {
 
 
 
-  const fetchFilters = async () => {
-
-    const result = await getairtable()
-    // console.log("***FILTERS****: ", result)
-
-
-
-    setTrialsFilters(result.trials)
-    setInterventionsFilters(result.interventions)
-    setOutcomesFilters(result.outcomes)
-    setSponsorsFilters(result.sponsors)
-    setPopulationFilters(result.populations)
-    setGeographyFilters(result.geography.Regions)
-    setInitialFilterLoadComplete(true)
-    // setUpdatedRequested(Date.now())
-  }
-  useEffect(() => {
-    fetchFilters();
-  }, [])
+  // const fetchFilters = async () => {
+  //
+  //   // const result = await getairtable()
+  //   // console.log("***FILTERS****: ", result)
+  //
+  //
+  //
+  //   // setTrialsFilters(result.trials)
+  //   // setInterventionsFilters(result.interventions)
+  //   // setOutcomesFilters(result.outcomes)
+  //   // setSponsorsFilters(result.sponsors)
+  //   // setPopulationFilters(result.populations)
+  //   // setGeographyFilters(result.geography.Regions)
+  //   // setInitialFilterLoadComplete(true)
+  //   // setUpdatedRequested(Date.now())
+  // }
+  // useEffect(() => {
+  //   fetchFilters();
+  // }, [])
 
   const generateFiltersPostBody = () => {
+    console.log("generateFiltersPostBody")
 
     return {
       "Trials": trialsFilters,
@@ -1027,6 +1036,7 @@ function createSunburst(level1, level2, level3, data) {
   var alldata = []
 
   function getTableData(){
+    console.log("getTableData")
         // var Airtable = require('airtable');
         // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
 
@@ -1034,10 +1044,10 @@ function createSunburst(level1, level2, level3, data) {
           var table_data = []
 
         return new Promise((resolve, reject) => {
-          base('Trials').select({
+          base('Studies').select({
 
               filterByFormula: airtableFilters,
-              view: "Raw View"
+              view: "Grid view"
           }).eachPage(function page(records, fetchNextPage) {
 
               records.forEach(function(record) {
@@ -1076,14 +1086,16 @@ function createSunburst(level1, level2, level3, data) {
 
 
     const fetchAllTableData = async () => {
+      console.log("did we make it in here: ")
       const res = await getTableData()
     //  newgetfilters(alldata)
+    console.log("All DATA Fetching?: ", res)
 
       // newgetfilters(alldata)
-      let sun = createSunburst("Sponsor_Type", "Intervention_Types", "Status", res.tabledata)
-      console.log("SUN; ", sun)
-      setSponsorsSunburstChart(sun)
-      setLoadingSponsorsSunburstChart(false)
+      // let sun = createSunburst("Sponsor_Type", "Intervention_Types", "Status", res.tabledata)
+      // console.log("SUN; ", sun)
+      // setSponsorsSunburstChart(sun)
+      // setLoadingSponsorsSunburstChart(false)
       // let sun2 = createSunburst("Purpose", "Intervention_Types", "Status", res.tabledata)
       // setTrialsSunburstChart(sun2)
       // setLoadingTrialsSunburstChart(false)
@@ -1106,10 +1118,10 @@ function createSunburst(level1, level2, level3, data) {
   function getSingleMetrics() {
 
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
           // Selecting the first 3 records in Raw View:
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
           // This function (`page`) will get called for each page of records.
 
@@ -1190,7 +1202,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchSingleStatMetrics = async () => {
-
+    console.log("fetchSingleStatMetrics")
     const result = await getSingleMetrics()
     //console.log("result for single metric: ", result)
 
@@ -1260,12 +1272,12 @@ function createSunburst(level1, level2, level3, data) {
   var age_groups_pie = [];
 
   function getTrialsChartsData() {
-
+    console.log("getTrialsChartsData")
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
@@ -1317,7 +1329,7 @@ function createSunburst(level1, level2, level3, data) {
 }// end of get trialStatusPieChartData
 
   const fetchTrialsMetricData = async () => {
-
+    console.log("fetchTrialsMetricData")
 
     const result = await getTrialsChartsData();
     //console.log("result: ", result)
@@ -1347,40 +1359,37 @@ function createSunburst(level1, level2, level3, data) {
   }
 
   function getTrialsLandscapeChartData() {
+    console.log("did we even make it here?")
     // data list
     let data_list = []
     let uni = new Set()
     let ys = new Set()
 
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
           records.forEach(function(record) {
             //statuses.add(record.get('Status'))
             // get all status
-            let status = record.get('Status')
-            let month = String(record.get('Start_Month'))
-            let year = String(record.get('Start_Year'))
+            let status = record.get('Design')
+
+            let year = String(record.get('Year'))
             //console.log("month check: ", month)
-            let date = ''
-            if (month.length === 1){
-              date = year + "-0" + month
-            } else {
-              date = year + "-" + month
-            }
+            let date = year
+
             //console.log("DATE: ", date)
             //console.log("date.split(,): ", date.split(","))
 
             // let allx = date.split(",")
-            let ally = String(record.get('Phase'))
+            let ally = String(record.get('Conditions'))
             // console.log("alls: ", allx, ally)
             //let z = record.get('landscapeZAxis')
-            let z = 1
+            let z = parseInt(record.get('Sample_Size'))
 
             let y_list = ally.split(",")
             let x_list = date.split(",")
@@ -1472,27 +1481,28 @@ function createSunburst(level1, level2, level3, data) {
 
   function getPopulationsLandscapeChartData() {
     // data list
+    console.log("getPopulationsChartsData")
     let data_list = []
     let uni = new Set()
     let ys = new Set()
 
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
           records.forEach(function(record) {
             //statuses.add(record.get('Status'))
             // get all status
-            let status = record.get('Status')
+            let status = record.get('Design')
             let allx = [record.get('Enrollment')]
             if (allx[0]>10000){
               allx[0] = "10000+"
             }
-            let ally = String(record.get('Phase'))
+            let ally = String(record.get('Condition'))
             // let z = record.get(landscapeZAxis)
           //  console.log("enrollment: ", allx)
             // if (landscapeZAxis === "Trial Volume") {
@@ -1598,16 +1608,17 @@ function createSunburst(level1, level2, level3, data) {
   }// end of get trialStatusPieChartData
 
   function getInterventionsLandscapeChartData() {
+    console.log("getInterventionsLandscapeChartData")
     // data list
     let data_list = []
     let uni = new Set()
     let ys = new Set()
 
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
@@ -1730,16 +1741,17 @@ function createSunburst(level1, level2, level3, data) {
 
 
   function getOutcomesLandscapeChartData() {
+    console.log("getOutcomesLandscapeChartData")
     // data list
     let data_list = []
     let uni = new Set()
     let ys = new Set()
 
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
@@ -1865,16 +1877,17 @@ function createSunburst(level1, level2, level3, data) {
   }// end of get trialStatusPieChartData
 
   function getSponsorsLandscapeChartData() {
+    console.log("getSponsorsLandscapeChartData")
     let sponsors_dict = {}
     let data_list = []
     let uni = new Set()
     let ys = new Set()
 
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
@@ -2017,34 +2030,34 @@ function createSunburst(level1, level2, level3, data) {
 
 // convert this to add the landscape chart
   const fetchLandscapeChartData = async () => {
-
+    console.log("are we getting into fetch landscape chart data?")
     const trials = await getTrialsLandscapeChartData()
     // console.log("LANDSCAPE trials: ", trials)
-    const pops = await getPopulationsLandscapeChartData()
-    const interventions = await getInterventionsLandscapeChartData()
-    const outcomes = await getOutcomesLandscapeChartData()
-    const sponsors = await getSponsorsLandscapeChartData()
+    // const pops = await getPopulationsLandscapeChartData()
+    // const interventions = await getInterventionsLandscapeChartData()
+    // const outcomes = await getOutcomesLandscapeChartData()
+    // const sponsors = await getSponsorsLandscapeChartData()
 
     setTrialsLandscapeChartData(trials.data);
     setTrialsLandscapeMinNodeSize(trials.min);
     setTrialsLandscapeMaxNodeSize(trials.max);
 
-    setPopulationsLandscapeChartData(pops.data);
-    setPopulationsLandscapeMinNodeSize(pops.min);
-    setPopulationsLandscapeMaxNodeSize(pops.max);
-
-    setInterventionsLandscapeChartData(interventions.data);
-    setInterventionsLandscapeMinNodeSize(interventions.min);
-    setInterventionsLandscapeMaxNodeSize(interventions.max);
-    setInterventionsYs(interventions.ys)
-
-    setOutcomesLandscapeChartData(outcomes.data);
-    setOutcomesLandscapeMinNodeSize(outcomes.min);
-    setOutcomesLandscapeMaxNodeSize(outcomes.max);
-
-    setSponsorsLandscapeChartData(sponsors.data);
-    setSponsorsLandscapeMinNodeSize(sponsors.min);
-    setSponsorsLandscapeMaxNodeSize(sponsors.max);
+    // setPopulationsLandscapeChartData(pops.data);
+    // setPopulationsLandscapeMinNodeSize(pops.min);
+    // setPopulationsLandscapeMaxNodeSize(pops.max);
+    //
+    // setInterventionsLandscapeChartData(interventions.data);
+    // setInterventionsLandscapeMinNodeSize(interventions.min);
+    // setInterventionsLandscapeMaxNodeSize(interventions.max);
+    // setInterventionsYs(interventions.ys)
+    //
+    // setOutcomesLandscapeChartData(outcomes.data);
+    // setOutcomesLandscapeMinNodeSize(outcomes.min);
+    // setOutcomesLandscapeMaxNodeSize(outcomes.max);
+    //
+    // setSponsorsLandscapeChartData(sponsors.data);
+    // setSponsorsLandscapeMinNodeSize(sponsors.min);
+    // setSponsorsLandscapeMaxNodeSize(sponsors.max);
 
 
     setLoadingLandscapeData(false)
@@ -2063,12 +2076,12 @@ function createSunburst(level1, level2, level3, data) {
   var volunteers_pie = [];
 
   function getPopulationsChartsData() {
-
+    console.log("getPopulationsChartsData")
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
@@ -2115,7 +2128,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchPopulationData = async () => {
-
+    console.log("fetchPopulationData")
     const result = await getPopulationsChartsData()
 
     setSingleMultiSitePieChartData(result.sites_pie);
@@ -2145,12 +2158,12 @@ function createSunburst(level1, level2, level3, data) {
 
   // Get Outcomes data from airtable
   function getOutcomesChartsData() {
-
+    console.log("getOutcomesChartsData")
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
@@ -2239,7 +2252,7 @@ function createSunburst(level1, level2, level3, data) {
 
   // Fetch and set outcomes data
   const fetchOutcomesData = async () => {
-
+    console.log("fetchOutcomesData")
     const result = await getOutcomesChartsData()
     setPrimaryOutcomesPieData(result.primary_outcomes_pie)
     setOutcomesTop10ParentBarChartData(result.outcome_bar)
@@ -2264,12 +2277,12 @@ function createSunburst(level1, level2, level3, data) {
   var interventions_result = {}
   // Get Intervention data from airtable
   function getInterventionsChartsData() {
-
+    console.log("getInterventionsChartsData")
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
@@ -2318,7 +2331,7 @@ function createSunburst(level1, level2, level3, data) {
   }// end Interventions get function
 
   const fetchInterventionsData = async () => {
-
+    console.log("fetchInterventionsData")
     const result = await getInterventionsChartsData()
     // setInterventionsTop10BarChartData(result.interventions_bar);
     // console.log("compare this bar: ", result.interventions_bar)
@@ -2338,12 +2351,12 @@ function createSunburst(level1, level2, level3, data) {
   let sponsors_pie = []
   // Get Sponsors data from airtable
   function getSponsorsChartsData() {
-
+    console.log("getSponsorsChartsData")
     return new Promise((resolve, reject) => {
-      base('Trials').select({
+      base('Studies').select({
 
           filterByFormula: airtableFilters,
-          view: "Raw View"
+          view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
 
 
@@ -2396,6 +2409,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchSponsorsData = async () => {
+    console.log("fetchSponsorsData")
         const result = await getSponsorsChartsData()
 
         setSponsorsTop10ByTrialsBarChartData(result.sponsors_bar);
@@ -2429,12 +2443,12 @@ function createSunburst(level1, level2, level3, data) {
 
       const cc = require('@genyus/country-code');
       function getGeographyData() {
-
+        console.log("getGeographyData")
         return new Promise((resolve, reject) => {
-          base('Trials').select({
+          base('Studies').select({
               // Selecting the first 3 records in Raw View:
               filterByFormula: airtableFilters,
-              view: "Raw View"
+              view: "Grid view"
           }).eachPage(function page(records, fetchNextPage) {
               // This function (`page`) will get called for each page of records.
 
@@ -2507,7 +2521,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchGeographyData = async () => {
-
+    console.log("fetchGeographyData")
     const result = await getGeographyData()
     setGeographyFacilitiesChartData(result.map);
     setRegionsPieChartData(result.regions_pie)
@@ -2519,26 +2533,27 @@ function createSunburst(level1, level2, level3, data) {
 
 
   useEffect(() => {
-    if (initialFilterLoadComplete) {
-      setLoadingStatsData(true)
-      fetchSingleStatMetrics();
-      setLoadingTrialsData(true)
-      fetchTrialsMetricData();
-      setLoadingPopulationData(true)
-      fetchPopulationData();
-      setLoadingOutcomesData(true)
-      fetchOutcomesData();
-      setLoadingInterventionsData(true)
-      fetchInterventionsData();
-      setLoadingSponsorsData(true)
-      fetchSponsorsData();
-      setLoadingGeographyData(true)
-      fetchGeographyData();
-      setLoadingAllTableData(true)
-      setLoadingSponsorsSunburstChart(true)
-      fetchAllTableData();
+    if (initialFilterLoadComplete || !initialFilterLoadComplete) {
+      // setLoadingStatsData(true)
+      // fetchSingleStatMetrics();
+      // setLoadingTrialsData(true)
+      // fetchTrialsMetricData();
+      // setLoadingPopulationData(true)
+      // fetchPopulationData();
+      // setLoadingOutcomesData(true)
+      // fetchOutcomesData();
+      // setLoadingInterventionsData(true)
+      // fetchInterventionsData();
+      // setLoadingSponsorsData(true)
+      // fetchSponsorsData();
+      // setLoadingGeographyData(true)
+      // fetchGeographyData();
+      // setLoadingAllTableData(true)
+      // setLoadingSponsorsSunburstChart(true)
       setLoadingLandscapeData(true)
       fetchLandscapeChartData();
+      fetchAllTableData();
+
       // console.log("tabledata after fetch: ", fetchAllTableData())
       // setLoadingLandscapeData(true)
       // fetchLandscapeChartData();
@@ -2547,7 +2562,8 @@ function createSunburst(level1, level2, level3, data) {
 
     }
     // eslint-disable-next-line
-  }, [updateRequested, initialFilterLoadComplete])
+  }, [])
+  //[updateRequested, initialFilterLoadComplete])
 
 
   if (currentUser === undefined) {
@@ -2737,121 +2753,10 @@ function createSunburst(level1, level2, level3, data) {
           </Row>
 
           <div className="scrollable-container">
-              <Row className="d-none d-xl-block" style={{ paddingTop: '80px'}}>
-                <Col xl={{span: 12}}>
-                  <div className="single-stats-containers">
-                    {
-                      stats.map((stat, index) => {
-                        return (
-                          <SingleStat
-                            key={index}
-                            stats={stat.stats}
-                            color={stat.color}
-                            loading={loadingStatsData}
-                          />
-                        )
-                      })
-                    }
-                  </div>
-                </Col>
-              </Row>
-              <Row className="d-xl-none" style={{ paddingTop: '80px'}}>
-                <Col lg={{span: 12}}>
-                  <div className="single-stats-containers">
-                    {
-                      stats.map((stat, index) => {
-                        if (index >= (stats.length / 2))
-                          return null
 
-                        return (
-                          <SingleStat
-                            key={index}
-                            stats={stat.stats}
-                            color={stat.color}
-                            loading={loadingStatsData}
-                          />
-                        )
-                      })
-                    }
-                  </div>
-                </Col>
-                <Col lg={{span: 12}}>
-                  <div className="single-stats-containers">
-                    {
-                      stats.map((stat, index) => {
-                        if (index < (stats.length / 2))
-                          return null
-
-                        return (
-                          <SingleStat
-                            key={index}
-                            stats={stat.stats}
-                            color={stat.color}
-                            loading={loadingStatsData}
-                          />
-                        )
-                      })
-                    }
-                  </div>
-                </Col>
-              </Row>
               <Row className="dashboard-charts-container">
                 <Col>
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Trials" color="red" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg={{span: 6}}>
-                      <PrismPieChart
-                        title="Trial Status"
-                        colors="rainbow"
-                        chartData={trialStatusPieChartData}
-                        loading={loadingTrialsData}
-                      />
-                    </Col>
-                    <Col lg={{span: 6}}>
-                      <PrismPieChart
-                        colors="rainbow"
-                        title="Trial Purpose"
-                        chartData={trialPurposePieChartData}
-                        loading={loadingTrialsData}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg={{span: 6}}>
-                      <PrismPieChart
-                        colors="rainbow"
-                        title="Randomization"
-                        chartData={trialRandomizationPieChartData}
-                        loading={loadingTrialsData}
-                      />
-                    </Col>
-                    <Col lg={{span: 6}}>
-                      <PrismPieChart
-                        colors="rainbow"
-                        title="Masking"
-                        chartData={trialMaskingPieChartData}
-                        loading={loadingTrialsData}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <PrismLineChart
-                        colors="rainbow"
-                        title="Trials Per Year"
-                        chartData={cumulativeTrialsLineChartData}
-                        xAxisLabel="Year"
-                        yAxisLabel="Trials"
-                        showLegend={false}
-                        tooltip={false}
-                        loading={loadingTrialsData}
-                      />
-                    </Col>
-                  </Row>
+
 
 
                   <Row>
@@ -2862,321 +2767,21 @@ function createSunburst(level1, level2, level3, data) {
                       chartData={trialsLandscapeChartData}
                       chartHeight={500}
                       type={'time'}
-                      format={'%Y-%m'}
-                      precision={'month'}
+                      format={'%Y'}
+                      precision={'year'}
                       axisBottomFormat={'%Y'}
-                      tickValues={'every 1 year'}
+                      tickValues={'every 5 years'}
                       minNodeSize={trialsLandscapeMinNodeSize}
                       maxNodeSize={trialsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
-                      yAxisLabel={"Phase"}
-                      zAxisLabel={"Trial Volume"}
+                      yAxisLabel={"Condition"}
+                      zAxisLabel={"Sample Size"}
                       loading={loadingLandscapeData}
                     />
                   </Col>
                   </Row>
 
 
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Populations" color="orange" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg={{span: 6}}>
-                      <PrismPieChart
-                        colors="orange"
-                        title="Age Groups"
-                        chartData={trialAgeGroupsPieChartData}
-                        loading={loadingPopulationData}
-                      />
-                    </Col>
-                    <Col lg={{span: 6}}>
-                      <PrismPieChart
-                        colors="orange"
-                        title="Single or Multi-Site"
-                        chartData={singleMultiSitePieChartData}
-                        loading={loadingPopulationData}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="orange"
-                      title="Healthy Volunteers"
-                      chartData={populationVolunteersPieChartData}
-                      loading={loadingPopulationData}
-                    />
-                  </Col>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="orange"
-                      title="Settings"
-                      chartData={populationEnrollmentPieChartData}
-                      loading={loadingPopulationData}
-                    />
-                  </Col>
-                  </Row>
-
-
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="Phase vs. Trial Enrollment"
-                      colors="rainbow"
-                      chartData={populationsLandscapeChartData}
-                      chartHeight={600}
-                      type={'linear'}
-                      xMax={'auto'}
-                      xMin={0}
-                      xVals={["Behavioral", "Device", "Diagnostic Test", "Other", "Procedure"]}
-                      yVals={["Early Phase 1", "Phase 1", "Phase 1/Phase 2", "Phase 2", "Phase2/Phase3", "Phase 3", "Phase 4", "N/A"]}
-                      // type: 'linear', min: 0, max: 'auto'
-                      minNodeSize={populationsLandscapeMinNodeSize}
-                      maxNodeSize={populationsLandscapeMaxNodeSize}
-                      xAxisLabel={"Enrollment"}
-                      yAxisLabel={"Phase"}
-                      zAxisLabel={"Trial Volume"}
-
-                      loading={loadingLandscapeData}
-                    />
-                  </Col>
-                  </Row>
-
-
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Interventions" color="yellow" />
-                    </Col>
-                  </Row>
-                  <Row>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="yellow"
-                      title="Interventions Types"
-                      chartData={interventionTypesPieChartData}
-                      loading={loadingInterventionsData}
-                    />
-                  </Col>
-
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="yellow"
-                      title="Number of Intervention Arms"
-                      chartData={interventionArmsPieChartData}
-                      loading={loadingInterventionsData}
-                    />
-                  </Col>
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <PrismAreaBump
-                        colors="rainbow"
-                        title="Interventions Use Over Time"
-                        chartData={interventionsAreaBumpChart}
-                        xAxisLabel="Year"
-                        yAxisLabel=""
-                        loading={loadingInterventionsData}
-                      />
-                    </Col>
-                  </Row>
-
-
-
-
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="Phase vs. Intervention Type"
-                      colors="yellow"
-                      chartData={interventionsLandscapeChartData}
-                      chartHeight={500}
-                      type={"point"}
-                      minNodeSize={interventionsLandscapeMinNodeSize}
-                      maxNodeSize={interventionsLandscapeMaxNodeSize}
-                      xAxisLabel={"Start Date"}
-                      yAxisLabel={"Phase"}
-
-                      yVals={interventionsYs}
-                      zAxisLabel={"Trial Volume"}
-                      loading={loadingLandscapeData}
-                    />
-                  </Col>
-                  </Row>
-
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Outcomes" color="green" />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="green"
-                      title="Number of Primary Outcomes"
-                      chartData={primaryOutcomesPieData}
-                      loading={loadingOutcomesData}
-                    />
-                  </Col>
-
-                    <Col lg={{span: 6}}>
-                      <PrismBarChart
-                        color="green"
-                        layout="horizontal"
-                        title="Top 10 Outcomes"
-                        chartData={outcomesTop10ParentBarChartData.data}
-                        groupKeys={outcomesTop10ParentBarChartData.group_keys}
-                        indexKey="outcome"
-                        xAxisLabel=""
-                        yAxisLabel=""
-                        loading={loadingOutcomesData}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <PrismAreaBump
-                        colors="rainbow"
-                        title="Outcome Use Over Time"
-                        chartData={outcomesAreaBump}
-                        xAxisLabel="Year"
-                        yAxisLabel=""
-                        loading={loadingOutcomesData}
-                      />
-                    </Col>
-                  </Row>
-
-
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="Intervention Type vs. Outcome Type"
-                      colors="green"
-                      chartData={outcomesLandscapeChartData}
-                      chartHeight={1000}
-                      type={"point"}
-                      minNodeSize={outcomesLandscapeMinNodeSize}
-                      maxNodeSize={outcomesLandscapeMaxNodeSize}
-                      xAxisLabel={"Intervention Type"}
-                      yAxisLabel={"Outcomes"}
-                      zAxisLabel={"Trial Volume"}
-                      loading={loadingLandscapeData}
-                    />
-                  </Col>
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Sponsors" color="blue" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg={{span: 6}}>
-                      <PrismPieChart
-                        colors="blue"
-                        title="Sponsor Type Breakdown"
-                        chartData={sponsorTypePieChartData}
-                        loading={loadingSponsorsData}
-                        />
-                      </Col>
-
-                    <Col lg={{span: 6}}>
-                      <PrismBarChart
-                        color="blue"
-                        layout="horizontal"
-                        title="Top 10 Sponsors"
-                        chartData={sponsorsTop10ByTrialsBarChartData.data}
-                        groupKeys={sponsorsTop10ByTrialsBarChartData.group_keys}
-                        indexKey="sponsor"
-                        yAxisLabel=""
-                        xAxisLabel="Trials"
-                        showLegend={false}
-                        loading={loadingSponsorsData}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <PrismSunburst
-                        colors="rainbow"
-                        title="Sponsors Breakdown"
-                        chartData={sponsorsSunburstChart}
-                        loading={loadingSponsorsSunburstChart}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="Sponsor Activity Over Time"
-                      colors="rainbow"
-                      chartData={sponsorsLandscapeChartData}
-                      chartHeight={900}
-                      type={'time'}
-                      format={'%Y-%m'}
-                      precision={'month'}
-                      xFormat="time:%Y-%m"
-                      axisBottomFormat={'%Y'}
-                      tickValues={'every 1 year'}
-                      minNodeSize={sponsorsLandscapeMinNodeSize}
-                      maxNodeSize={sponsorsLandscapeMaxNodeSize}
-                      xAxisLabel={"Start Date"}
-                      yAxisLabel={"Sponsor"}
-                      zAxisLabel={"Enrollment"}
-                      loading={loadingLandscapeData}
-                    />
-                  </Col>
-                  </Row>
-
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Geography" color="indigo" />
-                    </Col>
-                  </Row>
-                  <Row>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="indigo"
-                      title="Regions"
-                      chartData={regionsPieChartData}
-                      loading={loadingGeographyData}
-                    />
-                  </Col>
-
-                    <Col lg={{span: 6}}>
-                      <PrismBarChart
-                        color="indigo"
-                        layout="horizontal"
-                        title="Top 10 Countries"
-                        chartData={countriesTop10BarChartData.data}
-                        groupKeys={countriesTop10BarChartData.group_keys}
-                        indexKey="country"
-                        yAxisLabel=""
-                        xAxisLabel=""
-                        showLegend={false}
-                        loading={loadingSponsorsData}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <PrismChoropleth
-                        colors="rainbow"
-                        title="Trial Volume By Country"
-                        chartData={geographyFacilitiesChartData}
-                        loading={loadingGeographyData}
-                      />
-                    </Col>
-                  </Row>
 
                   <Row>
                     <Col>
