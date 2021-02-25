@@ -97,7 +97,7 @@ function SearchFilterSection(props) {
 function SearchFilters(props) {
 
   const colors = {
-    'Trials': 'red',
+    'Studies': 'red',
     'Populations': 'orange',
     'Interventions': 'yellow',
     'Outcomes': 'green',
