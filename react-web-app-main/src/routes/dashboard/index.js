@@ -494,7 +494,7 @@ function createSunburst(level1, level2, level3, data) {
           create_filter_dict([...type_set].sort(), unique_type)
 
 
-          trials_filts["Comparator"] = unique_status;
+
           trials_filts["Design"] = unique_type;
 
 
@@ -520,6 +520,7 @@ function createSunburst(level1, level2, level3, data) {
           interventions_filts["Interventions"] = unique_interventions
           interventions_filts["Intervention Type"] = unique_phases
           interventions_filts["Activity Type"] = unique_purpose
+          interventions_filts["Comparator"] = unique_status;
 
 
           // OUTCOMES
