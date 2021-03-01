@@ -80,7 +80,7 @@ const PrismStaticScatterplot = (props) => {
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
             animate={ false }
-            
+            onClick={(node, e) => allModal(e, node)}
             axisTop={ null }
             axisRight={ null }
             axisBottom={{
