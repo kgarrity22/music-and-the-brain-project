@@ -25,6 +25,7 @@ import PrismStaticScatterplot from './components/scatterplot-static'
 import PrismChoropleth from './components/choropleth'
 import MainTable from './components/tabulator'
 import PrismTextBlock from './components/text-block'
+import PrismModal from './components/modal'
 
 
 import './index.css'
@@ -2738,6 +2739,7 @@ function createSunburst(level1, level2, level3, data) {
               <Row className="dashboard-charts-container">
                 <Col>
 
+
                   <Row className="first-block">
                   <Col>
                     <PrismTextBlock
@@ -2831,6 +2833,10 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingOutcomesLandscapeData}
                     />
                   </Col>
+                  </Row>
+
+                  <Row>
+                    <PrismModal />
                   </Row>
 
 

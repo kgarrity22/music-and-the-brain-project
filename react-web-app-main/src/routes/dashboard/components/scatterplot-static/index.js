@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { Dropdown } from 'react-bootstrap'
 import Spinner from 'react-spinkit'
@@ -6,24 +6,38 @@ import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 
 import { COLOR_SCHEMES } from '../../../../constants'
 import ChartTooltip from '../tooltip'
+import Modal from 'react-modal';
 
 import './index.css'
 
 const PrismStaticScatterplot = (props) => {
 
-  // const calculateHeight = () => {
-  //   let numYKeys = 0
-  //   for(let i=0; i<props.chartData.length; i++) {
-  //     const dataSet = props.chartData[i]
-  //     console.log(dataSet)
-  //     if (dataSet.data && dataSet.data.length > numYKeys)
-  //       numYKeys = dataSet.data.length
-  //   }
-  //   console.log(numYKeys)
-  //   console.log(numYKeys * 10)
-  //   return numYKeys * 10
-  // }
-  // const height = calculateHeight()
+  const customStyles = {
+    content : {
+      top                   : '50%',
+      left                  : '50%',
+      right                 : 'auto',
+      bottom                : 'auto',
+      marginRight           : '-50%',
+      transform             : 'translate(-50%, -50%)'
+    }
+  };
+
+  var subtitle;
+  const [modalIsOpen, setIsOpen] = useState(false);
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    // subtitle.style.color = '#f00';
+  }
+
+  function closeModal(){
+    setIsOpen(false);
+  }
 
 
 
@@ -54,6 +68,7 @@ const PrismStaticScatterplot = (props) => {
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
             animate={ false }
+            onClick={openModal}
             axisTop={ null }
             axisRight={ null }
             axisBottom={{
@@ -93,6 +108,25 @@ const PrismStaticScatterplot = (props) => {
               }]
             }]}
           />
+          <Modal
+            isOpen={modalIsOpen}
+            onAfterOpen={afterOpenModal}
+            onRequestClose={closeModal}
+            style={customStyles}
+            contentLabel="Example Modal"
+          >
+
+            <h2 ref={_subtitle => (subtitle = _subtitle)}>Hello</h2>
+            <button onClick={closeModal}>close</button>
+            <div>I am a modal</div>
+            <form>
+              <input />
+              <button>tab navigation</button>
+              <button>stays</button>
+              <button>inside</button>
+              <button>the modal</button>
+            </form>
+          </Modal>
         </div>
       }
       {
