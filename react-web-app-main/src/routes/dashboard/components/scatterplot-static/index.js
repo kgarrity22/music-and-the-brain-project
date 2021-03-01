@@ -7,6 +7,12 @@ import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 import { COLOR_SCHEMES } from '../../../../constants'
 import ChartTooltip from '../tooltip'
 import Modal from 'react-modal';
+// import MainTable from '../tabulator'
+import ModalTable from '../modal-table'
+
+// import 'react-tabulator/lib/styles.css';
+// import 'react-tabulator/css/bootstrap/tabulator_bootstrap.min.css';
+// import 'react-tabulator/lib/styles.css';
 
 import './index.css'
 
@@ -115,17 +121,48 @@ const PrismStaticScatterplot = (props) => {
             style={customStyles}
             contentLabel="Example Modal"
           >
-
             <h2 ref={_subtitle => (subtitle = _subtitle)}>Hello</h2>
             <button onClick={closeModal}>close</button>
             <div>I am a modal</div>
-            <form>
-              <input />
-              <button>tab navigation</button>
-              <button>stays</button>
-              <button>inside</button>
-              <button>the modal</button>
-            </form>
+            <ModalTable
+              data={[{
+      name: 'Leanne Graham',
+      email: 'Sincere@april.biz',
+      age: 28,
+      status: 'Active'
+    },
+    {
+      name: 'Ervin Howell',
+      email: 'Shanna@melissa.tv',
+      age: 35,
+      status: 'Active'
+    },
+    {
+      name: 'Clementine Bauch',
+      email: 'Nathan@yesenia.net',
+      age: 33,
+      status: 'Inactive'
+    },
+    {
+      name: 'Patricia Lebsack',
+      email: 'Julianne@kory.org',
+      age: 25,
+      status: 'Active'
+    }]}
+              columns={[ {
+      Header: 'Name',
+      accessor: 'name'
+    }, {
+      Header: 'Email',
+      accessor: 'email'
+    }, {
+      Header: 'Age',
+      accessor: 'age'
+    }, {
+      Header: 'Status',
+      accessor: 'status'
+    }]}
+            />
           </Modal>
         </div>
       }
