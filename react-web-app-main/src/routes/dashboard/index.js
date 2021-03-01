@@ -1341,6 +1341,8 @@ function createSunburst(level1, level2, level3, data) {
 
             let z = parseInt(record.get('Sample_Size'))
 
+            let clickId = record.get('Covidence_ID')
+
             let y_list = ally.split(",")
             let x_list = date.split(",")
 
@@ -1353,7 +1355,7 @@ function createSunburst(level1, level2, level3, data) {
                   if (x !== "") {
 
                     data_list.push([status, x, y, z])
-                    let as_string = status + "; " + x + "; " + y
+                    let as_string = status + "; " + x + "; " + y + "; " + clickId
                   //  console.log("as string: ", as_string)
                     uni.add(as_string)
                   }
@@ -1386,7 +1388,7 @@ function createSunburst(level1, level2, level3, data) {
             }
 
             let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": ids[3]}
 
             new_data_list.push(item)
           }

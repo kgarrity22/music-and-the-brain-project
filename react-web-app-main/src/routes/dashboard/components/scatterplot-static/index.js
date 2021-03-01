@@ -9,12 +9,17 @@ import ChartTooltip from '../tooltip'
 import Modal from 'react-modal';
 // import MainTable from '../tabulator'
 import ModalTable from '../modal-table'
+import './index.css'
+
 
 // import 'react-tabulator/lib/styles.css';
 // import 'react-tabulator/css/bootstrap/tabulator_bootstrap.min.css';
 // import 'react-tabulator/lib/styles.css';
 
-import './index.css'
+var Airtable = require('airtable');
+var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
+
+
 
 const PrismStaticScatterplot = (props) => {
 
@@ -31,6 +36,8 @@ const PrismStaticScatterplot = (props) => {
 
   var subtitle;
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [allTableData, setAllTableData] = useState([])
+  const [modalTitle, setModalTitle] = useState("")
 
   function openModal() {
     setIsOpen(true);
@@ -45,11 +52,69 @@ const PrismStaticScatterplot = (props) => {
     setIsOpen(false);
   }
 
-  function allModal(e, node){
-    // console.log("E: ", e)
-    console.log("node: ", node)
-    openModal()
-  }
+  function getTableData(node){
+    //console.log("getTableData")
+        // var Airtable = require('airtable');
+        // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+
+          let id = node.data.clickId
+          var table_data = []
+
+        return new Promise((resolve, reject) => {
+          base('Studies').select({
+
+              view: "Grid view"
+          }).eachPage(function page(records, fetchNextPage) {
+
+              records.forEach(function(record) {
+                if (String(record.get('Covidence_ID'))===id){
+                  table_data.push(record.fields)
+                }
+
+              });
+              fetchNextPage();
+          }, function done(err) {
+              if (err) {
+                console.error(err);
+                return reject({});
+              }
+
+              resolve(table_data)
+          })
+        })
+    }
+    const allModal = async (node) => {
+
+      const res = await getTableData(node)
+      console.log("All DATA Fetching?: ", res)
+      setAllTableData(res)
+      setModalTitle(node.data.y)
+      openModal()
+
+    }
+
+  // function allModal(e, node){
+  //   console.log("E: ", e)
+  //   console.log("node: ", node)
+  //   openModal()
+  // }
+  let columns = [
+    // { Header: "Authors", accessor: "Authors" },
+    { Header: "Year", accessor: "Year" },
+    // { Header: "Title", accessor: "Title" },
+    { Header: "Location", accessor: "Location" },
+    // { Header: "Conditions", accessor: "Conditions" },
+    // { Header: "Design", accessor: "Design" },
+    // { Header: "Intervention Type", accessor: "Intervention_Type" },
+    // { Header: "Study Population", accessor: "Study_Pop_Stnd" },
+    // { Header: "Race/Ethnicity", accessor: "Race_Eth" },
+    // { Header: "Sample Size", accessor: "Sample_Size" },
+    // { Header: "Interventions", accessor: "Interventions" },
+    // { Header: "Activity_Type", accessor: "Activity_Type" },
+    // { Header: "Comparator", accessor: "Comparator" },
+    // { Header: "Outcomes", accessor: "Outcomes" },
+    // { Header: "Results", accessor: "Results" },
+  ]
 
 
 
@@ -80,7 +145,7 @@ const PrismStaticScatterplot = (props) => {
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
             animate={ false }
-            onClick={(node, e) => allModal(e, node)}
+            onClick={(node, e) => allModal(node)}
             axisTop={ null }
             axisRight={ null }
             axisBottom={{
@@ -128,47 +193,12 @@ const PrismStaticScatterplot = (props) => {
             contentLabel="Example Modal"
             ariaHideApp={false}
           >
-            <h2 ref={_subtitle => (subtitle = _subtitle)}>Hello</h2>
+            <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
             <button onClick={closeModal}>close</button>
-            <div>I am a modal</div>
+
             <ModalTable
-              data={[{
-      name: 'Leanne Graham',
-      email: 'Sincere@april.biz',
-      age: 28,
-      status: 'Active'
-    },
-    {
-      name: 'Ervin Howell',
-      email: 'Shanna@melissa.tv',
-      age: 35,
-      status: 'Active'
-    },
-    {
-      name: 'Clementine Bauch',
-      email: 'Nathan@yesenia.net',
-      age: 33,
-      status: 'Inactive'
-    },
-    {
-      name: 'Patricia Lebsack',
-      email: 'Julianne@kory.org',
-      age: 25,
-      status: 'Active'
-    }]}
-              columns={[ {
-      Header: 'Year',
-      accessor: 'name'
-    }, {
-      Header: 'Email',
-      accessor: 'email'
-    }, {
-      Header: 'Age',
-      accessor: 'age'
-    }, {
-      Header: 'Status',
-      accessor: 'status'
-    }]}
+              data={allTableData}
+              columns={columns}
             />
           </Modal>
         </div>
