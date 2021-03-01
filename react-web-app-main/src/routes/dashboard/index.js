@@ -2751,7 +2751,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Trial Volume: Phase vs. Start Date"
+                      title="Conditions Over Time"
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
                       chartHeight={500}
@@ -2834,17 +2834,6 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
-
-                  <Row>
-                    <PrismModal />
-                  </Row>
-
-
-
-
-
-
-
 
 
 

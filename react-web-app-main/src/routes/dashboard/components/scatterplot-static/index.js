@@ -45,6 +45,12 @@ const PrismStaticScatterplot = (props) => {
     setIsOpen(false);
   }
 
+  function allModal(e, node){
+    // console.log("E: ", e)
+    console.log("node: ", node)
+    openModal()
+  }
+
 
 
   return (
@@ -74,7 +80,7 @@ const PrismStaticScatterplot = (props) => {
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
             animate={ false }
-            onClick={openModal}
+            
             axisTop={ null }
             axisRight={ null }
             axisBottom={{
@@ -120,6 +126,7 @@ const PrismStaticScatterplot = (props) => {
             onRequestClose={closeModal}
             style={customStyles}
             contentLabel="Example Modal"
+            ariaHideApp={false}
           >
             <h2 ref={_subtitle => (subtitle = _subtitle)}>Hello</h2>
             <button onClick={closeModal}>close</button>
@@ -150,7 +157,7 @@ const PrismStaticScatterplot = (props) => {
       status: 'Active'
     }]}
               columns={[ {
-      Header: 'Name',
+      Header: 'Year',
       accessor: 'name'
     }, {
       Header: 'Email',
