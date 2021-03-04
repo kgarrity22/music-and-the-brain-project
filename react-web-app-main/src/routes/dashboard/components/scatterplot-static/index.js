@@ -143,7 +143,7 @@ const PrismStaticScatterplot = (props) => {
             colors={ COLOR_SCHEMES['rainbow'] }
             nodeSize={{ key: 'z', values: [props.minNodeSize, props.maxNodeSize], sizes: [10, 150] }}
 
-            tooltip={ function(e) { console.log("Tooltip E: ", e.node.data.all);
+            tooltip={ function(e) { console.log("Tooltip E: ", e.node.data);
               return <LandscapeTooltip all={e.node.data.all} />} }
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }

@@ -1499,7 +1499,7 @@ function createSunburst(level1, level2, level3, data) {
                 //console.log("x: ", x)
                 if (x !== "") {
 
-                  data_list.push([status, x, y, z, clickId])
+                  data_list.push([status, x, y, z, clickId[0]])
                   let as_string = status + "; " + x + "; " + y + "; " + z + "; " + clickId[0]
                 //  console.log("as string: ", as_string)
                   uni.add(as_string)
@@ -1616,6 +1616,7 @@ function createSunburst(level1, level2, level3, data) {
     let data_list = []
     let uni = new Set()
     let ys = new Set()
+    let all = []
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1628,6 +1629,7 @@ function createSunburst(level1, level2, level3, data) {
           records.forEach(function(record) {
             //statuses.add(record.get('Status'))
             // get all status
+            all.push(record.fields)
             let status = record.get('Results')
 
             let allx = String(record.get('Conditions'))
@@ -1635,6 +1637,10 @@ function createSunburst(level1, level2, level3, data) {
             let ally = String(record.get('Interventions'))
             // console.log("INTERVEN: ", ally)
             let z = parseInt(record.get('Sample_Size'))
+
+            let clickId = []
+            clickId.push(String(record.get('Covidence_ID')))
+
 
             let y_list = ally.split(",")
             let x_list  = allx.split(",")
@@ -1647,8 +1653,8 @@ function createSunburst(level1, level2, level3, data) {
                 for (var x of x_list){
                   if (x !== "") {
 
-                    data_list.push([y, x, status, z])
-                    let as_string = y + "; " + x + "; " + status
+                    data_list.push([y, x, status, z, clickId[0]])
+                    let as_string = y + "; " + x + "; " + status + "; " + clickId[0]
                     uni.add(as_string)
                   }
                 }
@@ -1671,16 +1677,7 @@ function createSunburst(level1, level2, level3, data) {
 
           let xs = []
 
-          // for (let i = 0; i < ys.size; i++){
-          //   let item = {}
-          //   if (i < 5){
-          //     item["Completed"] = {"x": xs[i], "y": [...ys].sort().reverse()[i], "z": 0}
-          //     new_data_list.push(item)
-          //   } else {
-          //     item["Completed"] = {"x": xs[0], "y": [...ys].sort().reverse()[i], "z": 0}
-          //     new_data_list.push(item)
-          //   }
-          // }
+
 
 
           //console.log("Ys: ", ys)
@@ -1688,13 +1685,30 @@ function createSunburst(level1, level2, level3, data) {
 
             var ids = i.split("; ")
             let z = 0;
+
+            let clickids = []
+            if (clickids.indexOf(ids[3])===-1){
+              clickids.push(ids[3])
+            }
+
             for (var arr of data_list){
+
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
+                if (clickids.indexOf(arr[4])===-1){
+                  clickids.push(arr[4])
+                }
               }
             }
+
             let item = {}
-            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z}
+            let limited = []
+            for (let j of all) {
+              if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+                limited.push(j)
+              }
+            }
+            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z, "clickId": clickids, "all": limited}
 
             new_data_list.push(item)
           }
@@ -1753,6 +1767,7 @@ function createSunburst(level1, level2, level3, data) {
     let data_list = []
     let uni = new Set()
     let ys = new Set()
+    let all = []
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1764,10 +1779,13 @@ function createSunburst(level1, level2, level3, data) {
 
           records.forEach(function(record) {
 
+            all.push(record.fields)
             let status = record.get('Results')
             let allx = String(record.get('Conditions'))
             let ally = String(record.get('Outcomes'))
             let z = parseInt(record.get('Sample_Size'))
+            let clickId = []
+            clickId.push(String(record.get('Covidence_ID')))
             // console.log("Z: ", z)
 
             let y_list = ally.split(",")
@@ -1784,8 +1802,8 @@ function createSunburst(level1, level2, level3, data) {
                       y = y.slice(1, y.length)
                     }
 
-                    data_list.push([y, x, status, z])
-                    let as_string = y + "; " + x + "; " + status + "; " + z
+                    data_list.push([y, x, status, z, clickId[0]])
+                    let as_string = y + "; " + x + "; " + status + "; " + z + "; " + clickId[0]
                     uni.add(as_string)
                   }
                 }
@@ -1808,29 +1826,36 @@ function createSunburst(level1, level2, level3, data) {
           //console.log("Ys: ", ys)
           let xs = []
 
-          // for (let i = 0; i < ys.size; i++){
-          //   let item = {}
-          //   if (i < 5){
-          //     item["Completed"] = {"x": xs[i], "y": [...ys].sort()[i], "z": 0}
-          //     new_data_list.push(item)
-          //   } else {
-          //     item["Completed"] = {"x": xs[0], "y": [...ys].sort()[i], "z": 0}
-          //     new_data_list.push(item)
-          //   }
-          // }
+
 
           //console.log("OUTCOMES: ", [...uni].sort())
           for (var i of [...uni].sort()){
 
             var ids = i.split("; ")
-            // let z = 0;
-            // for (var arr of data_list){
-            //   if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
-            //     z += arr[3]
-            //   }
-            // }
+            let z = 0;
+            let clickids = []
+            if (clickids.indexOf(ids[3])===-1){
+              clickids.push(ids[3])
+            }
+
+            for (var arr of data_list){
+
+              if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                z += arr[3]
+                if (clickids.indexOf(arr[4])===-1){
+                  clickids.push(arr[4])
+                }
+              }
+            }
+
             let item = {}
-            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": ids[3]}
+            let limited = []
+            for (let j of all) {
+              if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+                limited.push(j)
+              }
+            }
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": clickids, "all": limited}
 
             new_data_list.push(item)
           }
@@ -1896,6 +1921,7 @@ function createSunburst(level1, level2, level3, data) {
     let data_list = []
     let uni = new Set()
     let ys = new Set()
+    let all = []
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1908,6 +1934,7 @@ function createSunburst(level1, level2, level3, data) {
           records.forEach(function(record) {
             //statuses.add(record.get('Status'))
             // get all status
+            all.push(record.fields)
             let status = record.get('Status')
             let month = String(record.get('Start_Month'))
             let year = String(record.get('Start_Year'))
@@ -1918,6 +1945,8 @@ function createSunburst(level1, level2, level3, data) {
             } else {
               date = year + "-" + month
             }
+            let clickId = []
+            clickId.push(String(record.get('Covidence_ID')))
 
             // let allx = date.split(",")
 
@@ -1934,8 +1963,8 @@ function createSunburst(level1, level2, level3, data) {
               if (y !== ""){
                 for (var x of x_list){
                   if (x !== "") {
-                    data_list.push([y, x, status, z])
-                    let as_string = y + "; " + x + "; " + status
+                    data_list.push([y, x, status, z, clickId[0]])
+                    let as_string = y + "; " + x + "; " + status + "; " + clickId[0]
                     uni.add(as_string)
                   }
                 }
@@ -1973,22 +2002,35 @@ function createSunburst(level1, level2, level3, data) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
+          let clickids = []
           //console.log("Ys: ", ys)
           let sorted = [...uni].sort()
           //console.log("UNI: ", sorted)
           for (var i of sorted){
 
             var ids = i.split("; ")
+            if (clickids.indexOf(ids[3])===-1){
+              clickids.push(ids[3])
+            }
             let z = 0;
             for (var arr of data_list){
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
+                if (clickids.indexOf(arr[4])===-1){
+                  clickids.push(arr[4])
+                }
               }
             }
             let item = {}
+            let limited = []
+            for (let j of all) {
+              if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+                limited.push(j)
+              }
+            }
             // console.log("IDS2: ", ids[2])
             if (Object.keys(updated_sponsors_dict).indexOf(ids[0])!==-1){
-              item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z}
+              item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z, "clickIds": clickids, "all": limited}
               new_data_list.push(item)
             }
 
