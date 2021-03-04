@@ -17,6 +17,8 @@
   margin-bottom: 0px;
 }
 
+
+
 .chart-tooltip .tooltip-text {
   font-size: 13px;
   line-height: 20px;
@@ -31,4 +33,29 @@
   height: 12px;
   margin-left: 5px;
   margin-right: 5px;
+}
+
+.landsape-tooltip-holder {
+  background-color: #E1E1E1;
+  width: 200px;
+  overflow: auto;
+  list-style-type: none;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.landsape-tooltip-holder li {
+  list-style-type: none;
+  text-decoration: none;
+  font-size: 8px;
+  padding: 3px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+.landsape-tooltip-holder hr {
+  padding-bottom: 0px;
+  margin-bottom: 0px;
 }
