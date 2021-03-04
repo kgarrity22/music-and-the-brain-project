@@ -8,7 +8,7 @@ import { COLOR_SCHEMES } from '../../../../constants'
 import ChartTooltip from '../tooltip'
 import LandscapeTooltip from '../landscape-tooltip'
 import Modal from 'react-modal';
-// import MainTable from '../tabulator'
+import MainTable from '../tabulator'
 import ModalTable from '../modal-table'
 import './index.css'
 
@@ -20,20 +20,20 @@ import './index.css'
 var Airtable = require('airtable');
 var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
 
-
+// const customStyles = {
+//   content : {
+//     top                   : '50%',
+//     left                  : '10%',
+//     right                 : 'auto',
+//     bottom                : 'auto',
+//     marginRight           : '-50%',
+//     transform             : 'translate(-50%, -50%)'
+//   }
+// };
 
 const PrismStaticScatterplot = (props) => {
 
-  const customStyles = {
-    content : {
-      top                   : '50%',
-      left                  : '50%',
-      right                 : 'auto',
-      bottom                : 'auto',
-      marginRight           : '-50%',
-      transform             : 'translate(-50%, -50%)'
-    }
-  };
+
 
   var subtitle;
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -84,38 +84,29 @@ const PrismStaticScatterplot = (props) => {
   //         })
   //       })
   //   }
-    const allModal = async (node) => {
 
-      // const res = await getTableData(node)
-      // console.log("All DATA Fetching?: ", res)
-      setAllTableData([])
-      setModalTitle(node.data.y)
-      openModal()
-
-    }
+  function allModal(node){
+    console.log("NODE: ", node)
+    setAllTableData(node.data.all)
+    setModalTitle(node.data.y)
+    openModal()
+  }
+    // const allModal = (node) => {
+    //
+    //   // const res = await getTableData(node)
+    //   // console.log("All DATA Fetching?: ", res)
+    //   setAllTableData([])
+    //   setModalTitle(node.data.y)
+    //   openModal()
+    //
+    // }
 
   // function allModal(e, node){
   //   console.log("E: ", e)
   //   console.log("node: ", node)
   //   openModal()
   // }
-  let columns = [
-    { Header: "Authors", accessor: "Authors" },
-    { Header: "Year", accessor: "Year" },
-    { Header: "Title", accessor: "Title" },
-    { Header: "Location", accessor: "Location" },
-    { Header: "Conditions", accessor: "Conditions" },
-    { Header: "Design", accessor: "Design" },
-    { Header: "Intervention Type", accessor: "Intervention_Type" },
-    { Header: "Study Population", accessor: "Study_Pop_Stnd" },
-    { Header: "Race/Ethnicity", accessor: "Race_Eth" },
-    { Header: "Sample Size", accessor: "Sample_Size" },
-    { Header: "Interventions", accessor: "Interventions" },
-    { Header: "Activity_Type", accessor: "Activity_Type" },
-    { Header: "Comparator", accessor: "Comparator" },
-    { Header: "Outcomes", accessor: "Outcomes" },
-    { Header: "Results", accessor: "Results" },
-  ]
+
 
 //<ChartTooltip text={e.node.data.y} value={e.node.data.z} />
 
@@ -143,7 +134,8 @@ const PrismStaticScatterplot = (props) => {
             colors={ COLOR_SCHEMES['rainbow'] }
             nodeSize={{ key: 'z', values: [props.minNodeSize, props.maxNodeSize], sizes: [10, 150] }}
 
-            tooltip={ function(e) { console.log("Tooltip E: ", e.node.data);
+            tooltip={ function(e) {
+              //console.log("Tooltip E: ", e.node.data);
               return <LandscapeTooltip all={e.node.data.all} />} }
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
@@ -188,22 +180,26 @@ const PrismStaticScatterplot = (props) => {
               }]
             }]}
           />
+          <div className="scatter-modal">
           <Modal
             isOpen={modalIsOpen}
             onAfterOpen={afterOpenModal}
             onRequestClose={closeModal}
-            style={customStyles}
             contentLabel="Example Modal"
             ariaHideApp={false}
+            className="Modal"
           >
             <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
-            <button onClick={closeModal}>close</button>
-
-            <ModalTable
-              data={allTableData}
-              columns={columns}
-            />
+            
+            <div className="tableholder">
+              <MainTable
+                tabledata={allTableData}
+                height={"auto"}
+                />
+            </div>
           </Modal>
+          </div>
+
         </div>
       }
       {

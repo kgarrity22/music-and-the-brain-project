@@ -2946,6 +2946,7 @@ function createSunburst(level1, level2, level3, data) {
                     <MainTable
                       tabledata={allTableData}
                       updateData={allTableData}
+                      height={600}
                       />
                   </div>
                 </Col>

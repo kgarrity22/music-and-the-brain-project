@@ -10,7 +10,7 @@ import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme
 
   let options = {
 
-    height: 600,
+    // height: 600,
     placeholder: "Loading Data...",
     downloadDataFormatter: (data) => data,
     downloadReady: (fileContents, blob) => blob,
@@ -65,6 +65,7 @@ class MainTable extends React.Component {
           data={this.props.tabledata}
           updateData={this.props.updateData}
           options={options}
+          height={this.props.height}
         />
       </div>
     );

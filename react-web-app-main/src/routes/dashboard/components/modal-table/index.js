@@ -10,6 +10,7 @@ function Table({columns, data}) {
 
   // Render Data Table UI
   return (
+    <div className="table-container">
     <table {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
@@ -36,7 +37,10 @@ function Table({columns, data}) {
           )
         })}
       </tbody>
-    </table>
+      </table>
+    </div>
+
+
   )
 }
 
