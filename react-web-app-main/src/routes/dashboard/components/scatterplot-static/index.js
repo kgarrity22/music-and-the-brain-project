@@ -87,8 +87,16 @@ const PrismStaticScatterplot = (props) => {
 
   function allModal(node){
     console.log("NODE: ", node)
+    console.log("type: ", typeof(node.data.formattedX))
+    let title=""
+    if (typeof(node.data.formattedX)==='object'){
+      let x = String(node.data.x)
+      title = node.data.serieId + ": " + x.slice(4, 15) + " x " + node.data.y
+    } else {
+      title = node.data.serieId + ": " + node.data.x + " x " + node.data.y
+    }
     setAllTableData(node.data.all)
-    setModalTitle(node.data.y)
+    setModalTitle(title)
     openModal()
   }
     // const allModal = (node) => {
@@ -190,7 +198,7 @@ const PrismStaticScatterplot = (props) => {
             className="Modal"
           >
             <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
-            
+
             <div className="tableholder">
               <MainTable
                 tabledata={allTableData}
