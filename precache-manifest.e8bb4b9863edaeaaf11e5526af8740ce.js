@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "530f808d8d1340832e27602194668bcf",
+    "revision": "3acd98966d425ef61b3b27848ccd81ba",
     "url": "/music-and-the-brain-project/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/music-and-the-brain-project/static/css/2.880185b9.chunk.css"
   },
   {
-    "revision": "e77dc3a64934e30c43e2",
+    "revision": "559006f3b3e67e20b43f",
     "url": "/music-and-the-brain-project/static/css/main.dcc0eb74.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/music-and-the-brain-project/static/js/2.d611a0c4.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "e77dc3a64934e30c43e2",
-    "url": "/music-and-the-brain-project/static/js/main.150f3096.chunk.js"
+    "revision": "559006f3b3e67e20b43f",
+    "url": "/music-and-the-brain-project/static/js/main.000901ab.chunk.js"
   },
   {
     "revision": "63fa09f7401da4777619",
