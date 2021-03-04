@@ -6,6 +6,7 @@ import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 
 import { COLOR_SCHEMES } from '../../../../constants'
 import ChartTooltip from '../tooltip'
+import LandscapeTooltip from '../landscape-tooltip'
 import Modal from 'react-modal';
 // import MainTable from '../tabulator'
 import ModalTable from '../modal-table'
@@ -99,24 +100,24 @@ const PrismStaticScatterplot = (props) => {
   //   openModal()
   // }
   let columns = [
-    // { Header: "Authors", accessor: "Authors" },
+    { Header: "Authors", accessor: "Authors" },
     { Header: "Year", accessor: "Year" },
-    // { Header: "Title", accessor: "Title" },
+    { Header: "Title", accessor: "Title" },
     { Header: "Location", accessor: "Location" },
-    // { Header: "Conditions", accessor: "Conditions" },
-    // { Header: "Design", accessor: "Design" },
-    // { Header: "Intervention Type", accessor: "Intervention_Type" },
-    // { Header: "Study Population", accessor: "Study_Pop_Stnd" },
-    // { Header: "Race/Ethnicity", accessor: "Race_Eth" },
-    // { Header: "Sample Size", accessor: "Sample_Size" },
-    // { Header: "Interventions", accessor: "Interventions" },
-    // { Header: "Activity_Type", accessor: "Activity_Type" },
-    // { Header: "Comparator", accessor: "Comparator" },
-    // { Header: "Outcomes", accessor: "Outcomes" },
-    // { Header: "Results", accessor: "Results" },
+    { Header: "Conditions", accessor: "Conditions" },
+    { Header: "Design", accessor: "Design" },
+    { Header: "Intervention Type", accessor: "Intervention_Type" },
+    { Header: "Study Population", accessor: "Study_Pop_Stnd" },
+    { Header: "Race/Ethnicity", accessor: "Race_Eth" },
+    { Header: "Sample Size", accessor: "Sample_Size" },
+    { Header: "Interventions", accessor: "Interventions" },
+    { Header: "Activity_Type", accessor: "Activity_Type" },
+    { Header: "Comparator", accessor: "Comparator" },
+    { Header: "Outcomes", accessor: "Outcomes" },
+    { Header: "Results", accessor: "Results" },
   ]
 
-
+//<ChartTooltip text={e.node.data.y} value={e.node.data.z} />
 
   return (
     <div className="scatterplot-chart-container">
@@ -141,8 +142,9 @@ const PrismStaticScatterplot = (props) => {
             blendMode="multiply"
             colors={ COLOR_SCHEMES['rainbow'] }
             nodeSize={{ key: 'z', values: [props.minNodeSize, props.maxNodeSize], sizes: [10, 150] }}
-            tooltip={ function(e) { console.log("Tooltip E: ", e);
-              return <ChartTooltip text={e.node.data.y} value={e.node.data.z} />} }
+
+            tooltip={ function(e) { console.log("Tooltip E: ", e.node.data.all);
+              return <LandscapeTooltip all={e.node.data.all} />} }
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
             animate={ false }

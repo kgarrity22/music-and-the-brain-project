@@ -1,5 +1,6 @@
 table {
-  width: 100%;
+  width: 300px;
+  overflow: auto;
   border-spacing: 0;
   border: 1px solid black;
   tr {

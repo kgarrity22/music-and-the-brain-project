@@ -90,3 +90,9 @@
   left: 50%;
   color: #fff;
 }
+
+.table-holder {
+  width: 300px;
+  overflow: auto;
+  
+}
