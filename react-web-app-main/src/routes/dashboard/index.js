@@ -1321,6 +1321,7 @@ function createSunburst(level1, level2, level3, data) {
     let data_list = []
     let uni = new Set()
     let ys = new Set()
+    let all = []
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1333,6 +1334,7 @@ function createSunburst(level1, level2, level3, data) {
           records.forEach(function(record) {
             //statuses.add(record.get('Status'))
             // get all status
+            all.push(record.fields)
             let status = record.get('Design')
 
             let year = String(record.get('Year'))
@@ -1341,7 +1343,10 @@ function createSunburst(level1, level2, level3, data) {
 
             let z = parseInt(record.get('Sample_Size'))
 
-            let clickId = record.get('Covidence_ID')
+            let clickId = []
+            // console.log(record.get('Covidence_ID'))
+            clickId.push(String(record.get('Covidence_ID')))
+            // console.log("CLICKID: ", clickId)
 
             let y_list = ally.split(",")
             let x_list = date.split(",")
@@ -1354,8 +1359,8 @@ function createSunburst(level1, level2, level3, data) {
                   //console.log("x: ", x)
                   if (x !== "") {
 
-                    data_list.push([status, x, y, z])
-                    let as_string = status + "; " + x + "; " + y + "; " + clickId
+                    data_list.push([status, x, y, z, clickId[0]])
+                    let as_string = status + "; " + x + "; " + y + "; " + clickId[0]
                   //  console.log("as string: ", as_string)
                     uni.add(as_string)
                   }
@@ -1376,19 +1381,35 @@ function createSunburst(level1, level2, level3, data) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
+
           //console.log("Ys: ", ys)
           for (var i of uni){
 
             var ids = i.split("; ")
             let z = 0;
+            let clickids = []
+            if (clickids.indexOf(ids[3])===-1){
+              clickids.push(ids[3])
+            }
+
             for (var arr of data_list){
+
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
+                if (clickids.indexOf(arr[4])===-1){
+                  clickids.push(arr[4])
+                }
               }
             }
 
             let item = {}
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": ids[3]}
+            let limited = []
+            for (let j of all) {
+              if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+                limited.push(j)
+              }
+            }
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": clickids, "all": limited}
 
             new_data_list.push(item)
           }

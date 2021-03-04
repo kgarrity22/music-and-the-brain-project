@@ -52,42 +52,42 @@ const PrismStaticScatterplot = (props) => {
     setIsOpen(false);
   }
 
-  function getTableData(node){
-    //console.log("getTableData")
-        // var Airtable = require('airtable');
-        // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
-
-          let id = node.data.clickId
-          var table_data = []
-
-        return new Promise((resolve, reject) => {
-          base('Studies').select({
-
-              view: "Grid view"
-          }).eachPage(function page(records, fetchNextPage) {
-
-              records.forEach(function(record) {
-                if (String(record.get('Covidence_ID'))===id){
-                  table_data.push(record.fields)
-                }
-
-              });
-              fetchNextPage();
-          }, function done(err) {
-              if (err) {
-                console.error(err);
-                return reject({});
-              }
-
-              resolve(table_data)
-          })
-        })
-    }
+  // function getTableData(node){
+  //   //console.log("getTableData")
+  //       // var Airtable = require('airtable');
+  //       // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
+  //
+  //         let id = node.data.clickId
+  //         var table_data = []
+  //
+  //       return new Promise((resolve, reject) => {
+  //         base('Studies').select({
+  //
+  //             view: "Grid view"
+  //         }).eachPage(function page(records, fetchNextPage) {
+  //
+  //             records.forEach(function(record) {
+  //               if (String(record.get('Covidence_ID'))===id){
+  //                 table_data.push(record.fields)
+  //               }
+  //
+  //             });
+  //             fetchNextPage();
+  //         }, function done(err) {
+  //             if (err) {
+  //               console.error(err);
+  //               return reject({});
+  //             }
+  //
+  //             resolve(table_data)
+  //         })
+  //       })
+  //   }
     const allModal = async (node) => {
 
-      const res = await getTableData(node)
-      console.log("All DATA Fetching?: ", res)
-      setAllTableData(res)
+      // const res = await getTableData(node)
+      // console.log("All DATA Fetching?: ", res)
+      setAllTableData([])
       setModalTitle(node.data.y)
       openModal()
 
@@ -141,7 +141,8 @@ const PrismStaticScatterplot = (props) => {
             blendMode="multiply"
             colors={ COLOR_SCHEMES['rainbow'] }
             nodeSize={{ key: 'z', values: [props.minNodeSize, props.maxNodeSize], sizes: [10, 150] }}
-            tooltip={ (e) => <ChartTooltip text={e.node.data.y} value={e.node.data.z} /> }
+            tooltip={ function(e) { console.log("Tooltip E: ", e);
+              return <ChartTooltip text={e.node.data.y} value={e.node.data.z} />} }
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
             animate={ false }
