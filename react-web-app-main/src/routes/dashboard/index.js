@@ -2460,9 +2460,12 @@ function createSunburst(level1, level2, level3, data) {
 
 
           records.forEach(function(record) {
+            let condition = record.get('Conditions')
+            for (let i of condition){
+              pie_collection(sponsor_types_dict, i)
+            }
 
-            pie_collection(sponsor_types_dict, record.get('Sponsor_Type'))
-            pie_collection(sponsors_dict, record.get('Sponsor'))
+            // pie_collection(sponsors_dict, record.get('Sponsor'))
 
 
           });
@@ -2476,24 +2479,24 @@ function createSunburst(level1, level2, level3, data) {
           }
 
           pie_formatting(sponsor_types_dict, sponsors_pie)
-          var items = Object.keys(sponsors_dict).map(function(key) {
-            return [key, sponsors_dict[key]];
-          });
-
-          // Sort the array based on the second element
-          items.sort(function(first, second) {
-            return second[1] - first[1];
-          });
-
-          var updated_sponsors_dict = {}
-          for (var item of items.slice(0, 10)){
-            updated_sponsors_dict[item[0]] = item[1]
-          }
+          // var items = Object.keys(sponsors_dict).map(function(key) {
+          //   return [key, sponsors_dict[key]];
+          // });
+          //
+          // // Sort the array based on the second element
+          // items.sort(function(first, second) {
+          //   return second[1] - first[1];
+          // });
+          //
+          // var updated_sponsors_dict = {}
+          // for (var item of items.slice(0, 10)){
+          //   updated_sponsors_dict[item[0]] = item[1]
+          // }
 
           // console.log("bar original: ", countries_bar_formatted)
-          bar_formatting(updated_sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
+          //bar_formatting(updated_sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
         //  bar_formatting(sponsors_dict, sponsors_bar, sponsors_bar_formatted, "sponsor")
-          sponsors_result["sponsors_bar"] = sponsors_bar_formatted
+          // sponsors_result["sponsors_bar"] = sponsors_bar_formatted
           sponsors_result["sponsors_pie"] = sponsors_pie
           //console.log("SPONSOR data: ", sponsors_bar_formatted)
 
@@ -2510,7 +2513,7 @@ function createSunburst(level1, level2, level3, data) {
     console.log("fetchSponsorsData")
         const result = await getSponsorsChartsData()
 
-        setSponsorsTop10ByTrialsBarChartData(result.sponsors_bar);
+        // setSponsorsTop10ByTrialsBarChartData(result.sponsors_bar);
         setSponsorTypePieChartData(result.sponsors_pie)
         // setSponsorsTop10ByEnrollmentBarChartData(result.data.sponsors_top_10_by_enrollment);
         //setSponsorsBreakdownChartData(result.data.sponsors_breakdown);
@@ -2634,9 +2637,14 @@ function createSunburst(level1, level2, level3, data) {
     if (initialFilterLoadComplete) {
       setLoadingStatsData(true)
       fetchSingleStatMetrics();
-      
+
       setLoadingTrialsLandscapeData(true);
       fetchTrialsMetricData();
+
+      setLoadingSponsorsData(true);
+      fetchSponsorsData();
+
+
 
       setLoadingTrialsLandscapeData(true)
       fetchTrialsLandscapeChartData();
@@ -2985,8 +2993,8 @@ function createSunburst(level1, level2, level3, data) {
                     <PrismPieChart
                       colors="blue"
                       title="Conditions"
-                      chartData={[]}
-                      loading={loadingOutcomesData}
+                      chartData={sponsorTypePieChartData}
+                      loading={loadingSponsorsData}
                     />
                   </Col>
 
