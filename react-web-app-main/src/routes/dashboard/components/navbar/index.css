@@ -14,6 +14,7 @@
   height: 60px;
   display: flex;
   align-items: center;
+  /* text-align: center; */
   background-color: #334D6E;
 }
 
@@ -43,6 +44,19 @@
   margin-bottom: auto;
   display: flex;
   flex-direction: column;
+}
+
+.filter-nav .nav-item-container h4{
+  font-weight: 500;
+  margin-left: 26px;
+  /* font-size: 16px; */
+  line-height: 20px;
+  letter-spacing: 0.1px;
+  margin-bottom: 20px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  /* padding: 0px; */
 }
 
 .filter-nav .nav-item .nav-link {

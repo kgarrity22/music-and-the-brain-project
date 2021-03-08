@@ -1086,50 +1086,55 @@ function createSunburst(level1, level2, level3, data) {
           records.forEach(function(record) {
 
             single_metric_trials.push(1)
-            var enrollment_type = typeof(record.get('Enrollment'))
-            if (enrollment_type === 'number') {
-              single_metric_participants.push(record.get('Enrollment'))
+            let enrollment = record.get('Sample_Size')
+
+
+            if (typeof(enrollment) !== 'number' && !isNaN(parseInt(enrollment))) {
+
+              single_metric_participants.push(parseInt(enrollment))
             }
-            single_metric_sponsors.add(record.get('Sponsor'))
+            // single_metric_sponsors.add(record.get('Sponsor'))
 
             // intervention_set
 
-            var intervention = record.get('Interventions_Rollup')
-            single_metric_interventions += intervention.length
-
-            // outcomes
-            var outcome = record.get('Outcome_Concepts')
-            if (typeof(outcome)==='object'){
-              for (var item of outcome){
-                if (item === null){
-                  single_metric_outcomes.add(null)
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-                    single_metric_outcomes.add(j)
-                  }
-                }
-              }
-            } else {
-              single_metric_outcomes.add(outcome)
-            }
-
-            // sites
-            var facility_ids = record.get('Facilities_Links')
-            if (typeof(facility_ids)==='object'){
-              for (var item of facility_ids){
-                if (item === null){
-                  single_metric_sites.add(null)
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-                    single_metric_sites.add(j)
-                  }
-                }
-              }
-            } else {
-              single_metric_sites.add(facility_ids)
-            }
+            // var intervention = record.get('Interventions_Rollup')
+            // single_metric_interventions += intervention.length
+            //
+            // // outcomes
+            let outcome = record.get("Outcomes")
+            console.log("outcome: ", outcome)
+            // var outcome = record.get('Outcome_Concepts')
+            // if (typeof(outcome)==='object'){
+            //   for (var item of outcome){
+            //     if (item === null){
+            //       single_metric_outcomes.add(null)
+            //     } else {
+            //       var itemlist = item.split(", ")
+            //       for (var j of itemlist){
+            //         single_metric_outcomes.add(j)
+            //       }
+            //     }
+            //   }
+            // } else {
+            //   single_metric_outcomes.add(outcome)
+            // }
+            //
+            // // sites
+            // var facility_ids = record.get('Facilities_Links')
+            // if (typeof(facility_ids)==='object'){
+            //   for (var item of facility_ids){
+            //     if (item === null){
+            //       single_metric_sites.add(null)
+            //     } else {
+            //       var itemlist = item.split(", ")
+            //       for (var j of itemlist){
+            //         single_metric_sites.add(j)
+            //       }
+            //     }
+            //   }
+            // } else {
+            //   single_metric_sites.add(facility_ids)
+            // }
 
           });
 
@@ -1144,10 +1149,10 @@ function createSunburst(level1, level2, level3, data) {
 
           single_metrics_result["trials"] = sum(single_metric_trials);
           single_metrics_result["participants"] = sum(single_metric_participants);
-          single_metrics_result["interventions"] = single_metric_interventions;
-          single_metrics_result["outcomes"] = single_metric_outcomes.size;
-          single_metrics_result["sponsors"] = single_metric_sponsors.size;
-          single_metrics_result["sites"] = single_metric_sites.size;
+          // single_metrics_result["interventions"] = single_metric_interventions;
+          // single_metrics_result["outcomes"] = single_metric_outcomes.size;
+          // single_metrics_result["sponsors"] = single_metric_sponsors.size;
+          // single_metrics_result["sites"] = single_metric_sites.size;
 
           resolve(single_metrics_result)
 
@@ -1168,7 +1173,7 @@ function createSunburst(level1, level2, level3, data) {
       {
         color: 'red',
         stats: [
-          { title: 'Trials', metric: result.trials }
+          { title: 'Studies', metric: result.trials }
         ]
       },
       {
@@ -1180,29 +1185,29 @@ function createSunburst(level1, level2, level3, data) {
       {
         color: 'yellow',
         stats: [
-          { title: 'Interventions', metric: result.interventions }
+          { title: 'Primary Studies', metric: 289 }
         ]
       },
       {
         color: 'green',
         stats: [
-          { title: 'Outcomes', metric: result.outcomes }
+          { title: 'Secondary Studies', metric: 60 }
         ]
       },
 
       {
         color: 'blue',
         stats: [
-          { title: 'Sponsors', metric: result.sponsors }
+          { title: 'Measures', metric: 271 }
         ]
       },
 
-      {
-        color: 'violet',
-        stats: [
-          { title: 'Sites', metric: result.sites }
-        ]
-      },
+      // {
+      //   color: 'violet',
+      //   stats: [
+      //     { title: 'Sites', metric: result.sites }
+      //   ]
+      // },
 
     ])
     setLoadingStatsData(false)
@@ -2624,7 +2629,8 @@ function createSunburst(level1, level2, level3, data) {
 
   useEffect(() => {
     if (initialFilterLoadComplete) {
-
+      setLoadingStatsData(true)
+      fetchSingleStatMetrics();
       setLoadingTrialsLandscapeData(true)
       fetchTrialsLandscapeChartData();
       setLoadingPopulationsLandscapeData(true)
@@ -2634,6 +2640,7 @@ function createSunburst(level1, level2, level3, data) {
       setLoadingOutcomesLandscapeData(true)
       fetchOutcomesLandscapeChartData();
       fetchAllTableData();
+
 
       // console.log("tabledata after fetch: ", fetchAllTableData())
       // setLoadingLandscapeData(true)
@@ -2834,19 +2841,89 @@ function createSunburst(level1, level2, level3, data) {
           </Row>
 
           <div className="scrollable-container">
+            <Row className="d-none d-xl-block" style={{ paddingTop: '80px'}}>
+              <Col xl={{span: 12}}>
+                <div className="single-stats-containers">
+                  {
+                    stats.map((stat, index) => {
+                      return (
+                        <SingleStat
+                          key={index}
+                          stats={stat.stats}
+                          color={stat.color}
+                          loading={loadingStatsData}
+                        />
+                      )
+                    })
+                  }
+                </div>
+              </Col>
+            </Row>
+            <Row className="d-xl-none" style={{ paddingTop: '80px'}}>
+              <Col lg={{span: 12}}>
+                <div className="single-stats-containers">
+                  {
+                    stats.map((stat, index) => {
+                      if (index >= (stats.length / 2))
+                        return null
+
+                      return (
+                        <SingleStat
+                          key={index}
+                          stats={stat.stats}
+                          color={stat.color}
+                          loading={loadingStatsData}
+                        />
+                      )
+                    })
+                  }
+                </div>
+              </Col>
+              <Col lg={{span: 12}}>
+                <div className="single-stats-containers">
+                  {
+                    stats.map((stat, index) => {
+                      if (index < (stats.length / 2))
+                        return null
+
+                      return (
+                        <SingleStat
+                          key={index}
+                          stats={stat.stats}
+                          color={stat.color}
+                          loading={loadingStatsData}
+                        />
+                      )
+                    })
+                  }
+                </div>
+              </Col>
+              </Row>
+
 
               <Row className="dashboard-charts-container">
                 <Col>
 
-
                   <Row className="first-block">
                   <Col>
                     <PrismTextBlock
-                      textTitle={ 'How has the evidence evolved over time?' }
-                      mainText={ " Although scientists have been exploring music’s effects on the brain for a long time, research activities have spiked dramatically in recent years. Explore our dashboard below showing the history of this field." }
+                      textTitle={ 'The use of music in the treatment and management of serious mental illness: A global scoping review of the literature' }
+                      mainText={'\n\n'}
+                      moreText={'To get more specific information for each of these charts, use the filter menu to the left.'}
                     />
                   </Col>
                   </Row>
+                  <Row>
+                  <Col>
+                    <PrismTextBlock
+                      textTitle={ 'Viewing the Evidence' }
+                      mainText={ "Studies of music’s effects on serious mental illness are wide-ranging—involving many types of music-based activities, populations, comparators, and designs. The visuals below help reveal the landscape of existing evidence across this varied, evolving field." }
+                      moreText={"In each graph or chart, the bubbles correspond to a published study report. The size of each bubble corresponds to the number of participants in the study (the larger the bubble, the more participants). The color of each bubble indicates the study’s result. Check the legend to the right of each visual to see which results correspond to each color."}
+
+                    />
+                  </Col>
+                  </Row>
+
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
@@ -2869,16 +2946,8 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  <Row>
-                  <Col>
-                    <PrismTextBlock
-                      textTitle={ 'Understanding the complexity of evidence' }
-                      mainText={ "The effects of music on the brain have been studied in myriad ways. For example, there are many different types of music-based interventions (e.g., listening vs. performing; singing vs. drumming) and many different types of patients for whom music may be beneficial (e.g., patients with major depression, PTSD, or schizophrenia). When evaluating the evidence for any particular intervention, it is also important to know what that intervention was compared to (e.g., was it compared to a placebo or some form of cognitive behavioral therapy?). It is also important to know the outcome measure that was used to assess if/how the intervention worked." }
-                      moreText={"The graphs below depict these dimensions of the existing evidence. see how the evidence is arranged for different (1) conditions and interventions, (2) conditions and comparators, and (3) conditions and outcomes. In each tab, the bubbles all correspond to a published study report, placed on the landscape to show the particular combination of factors that it studied.The size of the bubble corresponds to the number of patients/participants in the study (i.e., larger bubbles means more patients). The color of the bubble codes the study’s outcome. The legends to the right of each chart show which results correspond to each color."}
-                      evenMoreText={"If you'd like to look at more specific categories in each of these charts, use the filter menu to the left."}
-                    />
-                  </Col>
-                  </Row>
+
+
 
                   <Row>
                   <Col>

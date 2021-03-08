@@ -63,6 +63,7 @@ function Navbar(props) {
       </div>
 
       <div className='nav-item-container'>
+        <h4>Filters</h4>
         {
           tabs.map((tab, index) => (
             <Nav.Item key={index}>
