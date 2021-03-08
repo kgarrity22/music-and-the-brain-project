@@ -1102,7 +1102,10 @@ function createSunburst(level1, level2, level3, data) {
             //
             // // outcomes
             let outcome = record.get("Outcomes")
-            console.log("outcome: ", outcome)
+            //console.log("outcome: ", outcome)
+            for (let i of outcome) {
+              single_metric_outcomes.add(outcome)
+            }
             // var outcome = record.get('Outcome_Concepts')
             // if (typeof(outcome)==='object'){
             //   for (var item of outcome){
@@ -1244,16 +1247,16 @@ function createSunburst(level1, level2, level3, data) {
 
 
           records.forEach(function(record) {
-            var age = record.get('Age_Groups')
-            for (var item of age){
-              pie_collection(age_groups_pie_dict, item)
-            }
-            pie_collection(purpose_pie_dict, record.get('Purpose'))
-            pie_collection(type_pie_dict, record.get('Study_Type'))
-            pie_collection(status_pie_dict, record.get('Status'))
-            pie_collection(trials_line_dict, record.get('Start_Year'))
-            pie_collection(randomization_pie_dict, record.get('Randomization'))
-            pie_collection(masking_pie_dict, record.get('Masking_Clean'))
+            // var age = record.get('Age_Groups')
+            // for (var item of age){
+            //   pie_collection(age_groups_pie_dict, item)
+            // }
+            pie_collection(purpose_pie_dict, record.get('Design'))
+            // pie_collection(type_pie_dict, record.get('Study_Type'))
+            pie_collection(status_pie_dict, record.get('Results'))
+            // pie_collection(trials_line_dict, record.get('Start_Year'))
+            // pie_collection(randomization_pie_dict, record.get('Randomization'))
+            // pie_collection(masking_pie_dict, record.get('Masking_Clean'))
 
           });
 
@@ -1265,23 +1268,23 @@ function createSunburst(level1, level2, level3, data) {
             return reject({});
           }
 
-          pie_formatting(age_groups_pie_dict, age_groups_pie)
+          // pie_formatting(age_groups_pie_dict, age_groups_pie)
           pie_formatting(purpose_pie_dict, purpose_pie)
-          pie_formatting(type_pie_dict, type_pie)
+          // pie_formatting(type_pie_dict, type_pie)
           pie_formatting(status_pie_dict, status_pie)
-          pie_formatting(randomization_pie_dict, randomization_pie)
-          pie_formatting(masking_pie_dict, masking_pie)
+          // pie_formatting(randomization_pie_dict, randomization_pie)
+          // pie_formatting(masking_pie_dict, masking_pie)
 
-          line_formatting(trials_line_dict, trials_line, trials_line_formatted)
-          trials_line_formatted.id = 'Trials'
+          // line_formatting(trials_line_dict, trials_line, trials_line_formatted)
+          // trials_line_formatted.id = 'Trials'
 
-          trials_result["age_pie"] = age_groups_pie;
+          // trials_result["age_pie"] = age_groups_pie;
           trials_result["purpose_pie"] = purpose_pie;
-          trials_result["type_pie"] = type_pie
+          // trials_result["type_pie"] = type_pie
           trials_result["status_pie"] = status_pie
-          trials_result["randomization_pie"] = randomization_pie
-          trials_result["masking_pie"] = masking_pie
-          trials_result["trials_line"] = [trials_line_formatted]
+          // trials_result["randomization_pie"] = randomization_pie
+          // trials_result["masking_pie"] = masking_pie
+          // trials_result["trials_line"] = [trials_line_formatted]
           //console.log(trials_line_formatted)
 
           resolve(trials_result)
@@ -1299,11 +1302,11 @@ function createSunburst(level1, level2, level3, data) {
     setTrialStatusPieChartData(result.status_pie);
     setTrialPurposePieChartData(result.purpose_pie);
     // extra pie here if we want it
-    setTrialTypePieChartData(result.type_pie);
-    setTrialAgeGroupsPieChartData(result.age_pie);
-    setCumulativeTrialsLineChartData(result.trials_line);
-    setTrialRandomizationPieChartData(result.randomization_pie);
-    setTrialMaskingPieChartData(result.masking_pie);
+    // setTrialTypePieChartData(result.type_pie);
+    // setTrialAgeGroupsPieChartData(result.age_pie);
+    // setCumulativeTrialsLineChartData(result.trials_line);
+    // setTrialRandomizationPieChartData(result.randomization_pie);
+    // setTrialMaskingPieChartData(result.masking_pie);
 
     setLoadingTrialsData(false)
   }
@@ -2631,6 +2634,10 @@ function createSunburst(level1, level2, level3, data) {
     if (initialFilterLoadComplete) {
       setLoadingStatsData(true)
       fetchSingleStatMetrics();
+      
+      setLoadingTrialsLandscapeData(true);
+      fetchTrialsMetricData();
+
       setLoadingTrialsLandscapeData(true)
       fetchTrialsLandscapeChartData();
       setLoadingPopulationsLandscapeData(true)
@@ -2922,6 +2929,68 @@ function createSunburst(level1, level2, level3, data) {
 
                     />
                   </Col>
+                  </Row>
+
+
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Studies" color="red" />
+                    </Col>
+                  </Row>
+                  <Row>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="red"
+                      title="Study Designs"
+                      chartData={trialPurposePieChartData}
+                      loading={loadingTrialsData}
+                    />
+                  </Col>
+
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="red"
+                      title="Study Results"
+                      chartData={trialStatusPieChartData}
+                      loading={loadingTrialsData}
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Interventions" color="yellow" />
+                    </Col>
+                  </Row>
+                  <Row>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="yellow"
+                      title="Activity Types"
+                      chartData={[]}
+                      loading={loadingInterventionsData}
+                    />
+                  </Col>
+
+
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Conditions" color="blue" />
+                    </Col>
+                  </Row>
+                  <Row>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="blue"
+                      title="Conditions"
+                      chartData={[]}
+                      loading={loadingOutcomesData}
+                    />
+                  </Col>
+
+
                   </Row>
 
                   <Row>
