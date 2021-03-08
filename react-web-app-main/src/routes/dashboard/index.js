@@ -2384,23 +2384,24 @@ function createSunburst(level1, level2, level3, data) {
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
-            let year = String(record.get("Start_Year"))
-            let month = String(record.get("Start_Month"))
-            let date = ""
-            if (month.length === 1){
-              date = year + "-" + "0" + month
-            } else {
-              date = year + "-" + month
-            }
-            int_dates.add(year)
+            // let year = String(record.get("Start_Year"))
+            // let month = String(record.get("Start_Month"))
+            // let date = ""
+            // if (month.length === 1){
+            //   date = year + "-" + "0" + month
+            // } else {
+            //   date = year + "-" + month
+            // }
+            // int_dates.add(year)
 
-            var interventions = record.get('Intervention_Types').split(", ")
-            for (var item of interventions){
-              pie_collection(interventions_types_dict, item)
-              pie_collection(intervention_area_dict, item + ": " + String(year))
-              interventions_area_unique.add(item)
-            }
-            pie_collection(interventions_arms_dict, record.get('Interventions_Count'))
+            // var interventions = record.get('Intervention_Types').split(", ")
+            // for (var item of interventions){
+            //   pie_collection(interventions_types_dict, item)
+            //   pie_collection(intervention_area_dict, item + ": " + String(year))
+            //   interventions_area_unique.add(item)
+            // }
+            pie_collection(interventions_types_dict, record.get('Activity_Type'))
+            //pie_collection(interventions_arms_dict, record.get('Interventions_Count'))
 
 
 
@@ -2414,13 +2415,13 @@ function createSunburst(level1, level2, level3, data) {
             console.error(err);
             return reject({});
           }
-          areaBumpFormatting(intervention_area_dict, [...interventions_area_unique].sort(), interventions_areabump_result, int_dates)
+          //areaBumpFormatting(intervention_area_dict, [...interventions_area_unique].sort(), interventions_areabump_result, int_dates)
           // console.log("AREA BUMP CHECK: ", outcome_areabump_result)
           pie_formatting(interventions_types_dict, intervention_types_pie)
-          pie_formatting(interventions_arms_dict, intervention_arms_pie)
+        //  pie_formatting(interventions_arms_dict, intervention_arms_pie)
           interventions_result["intervention_types_pie"] = intervention_types_pie
           interventions_result["intervention_arms_pie"] = intervention_arms_pie
-          interventions_result["interventions_areabump_result"] = interventions_areabump_result
+          // interventions_result["interventions_areabump_result"] = interventions_areabump_result
 
           resolve(interventions_result)
 
@@ -2434,8 +2435,8 @@ function createSunburst(level1, level2, level3, data) {
     // setInterventionsTop10BarChartData(result.interventions_bar);
     // console.log("compare this bar: ", result.interventions_bar)
     setInterventionTypesPieChartData(result.intervention_types_pie)
-    setInterventionArmsPieChartData(result.intervention_arms_pie)
-    setInterventionsAreaBumpChart(result.interventions_areabump_result)
+    //setInterventionArmsPieChartData(result.intervention_arms_pie)
+    // setInterventionsAreaBumpChart(result.interventions_areabump_result)
     setLoadingInterventionsData(false)
   }
 
@@ -2643,6 +2644,9 @@ function createSunburst(level1, level2, level3, data) {
 
       setLoadingSponsorsData(true);
       fetchSponsorsData();
+
+      setLoadingInterventionsData(true);
+      fetchInterventionsData();
 
 
 
@@ -2975,7 +2979,7 @@ function createSunburst(level1, level2, level3, data) {
                     <PrismPieChart
                       colors="yellow"
                       title="Activity Types"
-                      chartData={[]}
+                      chartData={interventionTypesPieChartData}
                       loading={loadingInterventionsData}
                     />
                   </Col>
