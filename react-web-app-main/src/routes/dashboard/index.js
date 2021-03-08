@@ -2641,12 +2641,13 @@ function createSunburst(level1, level2, level3, data) {
 
       setLoadingTrialsLandscapeData(true);
       fetchTrialsMetricData();
+      setLoadingInterventionsData(true);
+      fetchInterventionsData();
 
       setLoadingSponsorsData(true);
       fetchSponsorsData();
 
-      setLoadingInterventionsData(true);
-      fetchInterventionsData();
+
 
 
 
@@ -2970,6 +2971,19 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
                   <Row>
+                  <Col>
+                    <PrismTextBlock
+                      textTitle={ 'Explanation of Results' }
+                      mainText={ "Due to the wide variety of study facets involved in this scoping review, findings were documented according to whether the music intervention was found to have performed better, worse, or equal to the comparator, or whether results were undetermined." }
+
+
+                    />
+                  </Col>
+                  </Row>
+
+
+
+                  <Row>
                     <Col>
                       <SectionTitle title="Interventions" color="yellow" />
                     </Col>
@@ -3008,7 +3022,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Conditions Over Time"
+                      title="How Has this Area of Study Changed Over Time?"
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
                       chartHeight={500}
@@ -3033,7 +3047,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Condition vs. Interventions"
+                      title="What Music-Based Activities Have Been Studied?"
                       colors="rainbow"
                       chartData={interventionsLandscapeChartData}
                       chartHeight={1000}
@@ -3051,7 +3065,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Condition vs. Comparator"
+                      title="What Have Music-Based Activities Been Compared To?"
                       colors="rainbow"
                       chartData={populationsLandscapeChartData}
                       chartHeight={1000}
@@ -3069,7 +3083,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Condition vs. Outcomes"
+                      title="What Were the Results of These Studies, for Each Condition?"
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
                       chartHeight={1000}
