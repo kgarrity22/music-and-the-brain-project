@@ -860,6 +860,12 @@ function createSunburst(level1, level2, level3, data) {
   const [loadingOutcomesLandscapeData, setLoadingOutcomesLandscapeData] = useState(true)
 
 
+  const [loadingActivityTypesData, setLoadingActivityTypesData] = useState(true)
+  const [mddPieChartData, setMddPieChartData] = useState([])
+  const [schizophreniaPieCharData, setSchizophreniaPieCharData] = useState([])
+  const [bipolarPieChartData, setBipolarPieChartData] = useState([])
+  const [gadPieChartData, setGadPieChartData] = useState([])
+  const [ptsdPieChartData, setPtsdPieChartData] = useState([])
 
   /*
   This function creates a dictionary where the key is and items name and the value
@@ -1924,7 +1930,7 @@ function createSunburst(level1, level2, level3, data) {
   }// end of get trialStatusPieChartData
 
   function getSponsorsLandscapeChartData() {
-    console.log("getSponsorsLandscapeChartData")
+    //console.log("getSponsorsLandscapeChartData")
     let sponsors_dict = {}
     let data_list = []
     let uni = new Set()
@@ -2159,6 +2165,89 @@ function createSunburst(level1, level2, level3, data) {
     setOutcomesLandscapeMinNodeSize(outcomes.min);
     setOutcomesLandscapeMaxNodeSize(outcomes.max);
     setLoadingOutcomesLandscapeData(false)
+  }
+
+
+  function getActivityTypesChartsData(){
+    let activityPies = {}
+
+    let mdd_dict = {}
+    let mdd_pie = [];
+    let schizophrenia_dict = {}
+    let schizophrenia_pie = []
+    let bipolar_dict = {}
+    let bipolar_pie = [];
+    let gad_dict = {}
+    let gad_pie = [];
+    let ptsd_dict = {}
+    let ptsd_pie = [];
+
+    return new Promise((resolve, reject) => {
+      base('Studies').select({
+
+          filterByFormula: airtableFilters,
+          view: "Grid view"
+      }).eachPage(function page(records, fetchNextPage) {
+
+
+
+          records.forEach(function(record) {
+
+            if ((record.get("Conditions")).includes("MDD")){
+              pie_collection(mdd_dict, record.get("Activity_Type"))
+            }
+            if ((record.get("Conditions")).includes("GAD")){
+              pie_collection(gad_dict, record.get("Activity_Type"))
+            }
+            if ((record.get("Conditions")).includes("PTSD")){
+              pie_collection(ptsd_dict, record.get("Activity_Type"))
+            }
+            if ((record.get("Conditions")).includes("Bipolar disorder")){
+              pie_collection(bipolar_dict, record.get("Activity_Type"))
+            }
+            if ((record.get("Conditions")).includes("Schizophrenia")){
+              pie_collection(schizophrenia_dict, record.get("Activity_Type"))
+            }
+
+
+          });
+
+          fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err);
+            return reject({});
+          }
+
+          pie_formatting(mdd_dict, mdd_pie)
+          pie_formatting(gad_dict, gad_pie)
+          pie_formatting(ptsd_dict, ptsd_pie)
+          pie_formatting(bipolar_dict, bipolar_pie)
+          pie_formatting(schizophrenia_dict, schizophrenia_pie)
+
+          activityPies["mdd_pie"] = mdd_pie
+          activityPies["gad_pie"] = gad_pie
+          activityPies["ptsd_pie"] = ptsd_pie
+          activityPies["bipolar_pie"] = bipolar_pie
+          activityPies["schizophrenia_pie"] = schizophrenia_pie
+
+          resolve(activityPies)
+
+      })
+    })
+  }
+
+  const fetchActivityTypesData = async () => {
+    // console.log("fetchPopulationData")
+    const result = await getActivityTypesChartsData()
+
+    setMddPieChartData(result.mdd_pie)
+    setGadPieChartData(result.gad_pie)
+    setPtsdPieChartData(result.ptsd_pie)
+    setBipolarPieChartData(result.bipolar_pie)
+    setSchizophreniaPieCharData(result.schizophrenia_pie)
+    setLoadingActivityTypesData(false)
   }
 
 
@@ -2633,6 +2722,14 @@ function createSunburst(level1, level2, level3, data) {
     setLoadingGeographyData(false)
   }
 
+  useEffect(() => {
+    if (initialFilterLoadComplete) {
+      setLoadingActivityTypesData(true);
+      fetchActivityTypesData();
+    }
+
+  }, [updateRequested, initialFilterLoadComplete])
+
 
   useEffect(() => {
     if (initialFilterLoadComplete) {
@@ -2648,9 +2745,6 @@ function createSunburst(level1, level2, level3, data) {
       fetchSponsorsData();
 
 
-
-
-
       setLoadingTrialsLandscapeData(true)
       fetchTrialsLandscapeChartData();
       setLoadingPopulationsLandscapeData(true)
@@ -2660,13 +2754,6 @@ function createSunburst(level1, level2, level3, data) {
       setLoadingOutcomesLandscapeData(true)
       fetchOutcomesLandscapeChartData();
       fetchAllTableData();
-
-
-      // console.log("tabledata after fetch: ", fetchAllTableData())
-      // setLoadingLandscapeData(true)
-      // fetchLandscapeChartData();
-      // setData();
-
 
     }
     // eslint-disable-next-line
@@ -3015,7 +3102,59 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingSponsorsData}
                     />
                   </Col>
+                  </Row>
 
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Activity Types for Each Condition" color="indigo" />
+                    </Col>
+                  </Row>
+
+                  <Row>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="indigo"
+                      title="Major Depressive Disorder"
+                      chartData={mddPieChartData}
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="indigo"
+                      title="Schizophrenia"
+                      chartData={schizophreniaPieCharData}
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="indigo"
+                      title="Bipolar Disorder"
+                      chartData={bipolarPieChartData}
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="indigo"
+                      title="Generalized Anxiety Disorder"
+                      chartData={gadPieChartData}
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
+                  <Col>
+                    <PrismPieChart
+                      colors="indigo"
+                      title="Post-traumatic Stress Disorder"
+                      chartData={ptsdPieChartData}
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
 
                   </Row>
 

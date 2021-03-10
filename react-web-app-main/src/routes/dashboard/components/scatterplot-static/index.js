@@ -17,8 +17,8 @@ import './index.css'
 // import 'react-tabulator/css/bootstrap/tabulator_bootstrap.min.css';
 // import 'react-tabulator/lib/styles.css';
 
-var Airtable = require('airtable');
-var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
+// var Airtable = require('airtable');
+// var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
 
 // const customStyles = {
 //   content : {
