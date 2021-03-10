@@ -2193,13 +2193,13 @@ function createSunburst(level1, level2, level3, data) {
 
           records.forEach(function(record) {
 
-            if ((record.get("Conditions")).includes("MDD")){
+            if ((record.get("Conditions")).includes("Major Depressive Disorder")){
               pie_collection(mdd_dict, record.get("Activity_Type"))
             }
-            if ((record.get("Conditions")).includes("GAD")){
+            if ((record.get("Conditions")).includes("Generalized Anxiety Disorder")){
               pie_collection(gad_dict, record.get("Activity_Type"))
             }
-            if ((record.get("Conditions")).includes("PTSD")){
+            if ((record.get("Conditions")).includes("Post-traumatic Stress Disorder")){
               pie_collection(ptsd_dict, record.get("Activity_Type"))
             }
             if ((record.get("Conditions")).includes("Bipolar disorder")){
