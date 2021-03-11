@@ -1619,13 +1619,13 @@ function createSunburst(level1, level2, level3, data) {
               }
                 // return second_item.z - first_item.z;
             });
-            console.log("tosort: ", tosort)
+            //console.log("tosort: ", tosort)
             cleaned["data"] = tosort
             // console.log("data: ", clean_data[item])
             all_data.push(cleaned)
           }
           all_data.sort(function(first, second) {
-            console.log("checking for SORTING: ", second.data)
+            //console.log("checking for SORTING: ", second.data)
             return second.data.length - first.data.length;
           });
           // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
@@ -1848,7 +1848,7 @@ function createSunburst(level1, level2, level3, data) {
                     }
 
                     data_list.push([y, x, status, z, clickId[0]])
-                    let as_string = y + "; " + x + "; " + status + "; " + z + "; " + clickId[0]
+                    let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
                   }
                 }
@@ -1878,29 +1878,31 @@ function createSunburst(level1, level2, level3, data) {
 
             var ids = i.split("; ")
             let z = 0;
-            let clickids = []
-            if (clickids.indexOf(ids[3])===-1){
-              clickids.push(ids[3])
-            }
+            let clickids = new Set()
+            // if (clickids.indexOf(ids[3])===-1){
+            //   clickids.push(ids[3])
+            // }
 
             for (var arr of data_list){
 
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
-                if (clickids.indexOf(arr[4])===-1){
-                  clickids.push(arr[4])
-                }
+                // if (clickids.indexOf(arr[4])===-1){
+                //   clickids.push(arr[4])
+                // }
+                clickids.add(arr[4])
               }
             }
 
             let item = {}
             let limited = []
+            let list_ids = [...clickids]
             for (let j of all) {
-              if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+              if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
                 limited.push(j)
               }
             }
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": clickids, "all": limited}
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited}
 
             new_data_list.push(item)
           }
