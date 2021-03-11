@@ -1419,12 +1419,12 @@ function createSunburst(level1, level2, level3, data) {
 
             let item = {}
             let limited = []
-            for (let j of all) {
-              if (clickids.indexOf(String(j.Covidence_ID))!==-1){
-                limited.push(j)
-              }
-            }
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": clickids, "all": limited}
+            // for (let j of all) {
+            //   if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+            //     limited.push(j)
+            //   }
+            // }
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": clickids, "all": all}
 
             new_data_list.push(item)
           }
@@ -1477,6 +1477,7 @@ function createSunburst(level1, level2, level3, data) {
     let uni = new Set()
     let ys = new Set()
     let all = []
+    let all_ids = new Set()
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1491,6 +1492,7 @@ function createSunburst(level1, level2, level3, data) {
           // get all status
           all.push(record.fields)
           let status = record.get('Results')
+          all_ids.add(status)
 
           let allx = String(record.get('Conditions'))
 
@@ -1543,7 +1545,8 @@ function createSunburst(level1, level2, level3, data) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
-
+          let xtype = 'Conditions'
+          let ytype = 'Comparator'
 
           //console.log("Ys: ", ys)
           for (var i of uni){
@@ -1574,14 +1577,38 @@ function createSunburst(level1, level2, level3, data) {
               }
 
               let item = {}
-              let limited = []
+              let limited = {}
               let list_ids = [...clickids]
-              for (let j of all) {
-                if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
-                  limited.push(j)
+
+              //console.log("is this atHING: ", [...all_ids])
+              let list_all = [...all_ids]
+              for (let status of list_all){
+                let l1 = []
+                for (let j of all){
+                  //console.log("type check: ", j[xtype], j[ytype])
+                  if ((j[xtype]).includes(ids[1]) && j[ytype]===ids[2] && j.Results === status){
+                    l1.push(j)
+                    //console.log("JJJ: ", j)
+                  }
                 }
+                //console.log("L1: ", l1)
+                if (l1.length!==0){
+                  limited[status] = l1
+                  // limited.push(l1)
+                }
+
+
               }
-              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited}
+              console.log("LIMITED: ", limited)
+
+
+
+              // for (let j of all) {
+              //   if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
+              //     limited.push(j)
+              //   }
+              // }
+              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
               new_data_list.push(item)
 

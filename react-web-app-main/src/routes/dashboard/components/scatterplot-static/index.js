@@ -13,23 +13,7 @@ import ModalTable from '../modal-table'
 import './index.css'
 
 
-// import 'react-tabulator/lib/styles.css';
-// import 'react-tabulator/css/bootstrap/tabulator_bootstrap.min.css';
-// import 'react-tabulator/lib/styles.css';
 
-// var Airtable = require('airtable');
-// var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
-
-// const customStyles = {
-//   content : {
-//     top                   : '50%',
-//     left                  : '10%',
-//     right                 : 'auto',
-//     bottom                : 'auto',
-//     marginRight           : '-50%',
-//     transform             : 'translate(-50%, -50%)'
-//   }
-// };
 
 const PrismStaticScatterplot = (props) => {
 
@@ -38,6 +22,7 @@ const PrismStaticScatterplot = (props) => {
   var subtitle;
   const [modalIsOpen, setIsOpen] = useState(false);
   const [allTableData, setAllTableData] = useState([])
+  const [tables, setTables] = useState([])
   const [modalTitle, setModalTitle] = useState("")
 
   function openModal() {
@@ -53,37 +38,7 @@ const PrismStaticScatterplot = (props) => {
     setIsOpen(false);
   }
 
-  // function getTableData(node){
-  //   //console.log("getTableData")
-  //       // var Airtable = require('airtable');
-  //       // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
-  //
-  //         let id = node.data.clickId
-  //         var table_data = []
-  //
-  //       return new Promise((resolve, reject) => {
-  //         base('Studies').select({
-  //
-  //             view: "Grid view"
-  //         }).eachPage(function page(records, fetchNextPage) {
-  //
-  //             records.forEach(function(record) {
-  //               if (String(record.get('Covidence_ID'))===id){
-  //                 table_data.push(record.fields)
-  //               }
-  //
-  //             });
-  //             fetchNextPage();
-  //         }, function done(err) {
-  //             if (err) {
-  //               console.error(err);
-  //               return reject({});
-  //             }
-  //
-  //             resolve(table_data)
-  //         })
-  //       })
-  //   }
+
 
   function allModal(node){
     console.log("NODE: ", node)
@@ -95,7 +50,31 @@ const PrismStaticScatterplot = (props) => {
     } else {
       title = node.data.serieId + ": " + node.data.x + " x " + node.data.y
     }
-    setAllTableData(node.data.all)
+    let alltables = []
+    //console.log("CHECKING: ", node.data.all)
+    let complete = node.data.all
+
+    // for (let id of node.data.clickId){
+    //   let data = []
+    //   // for each piece of data
+    //   for (let i of node.data.all){
+    //     console.log("I: ", i[node.data.xtype], i[node.data.ytype])
+    //     console.log("node x and y: ", node.data.x, node.data.y)
+    //     if ((i[node.data.xtype]).includes(node.data.x) && i[node.data.ytype] === node.data.y){
+    //       data.push(i)
+    //     }
+    //   }
+    //   alltables.push(data)
+    // }
+    // console.log("alltables: ", alltables)
+    setAllTableData(alltables)
+    let table = []
+    for (let item of Object.keys(complete)){
+
+      table.push(<MainTable tabledata={ complete[item] } height={"auto"} />)
+    }
+    console.log(table)
+    setTables(table)
     setModalTitle(title)
     openModal()
   }
@@ -199,12 +178,11 @@ const PrismStaticScatterplot = (props) => {
           >
             <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
 
+
             <div className="tableholder">
-              <MainTable
-                tabledata={allTableData}
-                height={"auto"}
-                />
+              {tables}
             </div>
+
           </Modal>
           </div>
 

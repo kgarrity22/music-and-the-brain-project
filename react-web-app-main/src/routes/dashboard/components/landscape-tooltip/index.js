@@ -6,8 +6,8 @@ import './index.css'
 const LandscapeTooltip = (props) => {
   let items = []
 
-  for (let item of props.all) {
-    if (props.all.length > 1 ){
+  for (let item of Object.keys(props.all)) {
+    if ((Object.keys(props.all)).length > 1 ){
       items.push(
         <div className="landsape-tooltip-holder">
           <li><strong>Authors: </strong>{item.Authors}</li>
