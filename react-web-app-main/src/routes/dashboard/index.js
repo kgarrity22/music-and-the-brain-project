@@ -1509,7 +1509,15 @@ function createSunburst(level1, level2, level3, data) {
           let clickId = []
           clickId.push(String(record.get('Covidence_ID')))
 
-          let y_list = ally.split(",")
+          let y_list = ally.split(", ")
+          //console.log("CHECKINg ys: ", ally)
+          if (ally==="Other CAM, Different Art Therapy (Drama, Visual art, Creative Play)") {
+            y_list = ["Other CAM", "Different Art Therapy (Drama, Visual art, Creative Play)"]
+          }
+          if (ally==="Different Art Therapy (Drama, Visual art, Creative Play)"){
+            y_list = ["Different Art Therapy (Drama, Visual art, Creative Play)"]
+          }
+
           let x_list = allx.split(",")
 
           // need to do each y with each x
@@ -1585,8 +1593,8 @@ function createSunburst(level1, level2, level3, data) {
               for (let status of list_all){
                 let l1 = []
                 for (let j of all){
-                  //console.log("type check: ", j[xtype], j[ytype])
-                  if ((j[xtype]).includes(ids[1]) && j[ytype]===ids[2] && j.Results === status){
+                  //console.log("type check: ", j[xtype], j[ytype], j.Results)
+                  if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && j.Results === status){
                     l1.push(j)
                     //console.log("JJJ: ", j)
                   }
@@ -1599,7 +1607,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
               }
-              console.log("LIMITED: ", limited)
+              //console.log("LIMITED: ", limited)
 
 
 
@@ -1678,6 +1686,7 @@ function createSunburst(level1, level2, level3, data) {
     let uni = new Set()
     let ys = new Set()
     let all = []
+    let all_ids = new Set()
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1692,6 +1701,7 @@ function createSunburst(level1, level2, level3, data) {
             // get all status
             all.push(record.fields)
             let status = record.get('Results')
+            all_ids.add(status)
 
             let allx = String(record.get('Conditions'))
 
@@ -1745,6 +1755,8 @@ function createSunburst(level1, level2, level3, data) {
 
           let xs = []
           console.log("UNI: ", uni)
+          let xtype = "Conditions"
+          let ytype = "Interventions"
 
 
 
@@ -1774,14 +1786,37 @@ function createSunburst(level1, level2, level3, data) {
             }
 
             let item = {}
-            let limited = []
+            let limited = {}
             let list_ids = [...clickids]
-            for (let j of all) {
-              if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
-                limited.push(j)
+            //console.log("is this atHING: ", [...all_ids])
+            let list_all = [...all_ids]
+            for (let status of list_all){
+              let l1 = []
+              for (let j of all){
+                //console.log("type check: ", j[xtype], j[ytype])
+                if ((j[xtype]).includes(ids[1]) && j[ytype]===ids[2] && j.Results === status){
+                  l1.push(j)
+                  //console.log("JJJ: ", j)
+                }
               }
+              //console.log("L1: ", l1)
+              if (l1.length!==0){
+                limited[status] = l1
+                // limited.push(l1)
+              }
+
+
             }
-            item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z, "clickId": list_ids, "all": limited}
+            //console.log("LIMITED: ", limited)
+
+
+
+            // for (let j of all) {
+            //   if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
+            //     limited.push(j)
+            //   }
+            // }
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }
@@ -1841,6 +1876,7 @@ function createSunburst(level1, level2, level3, data) {
     let uni = new Set()
     let ys = new Set()
     let all = []
+    let all_ids = new Set()
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1854,6 +1890,7 @@ function createSunburst(level1, level2, level3, data) {
 
             all.push(record.fields)
             let status = record.get('Results')
+            all_ids.add(status)
             let allx = String(record.get('Conditions'))
             let ally = String(record.get('Outcomes'))
             let z = parseInt(record.get('Sample_Size'))
@@ -1898,6 +1935,8 @@ function createSunburst(level1, level2, level3, data) {
           let zs = []
           //console.log("Ys: ", ys)
           let xs = []
+          let xtype = 'Conditions'
+          let ytype = 'Outcomes'
 
 
 
@@ -1923,14 +1962,26 @@ function createSunburst(level1, level2, level3, data) {
             }
 
             let item = {}
-            let limited = []
+            let limited = {}
             let list_ids = [...clickids]
-            for (let j of all) {
-              if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
-                limited.push(j)
+            let list_all = [...all_ids]
+            for (let status of list_all){
+              let l1 = []
+              for (let j of all){
+                //console.log("type check: ", j[xtype], j[ytype])
+                if ((j[xtype]).includes(ids[1]) && j[ytype]===ids[2] && j.Results === status){
+                  l1.push(j)
+                  //console.log("JJJ: ", j)
+                }
+              }
+              //console.log("L1: ", l1)
+              if (l1.length!==0){
+                limited[status] = l1
+                // limited.push(l1)
               }
             }
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited}
+
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }

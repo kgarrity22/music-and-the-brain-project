@@ -5,6 +5,7 @@ import './index.css'
 
 const LandscapeTooltip = (props) => {
   let items = []
+  //console.log("PROPSALL: ", props.all)
 
   for (let item of Object.keys(props.all)) {
     if ((Object.keys(props.all)).length > 1 ){
@@ -12,7 +13,7 @@ const LandscapeTooltip = (props) => {
         <div className="landsape-tooltip-holder">
           <li><strong>Authors: </strong>{item.Authors}</li>
           <li><strong>Title: </strong> {item.Title}</li>
-          <li>Design: {item.Design}</li>
+          <li><strong>Design: </strong>{item.Design}</li>
           <hr />
         </div>
       )

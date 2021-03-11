@@ -42,7 +42,7 @@ const PrismStaticScatterplot = (props) => {
 
   function allModal(node){
     console.log("NODE: ", node)
-    console.log("type: ", typeof(node.data.formattedX))
+    //console.log("type: ", typeof(node.data.formattedX))
     let title=""
     if (typeof(node.data.formattedX)==='object'){
       let x = String(node.data.x)
@@ -54,19 +54,7 @@ const PrismStaticScatterplot = (props) => {
     //console.log("CHECKING: ", node.data.all)
     let complete = node.data.all
 
-    // for (let id of node.data.clickId){
-    //   let data = []
-    //   // for each piece of data
-    //   for (let i of node.data.all){
-    //     console.log("I: ", i[node.data.xtype], i[node.data.ytype])
-    //     console.log("node x and y: ", node.data.x, node.data.y)
-    //     if ((i[node.data.xtype]).includes(node.data.x) && i[node.data.ytype] === node.data.y){
-    //       data.push(i)
-    //     }
-    //   }
-    //   alltables.push(data)
-    // }
-    // console.log("alltables: ", alltables)
+
     setAllTableData(alltables)
     let table = []
     for (let item of Object.keys(complete)){
