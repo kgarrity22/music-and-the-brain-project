@@ -1471,7 +1471,7 @@ function createSunburst(level1, level2, level3, data) {
 
   function getPopulationsLandscapeChartData() {
     // data list
-    console.log("getPopulationsChartsData")
+    //console.log("getPopulationsChartsData")
     let data_list = []
     let uni = new Set()
     let ys = new Set()
@@ -1497,7 +1497,11 @@ function createSunburst(level1, level2, level3, data) {
           // console.log("COMPARATOR: ", allx)
           // console.log("alls: ", allx, ally)
           //let z = record.get('landscapeZAxis')
-          let z = parseInt(record.get('Sample_Size'))
+          let z = 0
+          if (!isNaN(parseInt(record.get('Sample_Size')))){
+            z = parseInt(record.get('Sample_Size'))
+          }
+
 
           let clickId = []
           clickId.push(String(record.get('Covidence_ID')))
@@ -1514,7 +1518,7 @@ function createSunburst(level1, level2, level3, data) {
                 if (x !== "") {
 
                   data_list.push([status, x, y, z, clickId[0]])
-                  let as_string = status + "; " + x + "; " + y + "; " + z + "; " + clickId[0]
+                  let as_string = status + "; " + x + "; " + y
                 //  console.log("as string: ", as_string)
                   uni.add(as_string)
                 }
@@ -1547,40 +1551,35 @@ function createSunburst(level1, level2, level3, data) {
             //     z += arr[3]
             //   }
             // }
-            if (!isNaN(ids[3])){
-              let clickids = []
-              if (clickids.indexOf(ids[3])===-1){
-                clickids.push(ids[3])
-              }
+
+              let clickids = new Set()
+              // if (clickids.indexOf(ids[3])===-1){
+              //   clickids.push(ids[3])
+              // }
 
               for (var arr of data_list){
 
                 if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
+                  //console.log("arr[3]: ", arr[3])
                   z += arr[3]
-                  if (clickids.indexOf(arr[4])===-1){
-                    clickids.push(arr[4])
-                  }
+                  // if (clickids.indexOf(arr[4])===-1){
+                  //   clickids.push(arr[4])
+                  // }
+                  clickids.add(arr[4])
                 }
               }
 
               let item = {}
               let limited = []
+              let list_ids = [...clickids]
               for (let j of all) {
-                if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+                if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
                   limited.push(j)
                 }
               }
-              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": clickids, "all": limited}
+              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited}
 
               new_data_list.push(item)
-              // console.log("Z: ", z)
-              // let item = {}
-              // item[ids[0]] = {"x": ids[1], "y": ids[2], "z": ids[3]}
-              //
-              // new_data_list.push(item)
-            }
-
-
 
           }
           //console.log("new LIST: ", new_data_list)
@@ -1615,9 +1614,10 @@ function createSunburst(level1, level2, level3, data) {
           // console.log("CHECK THIS DATA: ", all_data)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
-          let filtered = zs.filter(item => item !== 0)
-          console.log("filtered: ", filtered)
-          landscape_result["min"] = Math.min(...filtered)
+          // let filtered = zs.filter(item => item !== 0)
+          //console.log("filtered: ", filtered)
+          landscape_result["min"] = Math.min(...zs)
+          console.log("First Landscape res: ", landscape_result)
           resolve(landscape_result)
 
         })
@@ -1650,7 +1650,11 @@ function createSunburst(level1, level2, level3, data) {
 
             let ally = String(record.get('Interventions'))
             // console.log("INTERVEN: ", ally)
-            let z = parseInt(record.get('Sample_Size'))
+            let z = 0
+            if (!isNaN(parseInt(record.get('Sample_Size')))){
+              z = parseInt(record.get('Sample_Size'))
+            }
+
 
             let clickId = []
             clickId.push(String(record.get('Covidence_ID')))
