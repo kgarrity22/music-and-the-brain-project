@@ -1513,6 +1513,9 @@ function createSunburst(level1, level2, level3, data) {
           for (var y of y_list){
             //console.log("y: ", y)
             if (y !== ""){
+              if (y.charAt(0)===" "){
+                y = y.slice(1, y.length)
+              }
               for (var x of x_list){
                 //console.log("x: ", x)
                 if (x !== "") {
@@ -1606,16 +1609,32 @@ function createSunburst(level1, level2, level3, data) {
           for (var item of Object.keys(clean_data)){
             var cleaned = {}
             cleaned["id"] = item
-            cleaned["data"] = clean_data[item]
+            let tosort = clean_data[item]
+            tosort.sort(function(first, second) {
+              //console.log("first: ", first.y)
+              if (first.y > second.y){
+                return 1
+              } else if (first.y <= second.y){
+                return -1
+              }
+                // return second_item.z - first_item.z;
+            });
+            console.log("tosort: ", tosort)
+            cleaned["data"] = tosort
+            // console.log("data: ", clean_data[item])
             all_data.push(cleaned)
           }
+          all_data.sort(function(first, second) {
+            console.log("checking for SORTING: ", second.data)
+            return second.data.length - first.data.length;
+          });
           // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
           let landscape_result={}
           // console.log("CHECK THIS DATA: ", all_data)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           // let filtered = zs.filter(item => item !== 0)
-          //console.log("filtered: ", filtered)
+          // console.log("filtered: ", filtered)
           landscape_result["min"] = Math.min(...zs)
           console.log("First Landscape res: ", landscape_result)
           resolve(landscape_result)
@@ -1625,7 +1644,7 @@ function createSunburst(level1, level2, level3, data) {
   }// end of get trialStatusPieChartData
 
   function getInterventionsLandscapeChartData() {
-    console.log("getInterventionsLandscapeChartData")
+    //console.log("getInterventionsLandscapeChartData")
     // data list
     let data_list = []
     let uni = new Set()
