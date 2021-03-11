@@ -866,6 +866,7 @@ function createSunburst(level1, level2, level3, data) {
   const [bipolarPieChartData, setBipolarPieChartData] = useState([])
   const [gadPieChartData, setGadPieChartData] = useState([])
   const [ptsdPieChartData, setPtsdPieChartData] = useState([])
+  const [activityBarChartData, setActivityBarChartData] = useState({data: [], group_keys: []})
 
   /*
   This function creates a dictionary where the key is and items name and the value
@@ -2011,7 +2012,7 @@ function createSunburst(level1, level2, level3, data) {
                 for (var x of x_list){
                   if (x !== "") {
                     data_list.push([y, x, status, z, clickId[0]])
-                    let as_string = y + "; " + x + "; " + status + "; " + clickId[0]
+                    let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
                   }
                 }
@@ -2056,28 +2057,31 @@ function createSunburst(level1, level2, level3, data) {
           for (var i of sorted){
 
             var ids = i.split("; ")
-            if (clickids.indexOf(ids[3])===-1){
-              clickids.push(ids[3])
-            }
+            // if (clickids.indexOf(ids[3])===-1){
+            //   clickids.push(ids[3])
+            // }
+            let clickids = new Set()
             let z = 0;
             for (var arr of data_list){
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
-                if (clickids.indexOf(arr[4])===-1){
-                  clickids.push(arr[4])
-                }
+                // if (clickids.indexOf(arr[4])===-1){
+                //   clickids.push(arr[4])
+                // }
+                clickids.add(arr[4])
               }
             }
             let item = {}
+            let list_ids = [...clickids]
             let limited = []
             for (let j of all) {
-              if (clickids.indexOf(String(j.Covidence_ID))!==-1){
+              if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
                 limited.push(j)
               }
             }
             // console.log("IDS2: ", ids[2])
             if (Object.keys(updated_sponsors_dict).indexOf(ids[0])!==-1){
-              item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z, "clickIds": clickids, "all": limited}
+              item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z, "clickIds": list_ids, "all": limited}
               new_data_list.push(item)
             }
 
@@ -2133,37 +2137,6 @@ function createSunburst(level1, level2, level3, data) {
 
 
 
-// convert this to add the landscape chart
-  // const fetchLandscapeChartData = async () => {
-  //   console.log("are we getting into fetch landscape chart data?")
-  //   const trials = await getTrialsLandscapeChartData()
-  //   // console.log("LANDSCAPE trials: ", trials)
-  //   const pops = await getPopulationsLandscapeChartData()
-  //   const interventions = await getInterventionsLandscapeChartData()
-  //   const outcomes = await getOutcomesLandscapeChartData()
-  //   // const sponsors = await getSponsorsLandscapeChartData()
-  //
-  //   setTrialsLandscapeChartData(trials.data);
-  //   setTrialsLandscapeMinNodeSize(trials.min);
-  //   setTrialsLandscapeMaxNodeSize(trials.max);
-  //
-  //   setPopulationsLandscapeChartData(pops.data);
-  //   setPopulationsLandscapeMinNodeSize(pops.min);
-  //   setPopulationsLandscapeMaxNodeSize(pops.max);
-  //   //
-  //   setInterventionsLandscapeChartData(interventions.data);
-  //   setInterventionsLandscapeMinNodeSize(interventions.min);
-  //   setInterventionsLandscapeMaxNodeSize(interventions.max);
-  //   // setInterventionsYs(interventions.ys)
-  //   //
-  //   setOutcomesLandscapeChartData(outcomes.data);
-  //   setOutcomesLandscapeMinNodeSize(outcomes.min);
-  //   setOutcomesLandscapeMaxNodeSize(outcomes.max);
-  //   //
-  //
-  //   setLoadingLandscapeData(false)
-  // }
-
   const fetchTrialsLandscapeChartData = async () => {
     console.log("are we getting into fetch landscape chart data?")
     const trials = await getTrialsLandscapeChartData()
@@ -2215,6 +2188,8 @@ function createSunburst(level1, level2, level3, data) {
     let ptsd_dict = {}
     let ptsd_pie = [];
 
+
+
     return new Promise((resolve, reject) => {
       base('Studies').select({
 
@@ -2258,12 +2233,29 @@ function createSunburst(level1, level2, level3, data) {
           pie_formatting(ptsd_dict, ptsd_pie)
           pie_formatting(bipolar_dict, bipolar_pie)
           pie_formatting(schizophrenia_dict, schizophrenia_pie)
+          let groupkeys = Object.keys(mdd_dict)
 
+          mdd_dict["type"] = "Major Depressive Disorder"
+          gad_dict["type"] = "Generalized Anxiety Disorder"
+          ptsd_dict["type"] = "Post-traumatic Stress Disorder"
+          bipolar_dict["type"] = "Bipolar Disorder"
+          schizophrenia_dict["type"] = "Schizophrenia"
+          let activity_bar = []
+          activity_bar.push(mdd_dict)
+          activity_bar.push(gad_dict)
+          activity_bar.push(ptsd_dict)
+          activity_bar.push(bipolar_dict)
+          activity_bar.push(schizophrenia_dict)
+
+          let bar = {}
+          bar["data"] = activity_bar
+          bar["group_keys"] = groupkeys
           activityPies["mdd_pie"] = mdd_pie
           activityPies["gad_pie"] = gad_pie
           activityPies["ptsd_pie"] = ptsd_pie
           activityPies["bipolar_pie"] = bipolar_pie
           activityPies["schizophrenia_pie"] = schizophrenia_pie
+          activityPies["bar"] = bar
 
           resolve(activityPies)
 
@@ -2280,6 +2272,7 @@ function createSunburst(level1, level2, level3, data) {
     setPtsdPieChartData(result.ptsd_pie)
     setBipolarPieChartData(result.bipolar_pie)
     setSchizophreniaPieCharData(result.schizophrenia_pie)
+    setActivityBarChartData(result.bar)
     setLoadingActivityTypesData(false)
   }
 
@@ -3146,7 +3139,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col lg={{span: 6}}>
                     <PrismPieChart
-                      colors="indigo"
+                      colors="rainbow"
                       title="Major Depressive Disorder"
                       chartData={mddPieChartData}
                       loading={loadingActivityTypesData}
@@ -3154,7 +3147,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   <Col lg={{span: 6}}>
                     <PrismPieChart
-                      colors="indigo"
+                      colors="rainbow"
                       title="Schizophrenia"
                       chartData={schizophreniaPieCharData}
                       loading={loadingActivityTypesData}
@@ -3164,7 +3157,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col lg={{span: 6}}>
                     <PrismPieChart
-                      colors="indigo"
+                      colors="rainbow"
                       title="Bipolar Disorder"
                       chartData={bipolarPieChartData}
                       loading={loadingActivityTypesData}
@@ -3172,7 +3165,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   <Col lg={{span: 6}}>
                     <PrismPieChart
-                      colors="indigo"
+                      colors="rainbow"
                       title="Generalized Anxiety Disorder"
                       chartData={gadPieChartData}
                       loading={loadingActivityTypesData}
@@ -3182,13 +3175,28 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismPieChart
-                      colors="indigo"
+                      colors="rainbow"
                       title="Post-traumatic Stress Disorder"
                       chartData={ptsdPieChartData}
                       loading={loadingActivityTypesData}
                     />
                   </Col>
 
+                  </Row>
+                  <Row>
+                  <Col>
+                    <PrismBarChart
+                      colors={{"scheme":"nivo"}}
+                      layout="vertical"
+                      title="Activity Types & Conditions"
+                      chartData={activityBarChartData.data}
+                      groupKeys={activityBarChartData.group_keys}
+                      indexKey="type"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
                   </Row>
 
                   <Row>

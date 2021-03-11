@@ -116,7 +116,7 @@ const PrismBarChart = (props) => {
           padding={0.3}
           valueScale={ valueScale }
           indexScale={ indexScale }
-          colors={ colors }
+          colors={ props.colors }
           borderColor={ borderColor }
           isInteractive={true}
           tooltip={ generateTooltip }
@@ -129,12 +129,13 @@ const PrismBarChart = (props) => {
           animate={false}
           enableGridX={ enableGridX}
           enableGridY={ enableGridY }
+          groupMode={ 'stacked' }
       />
       </div>
       {
         props.loading &&
         <div className="overlay">
-          <Spinner name="ball-beat" color={colors[0]} />
+          <Spinner name="ball-beat" color={"indigo"} />
         </div>
       }
     </div>
