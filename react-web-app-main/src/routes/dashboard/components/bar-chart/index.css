@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 20px;
   color: #323338;
   height: 32px;
@@ -15,7 +15,7 @@
 }
 
 .bar-chart-container .chart {
-  height: 300px;
+  height: 400px;
 }
 
 .bar-chart-container .overlay {

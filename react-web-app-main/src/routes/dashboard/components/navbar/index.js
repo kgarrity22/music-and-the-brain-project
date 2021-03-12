@@ -55,8 +55,8 @@ function Navbar(props) {
   return (
     <Nav className="filter-nav">
       <div className="header-container">
-        <FiMap className="hidden" />
-        <p>Music & The Brain
+        <CanvasIcon />
+        <p>Music & Mental Illness
           <br />
           Landscape
         </p>

@@ -16,7 +16,7 @@ const borderColor = { from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }
 const PrismBarChart = (props) => {
 
   const [legends, setLegends] = useState([])
-  const [margins, setMargins] = useState({ top: 10, right: 10, bottom: 150, left: 200 })
+  const [margins, setMargins] = useState({ top: 20, right: 10, bottom: 50, left: 200 })
   useEffect(() => {
     if (props.layout !== 'horizontal') {
       setLegends([{
@@ -65,10 +65,9 @@ const PrismBarChart = (props) => {
     setAxisBottom({
         tickSize: 0,
         tickPadding: 5,
-        tickRotation: -60,
         legend: props.xAxisLabel,
         legendPosition: 'middle',
-        legendOffset: 32
+        legendOffset: 0
     })
   }, [props.xAxisLabel])
 
@@ -135,7 +134,7 @@ const PrismBarChart = (props) => {
       {
         props.loading &&
         <div className="overlay">
-          <Spinner name="ball-beat" color={"indigo"} />
+          <Spinner name="ball-beat" color={"blue"} />
         </div>
       }
     </div>

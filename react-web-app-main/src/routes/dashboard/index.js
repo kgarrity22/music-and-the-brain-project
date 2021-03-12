@@ -40,7 +40,7 @@ const initialStats = [
   {
     color: 'red',
     stats: [
-      { title: 'Trials', metric: '--' }
+      { title: 'Studies', metric: '--' }
     ]
   },
   {
@@ -52,27 +52,21 @@ const initialStats = [
   {
     color: 'yellow',
     stats: [
-      { title: 'Interventions', metric: '--' }
+      { title: 'Primary Studies', metric: '--' }
     ]
   },
   {
     color: 'green',
     stats: [
-      { title: 'Outcomes', metric: '--' }
+      { title: 'Secondary Studies', metric: '--' }
     ]
   },
   {
     color: 'blue',
     stats: [
-      { title: 'Sponsors', metric: '--' }
+      { title: 'Measures', metric: '--' }
     ]
   },
-  {
-    color: 'violet',
-    stats: [
-      { title: 'Sites', metric:'--' }
-    ]
-  }
 ]
 
 
@@ -3089,7 +3083,13 @@ function createSunburst(level1, level2, level3, data) {
       <Container fluid className='dashboard-route'>
         <div className="full-width">
           <div className="scrollable-container">
-
+          <Row className="title-block">
+          <Col>
+            <PrismTextBlock
+              textTitle={'Music in the Treatment and Management of Serious Mental Illness: A Global Scoping Review of the Literature' }
+              />
+          </Col>
+          </Row>
             <Row className="d-none d-xl-block">
               <Col xl={{span: 12}}>
                 <div className="single-stats-containers">
@@ -3152,29 +3152,15 @@ function createSunburst(level1, level2, level3, data) {
 
               <Row className="dashboard-charts-container">
                 <Col>
-
-                  <Row className="first-block">
-                  <Col>
-                    <PrismTextBlock
-                      textTitle={ 'The use of music in the treatment and management of serious mental illness: A global scoping review of the literature' }
-                      mainText={'\n\n'}
-                      moreText={'To get more specific information for each of these charts, use the filter menu to the left.'}
-                    />
-                  </Col>
-                  </Row>
                   <Row>
                   <Col>
                     <PrismTextBlock
-                      textTitle={ 'Viewing the Evidence' }
-                      mainText={ "Studies of music’s effects on serious mental illness are wide-ranging—involving many types of music-based activities, populations, comparators, and designs. The visuals below help reveal the landscape of existing evidence across this varied, evolving field." }
-                      moreText={"In each graph or chart, the bubbles correspond to a published study report. The size of each bubble corresponds to the number of participants in the study (the larger the bubble, the more participants). The color of each bubble indicates the study’s result. Check the legend to the right of each visual to see which results correspond to each color."}
-
+                      textTitle={ 'How to use this landscape' }
+                      mainText={ 'This page provides a dynamic lens for viewing the evidence for the effects of music on mental illness, which are wide-ranging and involve many types of activities, populations, comparators, and study designs. The numbers at the top of the page describe the overall quantitaty of evidence that is summarized by the visuals below.' }
+                      moreText={"On the left side of the page are set of data filters that can be used to narrow down the analysis on specific subsets of the evidence."}
                     />
                   </Col>
                   </Row>
-
-
-
                   <Row>
                     <Col>
                       <SectionTitle title="Studies" color="red" />
@@ -3183,29 +3169,26 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col lg={{span: 6}}>
                     <PrismPieChart
-                      colors="red"
-                      title="Study Designs"
+                      colors="rainbow"
+                      title="What types of studies are included in the analysis?"
                       chartData={trialPurposePieChartData}
-                      loading={loadingTrialsData}
-                    />
-                  </Col>
-
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="red"
-                      title="Study Results"
-                      chartData={trialStatusPieChartData}
                       loading={loadingTrialsData}
                     />
                   </Col>
                   </Row>
                   <Row>
-                  <Col>
+                  <Col lg={{span: 6}}>
+                    <PrismPieChart
+                      colors="rainbow"
+                      title="What is the distribution of study results?"
+                      chartData={trialStatusPieChartData}
+                      loading={loadingTrialsData}
+                    />
+                  </Col>
+                  <Col lg={{span: 6}}>
                     <PrismTextBlock
-                      textTitle={ 'Explanation of Results' }
-                      mainText={ "Due to the wide variety of study facets involved in this scoping review, findings were documented according to whether the music intervention was found to have performed better, worse, or equal to the comparator, or whether results were undetermined." }
-
-
+                      textTitle={ 'How did we classify results?' }
+                      mainText={ "Due to the wide variety of study facets involved in this scoping review, results were classified according to whether the music intervention was found to have performed better, worse, equivalent to the comparator, or whether results were undetermined." }
                     />
                   </Col>
                   </Row>
@@ -3221,12 +3204,32 @@ function createSunburst(level1, level2, level3, data) {
                   <Col lg={{span: 6}}>
                     <PrismPieChart
                       colors="yellow"
-                      title="Activity Types"
+                      title="What is the distribution of intervention types?"
                       chartData={interventionTypesPieChartData}
                       loading={loadingInterventionsData}
                     />
                   </Col>
-
+                  <Col lg={{span: 6}}>
+                    <PrismTextBlock
+                      textTitle={ 'How did we classify interventions?' }
+                      mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
+                  <Col>
+                    <PrismBarChart
+                      colors={{"scheme":"nivo"}}
+                      layout="vertical"
+                      title="What interventions have been studied?"
+                      chartData={activityBarChartData.data}
+                      groupKeys={activityBarChartData.group_keys}
+                      indexKey="type"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      loading={loadingSponsorsData}
+                    />
+                  </Col>
 
                   </Row>
 
@@ -3236,81 +3239,27 @@ function createSunburst(level1, level2, level3, data) {
                     </Col>
                   </Row>
                   <Row>
-                  <Col lg={{span: 6}}>
+                  <Col lg={{span: 12}}>
                     <PrismPieChart
                       colors="blue"
-                      title="Conditions"
+                      title="What is the distribution of mental illnesses studied?"
                       chartData={sponsorTypePieChartData}
                       loading={loadingSponsorsData}
                     />
                   </Col>
-                  </Row>
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Activity Types for Each Condition" color="indigo" />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="rainbow"
-                      title="Major Depressive Disorder"
-                      chartData={mddPieChartData}
-                      loading={loadingActivityTypesData}
-                    />
-                  </Col>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="rainbow"
-                      title="Schizophrenia"
-                      chartData={schizophreniaPieCharData}
-                      loading={loadingActivityTypesData}
-                    />
-                  </Col>
-                  </Row>
-                  <Row>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="rainbow"
-                      title="Bipolar Disorder"
-                      chartData={bipolarPieChartData}
-                      loading={loadingActivityTypesData}
-                    />
-                  </Col>
-                  <Col lg={{span: 6}}>
-                    <PrismPieChart
-                      colors="rainbow"
-                      title="Generalized Anxiety Disorder"
-                      chartData={gadPieChartData}
-                      loading={loadingActivityTypesData}
-                    />
-                  </Col>
-                  </Row>
-                  <Row>
-                  <Col>
-                    <PrismPieChart
-                      colors="rainbow"
-                      title="Post-traumatic Stress Disorder"
-                      chartData={ptsdPieChartData}
-                      loading={loadingActivityTypesData}
-                    />
-                  </Col>
-
                   </Row>
                   <Row>
                   <Col>
                     <PrismBarChart
                       colors={{"scheme":"nivo"}}
                       layout="vertical"
-                      title="Activity Types & Conditions"
+                      title="What is the breakdown of intervention types evaluated for each condition?"
                       chartData={activityBarChartData.data}
                       groupKeys={activityBarChartData.group_keys}
                       indexKey="type"
                       xAxisLabel=""
                       yAxisLabel=""
-                      loading={loadingActivityTypesData}
+                      loading={loadingSponsorsData}
                     />
                   </Col>
                   </Row>
@@ -3318,7 +3267,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="How Has this Area of Study Changed Over Time?"
+                      title="How has research activity for these conditions changed over time?"
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
                       chartHeight={500}
@@ -3336,10 +3285,14 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
-
-
-
-
+                  <Row>
+                  <Col lg={{span: 12}}>
+                    <PrismTextBlock
+                      textTitle={ 'How to interpret this graph' }
+                      mainText={ "The bubbles in the scatterplot indicate the type of and volume of studies for each condition and year combination. You can hover your mouse over each bubble to see more information about the research activity in that disease/time. You can also click on a node to inspect or download the details of the specific study reports." }
+                    />
+                  </Col>
+                  </Row>
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
