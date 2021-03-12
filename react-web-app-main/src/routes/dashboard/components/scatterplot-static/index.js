@@ -104,7 +104,7 @@ const PrismStaticScatterplot = (props) => {
         <div className="chart" style={{height: props.chartHeight}}>
           <ResponsiveScatterPlot
             data={ props.chartData }
-            height={props.chartHeight}
+            height={800}
             margin={{ top: 100, right: 300, bottom: 200, left: 200 }}
             xScale={{ type: props.type, format: props.format, precision: props.precision, min: props.xMin, max: props.xMax  }}
             xFormat={ props.xFormat }

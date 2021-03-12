@@ -3321,7 +3321,7 @@ function createSunburst(level1, level2, level3, data) {
                       title="How Has this Area of Study Changed Over Time?"
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
-                      chartHeight={500}
+                      chartHeight={900}
                       type={'time'}
                       format={'%Y'}
                       precision={'year'}
@@ -3346,7 +3346,7 @@ function createSunburst(level1, level2, level3, data) {
                       title="What Music-Based Activities Have Been Studied?"
                       colors="rainbow"
                       chartData={interventionsLandscapeChartData}
-                      chartHeight={1000}
+                      chartHeight={900}
                       type={"point"}
                       minNodeSize={interventionsLandscapeMinNodeSize}
                       maxNodeSize={interventionsLandscapeMaxNodeSize}
@@ -3382,7 +3382,7 @@ function createSunburst(level1, level2, level3, data) {
                       title="What Were the Results of These Studies, for Each Condition?"
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
-                      chartHeight={1000}
+                      chartHeight={900}
                       type={"point"}
                       minNodeSize={outcomesLandscapeMinNodeSize}
                       maxNodeSize={outcomesLandscapeMaxNodeSize}
