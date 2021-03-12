@@ -6,9 +6,15 @@ import './index.css'
 const LandscapeTooltip = (props) => {
   let items = []
   //console.log("PROPSALL: ", props)
-
+  let header = ""
   // want a title that has the x and y axis - an h2
-  let header = props.all.x + " by " + props.all.y
+  if (typeof(props.all.formattedX)==='object'){
+    let x = String(props.all.x)
+    header = x.slice(11, 15) + " by " + props.all.y
+  } else {
+    header = props.all.x + " by " + props.all.y
+  }
+  // let header = props.all.x + " by " + props.all.y
   // items.push(<div className="landscape-tooltip-header">
   //               <h2>{header}</h2>
   //             </div>

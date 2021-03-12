@@ -46,9 +46,9 @@ const PrismStaticScatterplot = (props) => {
     let title=""
     if (typeof(node.data.formattedX)==='object'){
       let x = String(node.data.x)
-      title = node.data.serieId + ": " + x.slice(4, 15) + " x " + node.data.y
+      title = x.slice(4, 15) + " x " + node.data.y
     } else {
-      title = node.data.serieId + ": " + node.data.x + " x " + node.data.y
+      title = node.data.x + " x " + node.data.y
     }
     let alltables = []
     //console.log("CHECKING: ", node.data.all)
@@ -58,8 +58,12 @@ const PrismStaticScatterplot = (props) => {
     setAllTableData(alltables)
     let table = []
     for (let item of Object.keys(complete)){
-
-      table.push(<MainTable tabledata={ complete[item] } height={"auto"} />)
+      console.log("complete[item]: ", complete)
+      table.push(<div>
+          <h3>{item}</h3>
+          <MainTable tabledata={ complete[item] } height={"auto"} />
+        </div>
+      )
     }
     console.log(table)
     setTables(table)
@@ -165,7 +169,7 @@ const PrismStaticScatterplot = (props) => {
             className="Modal"
           >
             <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
-
+            <button className="close-btn" onClick={closeModal}>close</button>
 
             <div className="tableholder">
               {tables}

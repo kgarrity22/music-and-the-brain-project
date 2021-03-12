@@ -1337,6 +1337,7 @@ function createSunburst(level1, level2, level3, data) {
     let uni = new Set()
     let ys = new Set()
     let all = []
+    let all_ids = new Set()
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1351,6 +1352,7 @@ function createSunburst(level1, level2, level3, data) {
             // get all status
             all.push(record.fields)
             let status = record.get('Design')
+            all_ids.add(status)
 
             let year = String(record.get('Year'))
             let date = year
@@ -1375,7 +1377,7 @@ function createSunburst(level1, level2, level3, data) {
                   if (x !== "") {
 
                     data_list.push([status, x, y, z, clickId[0]])
-                    let as_string = status + "; " + x + "; " + y + "; " + clickId[0]
+                    let as_string = status + "; " + x + "; " + y
                   //  console.log("as string: ", as_string)
                     uni.add(as_string)
                   }
@@ -1396,35 +1398,64 @@ function createSunburst(level1, level2, level3, data) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
+          let xtype = "Year"
+          let ytype = "Conditions"
 
           //console.log("Ys: ", ys)
           for (var i of uni){
 
             var ids = i.split("; ")
             let z = 0;
-            let clickids = []
-            if (clickids.indexOf(ids[3])===-1){
-              clickids.push(ids[3])
-            }
+            let clickids = new Set()
+            // if (clickids.indexOf(ids[3])===-1){
+            //   clickids.push(ids[3])
+            // }
 
             for (var arr of data_list){
 
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
-                if (clickids.indexOf(arr[4])===-1){
-                  clickids.push(arr[4])
-                }
+                clickids.add(arr[4])
+                // if (clickids.indexOf(arr[4])===-1){
+                //   clickids.push(arr[4])
+                // }
               }
             }
 
             let item = {}
-            let limited = []
-            // for (let j of all) {
-            //   if (clickids.indexOf(String(j.Covidence_ID))!==-1){
-            //     limited.push(j)
-            //   }
-            // }
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": clickids, "all": all}
+            let limited = {}
+            let list_ids = [...clickids]
+
+            let list_all = [...all_ids]
+
+            for (let status of list_all){
+              // console.log("status: ", status)
+              let l1 = []
+              for (let j of all){
+                // console.log("J: ", j)
+              //  console.log("TYPE of : ", typeof(j.Design))
+                if (typeof(j.Design) !== 'undefined'){
+                  // console.log(j[ytype], j.Design, j[xtype], status, ids[1], ids[2])
+                  //console.log("CHECK: ", typeof(j[xtype]), typeof(ids[1]))
+                  //console.log((j[xtype])===(ids[1]), (j[ytype]).includes(ids[2]), (j.Design).includes(status))
+                  if (j[xtype] === parseInt(ids[1]) && (j[ytype]).includes(ids[2]) && (j.Design).includes(status)){
+                    l1.push(j)
+                    //console.log("JJJ")
+                  }
+                  //console.log("l1: ", l1)
+                }
+              }
+            //  console.log("L1: ", l1)
+              if (l1.length!==0){
+                limited[status] = l1
+                // limited.push(l1)
+              }
+
+
+            }
+            //console.log("LIMITED: ", limited)
+
+            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }
