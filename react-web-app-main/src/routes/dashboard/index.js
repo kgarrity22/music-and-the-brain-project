@@ -1771,7 +1771,7 @@ function createSunburst(level1, level2, level3, data) {
 
             var ids = i.split("; ")
             let z = 0;
-            console.log("IDS: ", ids)
+            //console.log("IDS: ", ids)
 
             let clickids = new Set()
             // clickids.add(ids[3])
@@ -1826,7 +1826,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
             }
-            console.log("LIMITED: ", limited)
+            //console.log("LIMITED: ", limited)
 
             item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 

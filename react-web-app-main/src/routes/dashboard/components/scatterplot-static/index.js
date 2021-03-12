@@ -111,7 +111,7 @@ const PrismStaticScatterplot = (props) => {
 
             tooltip={ function(e) {
               //console.log("Tooltip E: ", e.node.data);
-              return <LandscapeTooltip all={e.node.data.all} />} }
+              return <LandscapeTooltip all={e.node.data} />} }
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
             animate={ false }
