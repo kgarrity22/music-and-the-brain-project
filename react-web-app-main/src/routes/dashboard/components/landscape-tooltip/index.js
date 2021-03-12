@@ -5,7 +5,7 @@ import './index.css'
 
 const LandscapeTooltip = (props) => {
   let items = []
-  console.log("PROPSALL: ", props)
+  //console.log("PROPSALL: ", props)
 
   // want a title that has the x and y axis - an h2
   let header = props.all.x + " by " + props.all.y

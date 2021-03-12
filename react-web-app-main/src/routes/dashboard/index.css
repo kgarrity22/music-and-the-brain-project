@@ -3,6 +3,7 @@
   display: flex;
   padding-left: 250px;
   padding-right: 0;
+  /* margin-top: 20px; */
 }
 
 .dashboard-route .searchbar-container {
@@ -12,6 +13,7 @@
 
 .dashboard-route .scrollable-container {
   overflow-y: auto;
+  margin-top: 10px
 }
 
 .dashboard-route .scrollable-container .row {

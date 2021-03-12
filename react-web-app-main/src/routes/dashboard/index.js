@@ -3057,14 +3057,9 @@ function createSunburst(level1, level2, level3, data) {
       />
       <Container fluid className='dashboard-route'>
         <div className="full-width">
-          <Row className="no-gutters">
-            <Col className="searchbar-container">
-              <Searchbar />
-            </Col>
-          </Row>
-
           <div className="scrollable-container">
-            <Row className="d-none d-xl-block" style={{ paddingTop: '80px'}}>
+
+            <Row className="d-none d-xl-block">
               <Col xl={{span: 12}}>
                 <div className="single-stats-containers">
                   {
