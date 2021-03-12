@@ -16,7 +16,7 @@ const borderColor = { from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }
 const PrismBarChart = (props) => {
 
   const [legends, setLegends] = useState([])
-  const [margins, setMargins] = useState({ top: 10, right: 10, bottom: 50, left: 200 })
+  const [margins, setMargins] = useState({ top: 10, right: 10, bottom: 150, left: 200 })
   useEffect(() => {
     if (props.layout !== 'horizontal') {
       setLegends([{
@@ -65,7 +65,7 @@ const PrismBarChart = (props) => {
     setAxisBottom({
         tickSize: 0,
         tickPadding: 5,
-        tickRotation: 0,
+        tickRotation: -60,
         legend: props.xAxisLabel,
         legendPosition: 'middle',
         legendOffset: 32
@@ -129,7 +129,7 @@ const PrismBarChart = (props) => {
           animate={false}
           enableGridX={ enableGridX}
           enableGridY={ enableGridY }
-          groupMode={ 'stacked' }
+          groupMode={ 'grouped' }
       />
       </div>
       {
