@@ -1701,7 +1701,7 @@ function createSunburst(level1, level2, level3, data) {
             // get all status
             all.push(record.fields)
             let status = record.get('Results')
-            all_ids.add(status)
+            // all_ids.add(status)
 
             let allx = String(record.get('Conditions'))
 
@@ -1716,7 +1716,7 @@ function createSunburst(level1, level2, level3, data) {
             let clickId = []
             clickId.push(String(record.get('Covidence_ID')))
 
-
+            // console.log("Ys check: ", )
             let y_list = ally.split(",")
             let x_list  = allx.split(",")
             // need to do each y with each x
@@ -1728,6 +1728,11 @@ function createSunburst(level1, level2, level3, data) {
                 if (y.charAt(0)===" "){
                   y = y.slice(1, y.length)
                 }
+                //onsole.log("Y: ", y)
+                if (y !== 'undefined'){
+                  all_ids.add(y)
+                }
+
                 for (var x of x_list){
                   if (x !== "") {
 
@@ -1756,7 +1761,7 @@ function createSunburst(level1, level2, level3, data) {
           let xs = []
           console.log("UNI: ", uni)
           let xtype = "Conditions"
-          let ytype = "Interventions"
+          let ytype = "Results"
 
 
 
@@ -1766,6 +1771,7 @@ function createSunburst(level1, level2, level3, data) {
 
             var ids = i.split("; ")
             let z = 0;
+            console.log("IDS: ", ids)
 
             let clickids = new Set()
             // clickids.add(ids[3])
@@ -1790,16 +1796,29 @@ function createSunburst(level1, level2, level3, data) {
             let list_ids = [...clickids]
             //console.log("is this atHING: ", [...all_ids])
             let list_all = [...all_ids]
+          //  console.log("list ALL: ", list_all)
             for (let status of list_all){
+              //console.log("status: ", status)
               let l1 = []
               for (let j of all){
-                //console.log("type check: ", j[xtype], j[ytype])
-                if ((j[xtype]).includes(ids[1]) && j[ytype]===ids[2] && j.Results === status){
-                  l1.push(j)
-                  //console.log("JJJ: ", j)
+                // console.log("type check: ", (j["Interventions"]).includes(status))
+                // console.log("check 1: ", j["Interventions"])
+                // console.log("check 2: ", ids[1])
+                // console.log("check 3: ", ids[0])
+                if (typeof(j.Interventions) !== 'undefined'){
+                  //console.log(typeof(j["Interventions"]))
+                  //console.log(j[xtype], j[ytype], j.Interventions)
+                  //console.log("ARE any TRUE: ",((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && (j["Interventions"]).includes(ids[0])))
+                  //console.log("interventions: ", j.Interventions)
+                  //console.log("j[xtype] vs ids[1]", j[ytype],  ids[0])
+                  if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && (j.Interventions).includes(status)){
+                    l1.push(j)
+                    //console.log("JJJ")
+                  }
+                  //console.log("l1: ", l1)
                 }
               }
-              //console.log("L1: ", l1)
+            //  console.log("L1: ", l1)
               if (l1.length!==0){
                 limited[status] = l1
                 // limited.push(l1)
@@ -1807,15 +1826,8 @@ function createSunburst(level1, level2, level3, data) {
 
 
             }
-            //console.log("LIMITED: ", limited)
+            console.log("LIMITED: ", limited)
 
-
-
-            // for (let j of all) {
-            //   if (list_ids.indexOf(String(j.Covidence_ID))!==-1){
-            //     limited.push(j)
-            //   }
-            // }
             item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
