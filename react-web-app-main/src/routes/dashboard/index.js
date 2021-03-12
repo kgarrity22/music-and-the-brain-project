@@ -3302,7 +3302,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      colors={{"scheme":"nivo"}}
+                      colors="rainbow"
                       layout="vertical"
                       title="Activity Types & Conditions"
                       chartData={activityBarChartData.data}
