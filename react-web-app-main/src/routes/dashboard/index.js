@@ -1902,7 +1902,7 @@ function createSunburst(level1, level2, level3, data) {
 
             all.push(record.fields)
             let status = record.get('Results')
-            all_ids.add(status)
+
             let allx = String(record.get('Conditions'))
             let ally = String(record.get('Outcomes'))
             let z = parseInt(record.get('Sample_Size'))
@@ -1923,7 +1923,7 @@ function createSunburst(level1, level2, level3, data) {
                     if (y[0]===" "){
                       y = y.slice(1, y.length)
                     }
-
+                    all_ids.add(y)
                     data_list.push([y, x, status, z, clickId[0]])
                     let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
@@ -1948,7 +1948,7 @@ function createSunburst(level1, level2, level3, data) {
           //console.log("Ys: ", ys)
           let xs = []
           let xtype = 'Conditions'
-          let ytype = 'Outcomes'
+          let ytype = 'Results'
 
 
 
@@ -1980,8 +1980,8 @@ function createSunburst(level1, level2, level3, data) {
             for (let status of list_all){
               let l1 = []
               for (let j of all){
-                //console.log("type check: ", j[xtype], j[ytype])
-                if ((j[xtype]).includes(ids[1]) && j[ytype]===ids[2] && j.Results === status){
+                //console.log("type check: ", j[ytype], ids[2])
+                if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && (j.Outcomes).includes(status)){
                   l1.push(j)
                   //console.log("JJJ: ", j)
                 }
