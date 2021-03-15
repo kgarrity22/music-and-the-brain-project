@@ -28,10 +28,10 @@ const PrismBarChart = (props) => {
         translateY: 0,
         itemsSpacing: 5,
         itemWidth: 100,
-        itemHeight: 20,
+        itemHeight: 10,
         itemDirection: 'left-to-right',
         itemOpacity: 0.85,
-        symbolSize: 20,
+        symbolSize: 10,
         effects: [{
           on: 'hover',
           style: {
@@ -104,9 +104,10 @@ const PrismBarChart = (props) => {
   return (
     <div className="bar-chart-container">
       <p className="chart-title">{props.title}</p>
-      <div className="chart">
+      <div className="chart" style={{"height": props.chartHeight}}>
         <ResponsiveBar
           theme={ theme }
+          
           data={props.chartData}
           keys={props.groupKeys}
           margin={margins}

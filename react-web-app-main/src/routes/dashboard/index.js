@@ -3242,6 +3242,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       layout="vertical"
                       title="Interventions"
+                      chartHeight={600}
                       chartData={interventionsBarData.data}
                       groupKeys={interventionsBarData.group_keys}
                       indexKey="int"
@@ -3289,7 +3290,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  
+
 
                   <Row>
                     <Col>
