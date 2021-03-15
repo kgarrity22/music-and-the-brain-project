@@ -3197,6 +3197,8 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   <Col lg={{span: 6}}>
                     <PrismTextBlock
+                      paddingTop={120}
+                      paddingBottom={0}
                       arrow={<FaArrowCircleLeft/ >}
                       textTitle={ '     How did we classify results?' }
                       mainText={ "Due to the wide variety of study facets involved in this scoping review, results were classified according to whether the music intervention was found to have performed better, worse, equivalent to the comparator, or whether results were undetermined." }
@@ -3224,6 +3226,8 @@ function createSunburst(level1, level2, level3, data) {
                   <Col lg={{span: 6}}>
 
                     <PrismTextBlock
+                      paddingTop={90}
+                      paddingBottom={0}
                       arrow={<FaArrowCircleLeft/ >}
                       textTitle={ '     How did we classify interventions?' }
                       mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
@@ -3285,28 +3289,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Conditions" color="blue" />
-                    </Col>
-
-                  </Row>
-                  <Row>
-                  <Col>
-                    <PrismBarChart
-                      colors={{"scheme":"nivo"}}
-                      layout="vertical"
-                      title="What interventions have been studied?"
-                      chartData={activityBarChartData.data}
-                      groupKeys={activityBarChartData.group_keys}
-                      indexKey="type"
-                      xAxisLabel=""
-                      yAxisLabel=""
-                      loading={loadingSponsorsData}
-                    />
-                  </Col>
-
-                  </Row>
+                  
 
                   <Row>
                     <Col>
