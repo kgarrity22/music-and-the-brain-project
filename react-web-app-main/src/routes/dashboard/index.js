@@ -787,6 +787,9 @@ function createSunburst(level1, level2, level3, data) {
   // intervention charts original variables
   const [interventionsTop10BarChartData, setInterventionsTop10BarChartData] = useState({data: [], group_keys: []})
   const [interventionTypesPieChartData, setInterventionTypesPieChartData] = useState([])
+  const [interventionsBarData, setInterventionsBarData] = useState({data: [], group_keys: []})
+  const [comparatorsBarData, setComparatorsBarData] = useState({data: [], group_keys: []})
+
   const [interventionArmsPieChartData, setInterventionArmsPieChartData] = useState([])
   const [interventionsAreaBumpChart, setInterventionsAreaBumpChart] = useState([])
 
@@ -861,6 +864,7 @@ function createSunburst(level1, level2, level3, data) {
   const [gadPieChartData, setGadPieChartData] = useState([])
   const [ptsdPieChartData, setPtsdPieChartData] = useState([])
   const [activityBarChartData, setActivityBarChartData] = useState({data: [], group_keys: []})
+  const [outcomesBarData, setOutcomesBarData] = useState({data: [], group_keys: []})
 
   /*
   This function creates a dictionary where the key is and items name and the value
@@ -1112,33 +1116,7 @@ function createSunburst(level1, level2, level3, data) {
             //   for (var item of outcome){
             //     if (item === null){
             //       single_metric_outcomes.add(null)
-            //     } else {
-            //       var itemlist = item.split(", ")
-            //       for (var j of itemlist){
-            //         single_metric_outcomes.add(j)
-            //       }
-            //     }
-            //   }
-            // } else {
-            //   single_metric_outcomes.add(outcome)
-            // }
-            //
-            // // sites
-            // var facility_ids = record.get('Facilities_Links')
-            // if (typeof(facility_ids)==='object'){
-            //   for (var item of facility_ids){
-            //     if (item === null){
-            //       single_metric_sites.add(null)
-            //     } else {
-            //       var itemlist = item.split(", ")
-            //       for (var j of itemlist){
-            //         single_metric_sites.add(j)
-            //       }
-            //     }
-            //   }
-            // } else {
-            //   single_metric_sites.add(facility_ids)
-            // }
+
 
           });
 
@@ -1332,6 +1310,8 @@ function createSunburst(level1, level2, level3, data) {
     let ys = new Set()
     let all = []
     let all_ids = new Set()
+    //ys.add("1945")
+    let xs = new Set()
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1349,7 +1329,9 @@ function createSunburst(level1, level2, level3, data) {
             all_ids.add(status)
 
             let year = String(record.get('Year'))
+            xs.add(year)
             let date = year
+
             let ally = String(record.get('Conditions'))
 
             let z = parseInt(record.get('Sample_Size'))
@@ -1453,7 +1435,11 @@ function createSunburst(level1, level2, level3, data) {
 
             new_data_list.push(item)
           }
-          //console.log("new LIST: ", new_data_list)
+          // let dict = {}
+          // dict[""] = {"x": "1945", "y": "", "z": 0}
+          //
+          // new_data_list.push(dict)
+          // console.log("new LIST: ", new_data_list)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1483,11 +1469,12 @@ function createSunburst(level1, level2, level3, data) {
           // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
           let landscape_result={}
           // console.log("CHECK THIS DATA: ", all_data)
+          console.log("XS: ", xs)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           let filtered = zs.filter(item => item !== 0)
           console.log("filtered: ", filtered)
-          landscape_result["min"] = Math.min(...filtered)
+          landscape_result["min"] = Math.min(...zs)
           console.log("LANDscape RESul; ", landscape_result)
           resolve(landscape_result)
 
@@ -1641,7 +1628,7 @@ function createSunburst(level1, level2, level3, data) {
               //     limited.push(j)
               //   }
               // }
-              item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+              item[ids[0]] = {"x": ids[2], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
               new_data_list.push(item)
 
@@ -1853,7 +1840,7 @@ function createSunburst(level1, level2, level3, data) {
             }
             //console.log("LIMITED: ", limited)
 
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+            item[ids[0]] = {"x": ids[2], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }
@@ -2018,7 +2005,7 @@ function createSunburst(level1, level2, level3, data) {
               }
             }
 
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+            item[ids[0]] = {"x": ids[2], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }
@@ -2486,7 +2473,13 @@ function createSunburst(level1, level2, level3, data) {
 
   // Get Outcomes data from airtable
   function getOutcomesChartsData() {
-    console.log("getOutcomesChartsData")
+    let outcomes_bar_dict = {}
+    //Let outcomes_bar = []
+
+
+
+
+    // console.log("getOutcomesChartsData")
     return new Promise((resolve, reject) => {
       base('Studies').select({
 
@@ -2495,39 +2488,11 @@ function createSunburst(level1, level2, level3, data) {
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
-            // OUTCOMES FILTERS
-            let year = String(record.get("Start_Year"))
-            years.add(year)
+            let outcome = record.get('Outcomes')
 
 
-            var outcome = record.get('Outcome_Concepts')
-            if (typeof(outcome)==='object'){
-              for (var item of outcome){
-                if (item === null){
-                  //console.log()
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-
-                    pie_collection(outcomes_dict, j)
-                    pie_collection(outcome_area_dict, j + ": " + String(year))
-                    outcome_area_unique.add(j)
-                  }
-                }
-              }
-            } else {
-              pie_collection(outcome_area_dict, outcome + ": " + String(year))
-              outcome_area_unique.add(outcome)
-              pie_collection(outcomes_dict, outcome)
-            }
-
-
-
-            let primary_outcome = record.get('Num_Primary_Outcomes')
-            if (primary_outcome >= 5){
-              pie_collection(outcomes_pie_dict, "5+")
-            } else {
-              pie_collection(outcomes_pie_dict, primary_outcome)
+            for (let i of outcome){
+              pie_collection(outcomes_bar_dict, i)
             }
 
 
@@ -2542,34 +2507,39 @@ function createSunburst(level1, level2, level3, data) {
             return reject({});
           }
           //console.log("OUTCOMES DICT: ", outcomes_dict)
+          let group_keys = Object.keys(outcomes_bar_dict)
+          let bar = {}
+          bar["data"] = [outcomes_bar_dict]
+          bar["group_keys"] = group_keys
 
-          var items = Object.keys(outcomes_dict).map(function(key) {
-            return [key, outcomes_dict[key]];
-          });
-
-          // Sort the array based on the second element
-          items.sort(function(first, second) {
-            return second[1] - first[1];
-          });
-
-          var updated_outcomes_dict = {}
-          let updated = []
-          for (var item of items.slice(0, 10)){
-            updated_outcomes_dict[item[0]] = item[1]
-          }
-          for (var item of items.slice(0, 20)){
-            updated.push(item[0])
-          }
-
-          //console.log('updated:', updated_outcomes_dict)
-
-          areaBumpFormatting(outcome_area_dict, updated, outcome_areabump_result, years)
-          pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
-          bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
-          outcomes_result["outcome_bar"] = outcomes_bar_formatted
-          outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
-          outcomes_result["area_bump"] = outcome_areabump_result
+          // var items = Object.keys(outcomes_dict).map(function(key) {
+          //   return [key, outcomes_dict[key]];
+          // });
+          //
+          // // Sort the array based on the second element
+          // items.sort(function(first, second) {
+          //   return second[1] - first[1];
+          // });
+          //
+          // var updated_outcomes_dict = {}
+          // let updated = []
+          // for (var item of items.slice(0, 10)){
+          //   updated_outcomes_dict[item[0]] = item[1]
+          // }
+          // for (var item of items.slice(0, 20)){
+          //   updated.push(item[0])
+          // }
+          //
+          // //console.log('updated:', updated_outcomes_dict)
+          //
+          // areaBumpFormatting(outcome_area_dict, updated, outcome_areabump_result, years)
+          // pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
+          // bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
+          // outcomes_result["outcome_bar"] = outcomes_bar_formatted
+          // outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
+          // outcomes_result["area_bump"] = outcome_areabump_result
           //console.log("OUTCOME data: ", outcome_areabump_result)
+          outcomes_result["outcomes_bar"] = bar
 
           resolve(outcomes_result)
 
@@ -2580,12 +2550,13 @@ function createSunburst(level1, level2, level3, data) {
 
   // Fetch and set outcomes data
   const fetchOutcomesData = async () => {
-    console.log("fetchOutcomesData")
+    // console.log("fetchOutcomesData")
     const result = await getOutcomesChartsData()
-    setPrimaryOutcomesPieData(result.primary_outcomes_pie)
-    setOutcomesTop10ParentBarChartData(result.outcome_bar)
-    setOutcomesAreaBump(result.area_bump)
-    setLoadingOutcomesData(false)
+    setOutcomesBarData(result.outcomes_bar)
+    // setPrimaryOutcomesPieData(result.primary_outcomes_pie)
+    // setOutcomesTop10ParentBarChartData(result.outcome_bar)
+    // setOutcomesAreaBump(result.area_bump)
+    // setLoadingOutcomesData(false)
   }
 
 
@@ -2605,7 +2576,13 @@ function createSunburst(level1, level2, level3, data) {
   var interventions_result = {}
   // Get Intervention data from airtable
   function getInterventionsChartsData() {
-    console.log("getInterventionsChartsData")
+    // console.log("getInterventionsChartsData")
+    let interventions_bar_dict = {}
+    let comparator_bar_dict = {}
+//Let outcomes_bar = []
+
+
+
     return new Promise((resolve, reject) => {
       base('Studies').select({
 
@@ -2614,27 +2591,37 @@ function createSunburst(level1, level2, level3, data) {
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
-            // let year = String(record.get("Start_Year"))
-            // let month = String(record.get("Start_Month"))
-            // let date = ""
-            // if (month.length === 1){
-            //   date = year + "-" + "0" + month
-            // } else {
-            //   date = year + "-" + month
-            // }
-            // int_dates.add(year)
 
-            // var interventions = record.get('Intervention_Types').split(", ")
-            // for (var item of interventions){
-            //   pie_collection(interventions_types_dict, item)
-            //   pie_collection(intervention_area_dict, item + ": " + String(year))
-            //   interventions_area_unique.add(item)
             // }
             pie_collection(interventions_types_dict, record.get('Activity_Type'))
-            //pie_collection(interventions_arms_dict, record.get('Interventions_Count'))
+            let comp = record.get('Comparator')
+            let allcomp = []
+            if (comp === "Other CAM, Different Art Therapy (Drama, Visual art, Creative Play)"){
+              allcomp = ["Other CAM", "Different Art Therapy (Drama, Visual art, Creative Play)"]
+            } else if (comp === "Different Art Therapy (Drama, Visual art, Creative Play)") {
+              allcomp = ["Different Art Therapy (Drama, Visual art, Creative Play)"]
+
+            } else {
+              allcomp = comp.split(",")
+
+            }
+
+            for (let i of allcomp){
+              if (i.charAt(0) === " "){
+                i = i.slice(1, i.length)
+              }
+              pie_collection(comparator_bar_dict, i)
+            }
 
 
+            let int = record.get("Interventions")
 
+
+            if (typeof(int)!=="undefined"){
+              for (let i of int.split(",")){
+                pie_collection(interventions_bar_dict, i)
+              }
+            }
 
           });
 
@@ -2648,9 +2635,24 @@ function createSunburst(level1, level2, level3, data) {
           //areaBumpFormatting(intervention_area_dict, [...interventions_area_unique].sort(), interventions_areabump_result, int_dates)
           // console.log("AREA BUMP CHECK: ", outcome_areabump_result)
           pie_formatting(interventions_types_dict, intervention_types_pie)
+          let group_keys = Object.keys(interventions_bar_dict)
+          let bar = {}
+          // interventions_bar_dict["int"] = "Interventions"
+          bar["data"] = [interventions_bar_dict]
+
+          bar['group_keys'] = group_keys
+
+          let group_keys2 = Object.keys(comparator_bar_dict)
+          let bar2 = {}
+          // comparator_bar_dict["comp"] = "Comparators"
+          bar2["data"] = [comparator_bar_dict]
+          bar2['group_keys'] = group_keys2
         //  pie_formatting(interventions_arms_dict, intervention_arms_pie)
           interventions_result["intervention_types_pie"] = intervention_types_pie
-          interventions_result["intervention_arms_pie"] = intervention_arms_pie
+          interventions_result["intervention_bar"] = bar
+          interventions_result["comparator_bar"] = bar2
+          console.log('BAR2:', bar2)
+          // interventions_result["intervention_arms_pie"] = intervention_arms_pie
           // interventions_result["interventions_areabump_result"] = interventions_areabump_result
 
           resolve(interventions_result)
@@ -2665,6 +2667,9 @@ function createSunburst(level1, level2, level3, data) {
     // setInterventionsTop10BarChartData(result.interventions_bar);
     // console.log("compare this bar: ", result.interventions_bar)
     setInterventionTypesPieChartData(result.intervention_types_pie)
+    setInterventionsBarData(result.intervention_bar)
+    setComparatorsBarData(result.comparator_bar)
+
     //setInterventionArmsPieChartData(result.intervention_arms_pie)
     // setInterventionsAreaBumpChart(result.interventions_areabump_result)
     setLoadingInterventionsData(false)
@@ -2884,6 +2889,9 @@ function createSunburst(level1, level2, level3, data) {
 
       setLoadingSponsorsData(true);
       fetchSponsorsData();
+
+      setLoadingOutcomesData(true);
+      fetchOutcomesData();
 
 
       setLoadingTrialsLandscapeData(true)
@@ -3201,7 +3209,7 @@ function createSunburst(level1, level2, level3, data) {
                     </Col>
                   </Row>
                   <Row>
-                  <Col lg={{span: 6}}>
+                  <Col>
                     <PrismPieChart
                       colors="yellow"
                       title="What is the distribution of intervention types?"
@@ -3209,12 +3217,74 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingInterventionsData}
                     />
                   </Col>
+
                   <Col lg={{span: 6}}>
                     <PrismTextBlock
                       textTitle={ '<- How did we classify interventions?' }
                       mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
                     />
                   </Col>
+
+
+                  </Row>
+                  <Row>
+                  <Col>
+                    <PrismBarChart
+                      colors="rainbow"
+                      layout="vertical"
+                      title="Interventions"
+                      chartData={interventionsBarData.data}
+                      groupKeys={interventionsBarData.group_keys}
+                      indexKey="int"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      loading={loadingInterventionsData}
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
+                  <Col>
+                    <PrismBarChart
+                      colors="rainbow"
+                      layout="vertical"
+                      title="Comparators"
+                      chartData={comparatorsBarData.data}
+                      groupKeys={comparatorsBarData.group_keys}
+                      indexKey="comp"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      loading={loadingInterventionsData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Outcomes" color="green" />
+                    </Col>
+                  </Row>
+                  <Row>
+
+                  <Col>
+                    <PrismBarChart
+                      colors="rainbow"
+                      layout="vertical"
+                      title="Outcomes"
+                      chartData={outcomesBarData.data}
+                      groupKeys={outcomesBarData.group_keys}
+                      indexKey="type"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Conditions" color="blue" />
+                    </Col>
+
                   </Row>
                   <Row>
                   <Col>
@@ -3251,7 +3321,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      colors={{"scheme":"nivo"}}
+                      colors="rainbow"
                       layout="vertical"
                       title="What is the breakdown of intervention types evaluated for each condition?"
                       chartData={activityBarChartData.data}
@@ -3270,12 +3340,13 @@ function createSunburst(level1, level2, level3, data) {
                       title="How has research activity for these conditions changed over time?"
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
-                      chartHeight={500}
+                      chartHeight={900}
+                      marginBottom={100}
                       type={'time'}
                       format={'%Y'}
-                      precision={'year'}
+                      tickValues={20}
                       axisBottomFormat={'%Y'}
-                      tickValues={'every 5 years'}
+
                       minNodeSize={trialsLandscapeMinNodeSize}
                       maxNodeSize={trialsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
@@ -3299,7 +3370,8 @@ function createSunburst(level1, level2, level3, data) {
                       title="What Music-Based Activities Have Been Studied?"
                       colors="rainbow"
                       chartData={interventionsLandscapeChartData}
-                      chartHeight={1000}
+                      chartHeight={900}
+                      marginBottom={100}
                       type={"point"}
                       minNodeSize={interventionsLandscapeMinNodeSize}
                       maxNodeSize={interventionsLandscapeMaxNodeSize}
@@ -3317,7 +3389,8 @@ function createSunburst(level1, level2, level3, data) {
                       title="What Have Music-Based Activities Been Compared To?"
                       colors="rainbow"
                       chartData={populationsLandscapeChartData}
-                      chartHeight={1000}
+                      chartHeight={900}
+                      marginBottom={205}
                       type={"point"}
                       minNodeSize={populationsLandscapeMinNodeSize}
                       maxNodeSize={populationsLandscapeMaxNodeSize}
@@ -3335,7 +3408,8 @@ function createSunburst(level1, level2, level3, data) {
                       title="What Were the Results of These Studies, for Each Condition?"
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
-                      chartHeight={1000}
+                      chartHeight={900}
+                      marginBottom={100}
                       type={"point"}
                       minNodeSize={outcomesLandscapeMinNodeSize}
                       maxNodeSize={outcomesLandscapeMaxNodeSize}

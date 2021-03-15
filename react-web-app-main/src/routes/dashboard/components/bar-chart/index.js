@@ -115,7 +115,7 @@ const PrismBarChart = (props) => {
           padding={0.3}
           valueScale={ valueScale }
           indexScale={ indexScale }
-          colors={ props.colors }
+          colors={ colors }
           borderColor={ borderColor }
           isInteractive={true}
           tooltip={ generateTooltip }
