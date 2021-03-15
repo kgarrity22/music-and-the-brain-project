@@ -867,6 +867,7 @@ function createSunburst(level1, level2, level3, data) {
   const [gadPieChartData, setGadPieChartData] = useState([])
   const [ptsdPieChartData, setPtsdPieChartData] = useState([])
   const [activityBarChartData, setActivityBarChartData] = useState({data: [], group_keys: []})
+  const [outcomesBarData, setOutcomesBarData] = useState({data: [], group_keys: []})
 
   /*
   This function creates a dictionary where the key is and items name and the value
@@ -1118,33 +1119,7 @@ function createSunburst(level1, level2, level3, data) {
             //   for (var item of outcome){
             //     if (item === null){
             //       single_metric_outcomes.add(null)
-            //     } else {
-            //       var itemlist = item.split(", ")
-            //       for (var j of itemlist){
-            //         single_metric_outcomes.add(j)
-            //       }
-            //     }
-            //   }
-            // } else {
-            //   single_metric_outcomes.add(outcome)
-            // }
-            //
-            // // sites
-            // var facility_ids = record.get('Facilities_Links')
-            // if (typeof(facility_ids)==='object'){
-            //   for (var item of facility_ids){
-            //     if (item === null){
-            //       single_metric_sites.add(null)
-            //     } else {
-            //       var itemlist = item.split(", ")
-            //       for (var j of itemlist){
-            //         single_metric_sites.add(j)
-            //       }
-            //     }
-            //   }
-            // } else {
-            //   single_metric_sites.add(facility_ids)
-            // }
+
 
           });
 
@@ -2501,7 +2476,13 @@ function createSunburst(level1, level2, level3, data) {
 
   // Get Outcomes data from airtable
   function getOutcomesChartsData() {
-    console.log("getOutcomesChartsData")
+    let outcomes_bar_dict = {}
+//Let outcomes_bar = []
+
+
+
+
+    // console.log("getOutcomesChartsData")
     return new Promise((resolve, reject) => {
       base('Studies').select({
 
@@ -2510,40 +2491,17 @@ function createSunburst(level1, level2, level3, data) {
       }).eachPage(function page(records, fetchNextPage) {
 
           records.forEach(function(record) {
-            // OUTCOMES FILTERS
-            let year = String(record.get("Start_Year"))
-            years.add(year)
+            let outcome = record.get('Outcomes')
 
 
-            var outcome = record.get('Outcome_Concepts')
-            if (typeof(outcome)==='object'){
-              for (var item of outcome){
-                if (item === null){
-                  //console.log()
-                } else {
-                  var itemlist = item.split(", ")
-                  for (var j of itemlist){
-
-                    pie_collection(outcomes_dict, j)
-                    pie_collection(outcome_area_dict, j + ": " + String(year))
-                    outcome_area_unique.add(j)
-                  }
-                }
-              }
-            } else {
-              pie_collection(outcome_area_dict, outcome + ": " + String(year))
-              outcome_area_unique.add(outcome)
-              pie_collection(outcomes_dict, outcome)
+            for (let i of outcome){
+              pie_collection(outcomes_bar_dict, i)
             }
 
 
 
-            let primary_outcome = record.get('Num_Primary_Outcomes')
-            if (primary_outcome >= 5){
-              pie_collection(outcomes_pie_dict, "5+")
-            } else {
-              pie_collection(outcomes_pie_dict, primary_outcome)
-            }
+
+
 
 
 
@@ -2557,34 +2515,39 @@ function createSunburst(level1, level2, level3, data) {
             return reject({});
           }
           //console.log("OUTCOMES DICT: ", outcomes_dict)
+          let group_keys = Object.keys(outcomes_bar_dict)
+          let bar = {}
+          bar["data"] = [outcomes_bar_dict]
+          bar["group_keys"] = group_keys
 
-          var items = Object.keys(outcomes_dict).map(function(key) {
-            return [key, outcomes_dict[key]];
-          });
-
-          // Sort the array based on the second element
-          items.sort(function(first, second) {
-            return second[1] - first[1];
-          });
-
-          var updated_outcomes_dict = {}
-          let updated = []
-          for (var item of items.slice(0, 10)){
-            updated_outcomes_dict[item[0]] = item[1]
-          }
-          for (var item of items.slice(0, 20)){
-            updated.push(item[0])
-          }
-
-          //console.log('updated:', updated_outcomes_dict)
-
-          areaBumpFormatting(outcome_area_dict, updated, outcome_areabump_result, years)
-          pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
-          bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
-          outcomes_result["outcome_bar"] = outcomes_bar_formatted
-          outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
-          outcomes_result["area_bump"] = outcome_areabump_result
+          // var items = Object.keys(outcomes_dict).map(function(key) {
+          //   return [key, outcomes_dict[key]];
+          // });
+          //
+          // // Sort the array based on the second element
+          // items.sort(function(first, second) {
+          //   return second[1] - first[1];
+          // });
+          //
+          // var updated_outcomes_dict = {}
+          // let updated = []
+          // for (var item of items.slice(0, 10)){
+          //   updated_outcomes_dict[item[0]] = item[1]
+          // }
+          // for (var item of items.slice(0, 20)){
+          //   updated.push(item[0])
+          // }
+          //
+          // //console.log('updated:', updated_outcomes_dict)
+          //
+          // areaBumpFormatting(outcome_area_dict, updated, outcome_areabump_result, years)
+          // pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
+          // bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
+          // outcomes_result["outcome_bar"] = outcomes_bar_formatted
+          // outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
+          // outcomes_result["area_bump"] = outcome_areabump_result
           //console.log("OUTCOME data: ", outcome_areabump_result)
+          outcomes_result["outcomes_bar"] = bar
 
           resolve(outcomes_result)
 
@@ -2595,12 +2558,13 @@ function createSunburst(level1, level2, level3, data) {
 
   // Fetch and set outcomes data
   const fetchOutcomesData = async () => {
-    console.log("fetchOutcomesData")
+    // console.log("fetchOutcomesData")
     const result = await getOutcomesChartsData()
-    setPrimaryOutcomesPieData(result.primary_outcomes_pie)
-    setOutcomesTop10ParentBarChartData(result.outcome_bar)
-    setOutcomesAreaBump(result.area_bump)
-    setLoadingOutcomesData(false)
+    setOutcomesBarData(result.outcomes_bar)
+    // setPrimaryOutcomesPieData(result.primary_outcomes_pie)
+    // setOutcomesTop10ParentBarChartData(result.outcome_bar)
+    // setOutcomesAreaBump(result.area_bump)
+    // setLoadingOutcomesData(false)
   }
 
 
@@ -2899,6 +2863,9 @@ function createSunburst(level1, level2, level3, data) {
 
       setLoadingSponsorsData(true);
       fetchSponsorsData();
+
+      setLoadingOutcomesData(true);
+      fetchOutcomesData();
 
 
       setLoadingTrialsLandscapeData(true)
@@ -3237,6 +3204,28 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
 
 
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Outcomes" color="green" />
+                    </Col>
+                  </Row>
+                  <Row>
+
+                  <Col>
+                    <PrismBarChart
+                      colors="rainbow"
+                      layout="vertical"
+                      title="Outcomes"
+                      chartData={outcomesBarData.data}
+                      groupKeys={outcomesBarData.group_keys}
+                      indexKey="type"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
                   </Row>
 
                   <Row>
