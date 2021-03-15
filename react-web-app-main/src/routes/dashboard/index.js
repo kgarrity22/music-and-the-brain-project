@@ -10,6 +10,8 @@ import CsvDownloader from 'react-csv-downloader';
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 
+import { FaArrowCircleLeft } from 'react-icons/fa'
+
 import Navbar from './components/navbar'
 import Searchbar from './components/searchbar'
 import SearchFilters from './components/search-filters'
@@ -3195,7 +3197,8 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   <Col lg={{span: 6}}>
                     <PrismTextBlock
-                      textTitle={ 'How did we classify results?' }
+                      arrow={<FaArrowCircleLeft/ >}
+                      textTitle={ '     How did we classify results?' }
                       mainText={ "Due to the wide variety of study facets involved in this scoping review, results were classified according to whether the music intervention was found to have performed better, worse, equivalent to the comparator, or whether results were undetermined." }
                     />
                   </Col>
@@ -3219,8 +3222,10 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
 
                   <Col lg={{span: 6}}>
+
                     <PrismTextBlock
-                      textTitle={ '<- How did we classify interventions?' }
+                      arrow={<FaArrowCircleLeft/ >}
+                      textTitle={ '     How did we classify interventions?' }
                       mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
                     />
                   </Col>

@@ -13,7 +13,7 @@ const PrismTextBlock = (props) => {
 
   return (
     <div className="text-block-container">
-      <h2 className="chart-title">{props.textTitle}</h2>
+      <h2 className="chart-title">{props.arrow}{props.textTitle}</h2>
       <p className="main-text">{props.mainText}</p>
       <p className="second-p">{props.moreText}</p>
       <p>{props.evenMoreText}</p>
