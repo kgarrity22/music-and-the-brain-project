@@ -105,7 +105,7 @@ const PrismStaticScatterplot = (props) => {
           <ResponsiveScatterPlot
             data={ props.chartData }
             height={800}
-            margin={{ top: 100, right: 300, bottom: 200, left: 200 }}
+            margin={{ top: 50, right: 300, bottom: props.marginBottom, left: 200 }}
             xScale={{ type: props.type, format: props.format, precision: props.precision, min: props.xMin, max: props.xMax  }}
             xFormat={ props.xFormat }
             yScale={{ type: 'point' }}
@@ -118,6 +118,7 @@ const PrismStaticScatterplot = (props) => {
               return <LandscapeTooltip all={e.node.data} />} }
             gridXValues={ props.xVals }
             gridYValues={ props.yVals }
+            useMesh={true}
             animate={ false }
             onClick={(node, e) => allModal(node)}
             axisTop={ null }
@@ -129,7 +130,8 @@ const PrismStaticScatterplot = (props) => {
                 tickRotation: -45,
                 legend: null,
                 format: props.axisBottomFormat,
-                tickValues: props.tickValues
+                tickValues: props.tickValues,
+
 
             }}
             axisLeft={{
@@ -139,6 +141,7 @@ const PrismStaticScatterplot = (props) => {
                 tickRotation: 0,
                 legend: null
             }}
+
             legends={[{
               anchor: 'bottom-right',
               direction: 'column',

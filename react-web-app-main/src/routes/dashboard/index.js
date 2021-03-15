@@ -1338,6 +1338,8 @@ function createSunburst(level1, level2, level3, data) {
     let ys = new Set()
     let all = []
     let all_ids = new Set()
+    //ys.add("1945")
+    let xs = new Set()
 
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -1355,7 +1357,9 @@ function createSunburst(level1, level2, level3, data) {
             all_ids.add(status)
 
             let year = String(record.get('Year'))
+            xs.add(year)
             let date = year
+
             let ally = String(record.get('Conditions'))
 
             let z = parseInt(record.get('Sample_Size'))
@@ -1459,7 +1463,11 @@ function createSunburst(level1, level2, level3, data) {
 
             new_data_list.push(item)
           }
-          //console.log("new LIST: ", new_data_list)
+          // let dict = {}
+          // dict[""] = {"x": "1945", "y": "", "z": 0}
+          //
+          // new_data_list.push(dict)
+          // console.log("new LIST: ", new_data_list)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1489,11 +1497,12 @@ function createSunburst(level1, level2, level3, data) {
           // setTrialsLandscapeChartHeight(ys.size * 50 + 300)
           let landscape_result={}
           // console.log("CHECK THIS DATA: ", all_data)
+          console.log("XS: ", xs)
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           let filtered = zs.filter(item => item !== 0)
           console.log("filtered: ", filtered)
-          landscape_result["min"] = Math.min(...filtered)
+          landscape_result["min"] = Math.min(...zs)
           console.log("LANDscape RESul; ", landscape_result)
           resolve(landscape_result)
 
@@ -3322,11 +3331,12 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
                       chartHeight={900}
+                      marginBottom={100}
                       type={'time'}
                       format={'%Y'}
-                      precision={'year'}
+                      tickValues={20}
                       axisBottomFormat={'%Y'}
-                      tickValues={'every 5 years'}
+
                       minNodeSize={trialsLandscapeMinNodeSize}
                       maxNodeSize={trialsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
@@ -3347,6 +3357,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={interventionsLandscapeChartData}
                       chartHeight={900}
+                      marginBottom={100}
                       type={"point"}
                       minNodeSize={interventionsLandscapeMinNodeSize}
                       maxNodeSize={interventionsLandscapeMaxNodeSize}
@@ -3364,7 +3375,8 @@ function createSunburst(level1, level2, level3, data) {
                       title="What Have Music-Based Activities Been Compared To?"
                       colors="rainbow"
                       chartData={populationsLandscapeChartData}
-                      chartHeight={1000}
+                      chartHeight={900}
+                      marginBottom={205}
                       type={"point"}
                       minNodeSize={populationsLandscapeMinNodeSize}
                       maxNodeSize={populationsLandscapeMaxNodeSize}
@@ -3383,6 +3395,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
                       chartHeight={900}
+                      marginBottom={100}
                       type={"point"}
                       minNodeSize={outcomesLandscapeMinNodeSize}
                       maxNodeSize={outcomesLandscapeMaxNodeSize}
