@@ -794,6 +794,8 @@ function createSunburst(level1, level2, level3, data) {
   const [interventionsTop10BarChartData, setInterventionsTop10BarChartData] = useState({data: [], group_keys: []})
   const [interventionTypesPieChartData, setInterventionTypesPieChartData] = useState([])
   const [interventionsBarData, setInterventionsBarData] = useState({data: [], group_keys: []})
+  const [comparatorsBarData, setComparatorsBarData] = useState({data: [], group_keys: []})
+
   const [interventionArmsPieChartData, setInterventionArmsPieChartData] = useState([])
   const [interventionsAreaBumpChart, setInterventionsAreaBumpChart] = useState([])
 
@@ -2582,6 +2584,7 @@ function createSunburst(level1, level2, level3, data) {
   function getInterventionsChartsData() {
     // console.log("getInterventionsChartsData")
     let interventions_bar_dict = {}
+    let comparator_bar_dict = {}
 //Let outcomes_bar = []
 
 
@@ -2597,20 +2600,34 @@ function createSunburst(level1, level2, level3, data) {
 
             // }
             pie_collection(interventions_types_dict, record.get('Activity_Type'))
+            let comp = record.get('Comparator')
+            let allcomp = []
+            if (comp === "Other CAM, Different Art Therapy (Drama, Visual art, Creative Play)"){
+              allcomp = ["Other CAM", "Different Art Therapy (Drama, Visual art, Creative Play)"]
+            } else if (comp === "Different Art Therapy (Drama, Visual art, Creative Play)") {
+              allcomp = ["Different Art Therapy (Drama, Visual art, Creative Play)"]
+
+            } else {
+              allcomp = comp.split(",")
+
+            }
+
+            for (let i of allcomp){
+              if (i.charAt(0) === " "){
+                i = i.slice(1, i.length)
+              }
+              pie_collection(comparator_bar_dict, i)
+            }
+
+
             let int = record.get("Interventions")
+
 
             if (typeof(int)!=="undefined"){
               for (let i of int.split(",")){
                 pie_collection(interventions_bar_dict, i)
               }
             }
-
-
-
-            //pie_collection(interventions_arms_dict, record.get('Interventions_Count'))
-
-
-
 
           });
 
@@ -2626,11 +2643,21 @@ function createSunburst(level1, level2, level3, data) {
           pie_formatting(interventions_types_dict, intervention_types_pie)
           let group_keys = Object.keys(interventions_bar_dict)
           let bar = {}
+          // interventions_bar_dict["int"] = "Interventions"
           bar["data"] = [interventions_bar_dict]
+
           bar['group_keys'] = group_keys
+
+          let group_keys2 = Object.keys(comparator_bar_dict)
+          let bar2 = {}
+          // comparator_bar_dict["comp"] = "Comparators"
+          bar2["data"] = [comparator_bar_dict]
+          bar2['group_keys'] = group_keys2
         //  pie_formatting(interventions_arms_dict, intervention_arms_pie)
           interventions_result["intervention_types_pie"] = intervention_types_pie
           interventions_result["intervention_bar"] = bar
+          interventions_result["comparator_bar"] = bar2
+          console.log('BAR2:', bar2)
           // interventions_result["intervention_arms_pie"] = intervention_arms_pie
           // interventions_result["interventions_areabump_result"] = interventions_areabump_result
 
@@ -2647,6 +2674,8 @@ function createSunburst(level1, level2, level3, data) {
     // console.log("compare this bar: ", result.interventions_bar)
     setInterventionTypesPieChartData(result.intervention_types_pie)
     setInterventionsBarData(result.intervention_bar)
+    setComparatorsBarData(result.comparator_bar)
+
     //setInterventionArmsPieChartData(result.intervention_arms_pie)
     // setInterventionsAreaBumpChart(result.interventions_areabump_result)
     setLoadingInterventionsData(false)
@@ -3215,7 +3244,22 @@ function createSunburst(level1, level2, level3, data) {
                       title="Interventions"
                       chartData={interventionsBarData.data}
                       groupKeys={interventionsBarData.group_keys}
-                      indexKey="type"
+                      indexKey="int"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      loading={loadingInterventionsData}
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
+                  <Col>
+                    <PrismBarChart
+                      colors="rainbow"
+                      layout="vertical"
+                      title="Comparators"
+                      chartData={comparatorsBarData.data}
+                      groupKeys={comparatorsBarData.group_keys}
+                      indexKey="comp"
                       xAxisLabel=""
                       yAxisLabel=""
                       loading={loadingInterventionsData}
