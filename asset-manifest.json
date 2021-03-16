@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/music-and-the-brain-project/static/css/main.0339bdda.chunk.css",
-    "main.js": "/music-and-the-brain-project/static/js/main.3a3fea07.chunk.js",
+    "main.css": "/music-and-the-brain-project/static/css/main.9d0f720a.chunk.css",
+    "main.js": "/music-and-the-brain-project/static/js/main.5d151a8c.chunk.js",
     "runtime-main.js": "/music-and-the-brain-project/static/js/runtime-main.3f2f2f89.js",
     "static/css/2.880185b9.chunk.css": "/music-and-the-brain-project/static/css/2.880185b9.chunk.css",
-    "static/js/2.6ab6f10f.chunk.js": "/music-and-the-brain-project/static/js/2.6ab6f10f.chunk.js",
+    "static/js/2.d8c1fc85.chunk.js": "/music-and-the-brain-project/static/js/2.d8c1fc85.chunk.js",
     "index.html": "/music-and-the-brain-project/index.html",
-    "precache-manifest.7d00591833294d70b5b334ef92ef71f4.js": "/music-and-the-brain-project/precache-manifest.7d00591833294d70b5b334ef92ef71f4.js",
+    "precache-manifest.1d03a28a4b6b0c274e4391c0d4117c55.js": "/music-and-the-brain-project/precache-manifest.1d03a28a4b6b0c274e4391c0d4117c55.js",
     "service-worker.js": "/music-and-the-brain-project/service-worker.js",
-    "static/js/2.6ab6f10f.chunk.js.LICENSE.txt": "/music-and-the-brain-project/static/js/2.6ab6f10f.chunk.js.LICENSE.txt"
+    "static/js/2.d8c1fc85.chunk.js.LICENSE.txt": "/music-and-the-brain-project/static/js/2.d8c1fc85.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.3f2f2f89.js",
     "static/css/2.880185b9.chunk.css",
-    "static/js/2.6ab6f10f.chunk.js",
-    "static/css/main.0339bdda.chunk.css",
-    "static/js/main.3a3fea07.chunk.js"
+    "static/js/2.d8c1fc85.chunk.js",
+    "static/css/main.9d0f720a.chunk.css",
+    "static/js/main.5d151a8c.chunk.js"
   ]
 }
