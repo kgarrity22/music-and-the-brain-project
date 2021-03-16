@@ -1737,7 +1737,7 @@ function createSunburst(level1, level2, level3, data) {
             let status = record.get('Results')
             // all_ids.add(status)
 
-            let allx = String(record.get('Conditions'))
+            let allx = String(record.get('Outcomes'))
 
             let ally = String(record.get('Interventions'))
             // console.log("INTERVEN: ", ally)
@@ -1794,8 +1794,8 @@ function createSunburst(level1, level2, level3, data) {
 
           let xs = []
           console.log("UNI: ", uni)
-          let xtype = "Conditions"
-          let ytype = "Results"
+          let xtype = "Outcomes"
+          let ytype = "Interventions"
 
 
 
@@ -1835,17 +1835,14 @@ function createSunburst(level1, level2, level3, data) {
               //console.log("status: ", status)
               let l1 = []
               for (let j of all){
-                // console.log("type check: ", (j["Interventions"]).includes(status))
-                // console.log("check 1: ", j["Interventions"])
-                // console.log("check 2: ", ids[1])
-                // console.log("check 3: ", ids[0])
+
                 if (typeof(j.Interventions) !== 'undefined'){
                   //console.log(typeof(j["Interventions"]))
                   //console.log(j[xtype], j[ytype], j.Interventions)
                   //console.log("ARE any TRUE: ",((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && (j["Interventions"]).includes(ids[0])))
                   //console.log("interventions: ", j.Interventions)
                   //console.log("j[xtype] vs ids[1]", j[ytype],  ids[0])
-                  if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && (j.Interventions).includes(status)){
+                  if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[0]) && (j.Interventions).includes(status)){
                     l1.push(j)
                     //console.log("JJJ")
                   }
@@ -1861,10 +1858,11 @@ function createSunburst(level1, level2, level3, data) {
 
             }
             //console.log("LIMITED: ", limited)
+            if (ids[0]!=="undefined"){
+              item[ids[2]] = {"x": ids[0], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+              new_data_list.push(item)
+            }
 
-            item[ids[0]] = {"x": ids[2], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
-
-            new_data_list.push(item)
           }
 
 
@@ -1903,7 +1901,7 @@ function createSunburst(level1, level2, level3, data) {
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           let filtered = zs.filter(item => item !== 0)
-          console.log("filtered: ", filtered)
+          //console.log("filtered: ", filtered)
           landscape_result["min"] = Math.min(...filtered)
           landscape_result["ys"] = [...ys].sort()
           console.log("INTERventions LAnd: ", landscape_result)
@@ -2014,7 +2012,7 @@ function createSunburst(level1, level2, level3, data) {
             for (let status of list_all){
               let l1 = []
               for (let j of all){
-                console.log("type check: ", j[ytype], ids[1])
+                //console.log("type check: ", j[ytype], ids[1])
                 if ((j[xtype]).includes(ids[2]) && (j[ytype]).includes(ids[1]) && (j.Results).includes(status)){
                   l1.push(j)
                   //console.log("JJJ: ", j)
@@ -2050,7 +2048,7 @@ function createSunburst(level1, level2, level3, data) {
           }
           //console.log("zs: ", zs)
 
-          console.log("clean data: ", clean_data)
+        //  console.log("clean data: ", clean_data)
           var all_data=[]
           for (var item of Object.keys(clean_data)){
             var cleaned = {}
@@ -2075,7 +2073,7 @@ function createSunburst(level1, level2, level3, data) {
           landscape_result["data"] = all_data
           landscape_result["max"] = Math.max(...zs)
           let filtered = zs.filter(item => item !== 0)
-          console.log("filtered: ", filtered)
+          //console.log("filtered: ", filtered)
           landscape_result["min"] = Math.min(...filtered)
 
           console.log("outcome landscape res: ", landscape_result)
@@ -2262,7 +2260,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchTrialsLandscapeChartData = async () => {
-    console.log("are we getting into fetch landscape chart data?")
+    //console.log("are we getting into fetch landscape chart data?")
     const trials = await getTrialsLandscapeChartData()
 
     setTrialsLandscapeChartData(trials.data);
@@ -2413,7 +2411,7 @@ function createSunburst(level1, level2, level3, data) {
   var volunteers_pie = [];
 
   function getPopulationsChartsData() {
-    console.log("getPopulationsChartsData")
+    //console.log("getPopulationsChartsData")
     return new Promise((resolve, reject) => {
       base('Studies').select({
 
@@ -2465,7 +2463,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchPopulationData = async () => {
-    console.log("fetchPopulationData")
+    //console.log("fetchPopulationData")
     const result = await getPopulationsChartsData()
 
     setSingleMultiSitePieChartData(result.sites_pie);
@@ -2668,7 +2666,7 @@ function createSunburst(level1, level2, level3, data) {
           interventions_result["intervention_types_pie"] = intervention_types_pie
           interventions_result["intervention_bar"] = bar
           interventions_result["comparator_bar"] = bar2
-          console.log('BAR2:', bar2)
+          //console.log('BAR2:', bar2)
           // interventions_result["intervention_arms_pie"] = intervention_arms_pie
           // interventions_result["interventions_areabump_result"] = interventions_areabump_result
 
@@ -2679,7 +2677,7 @@ function createSunburst(level1, level2, level3, data) {
   }// end Interventions get function
 
   const fetchInterventionsData = async () => {
-    console.log("fetchInterventionsData")
+    //console.log("fetchInterventionsData")
     const result = await getInterventionsChartsData()
     // setInterventionsTop10BarChartData(result.interventions_bar);
     // console.log("compare this bar: ", result.interventions_bar)
@@ -2763,7 +2761,7 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchSponsorsData = async () => {
-    console.log("fetchSponsorsData")
+    //console.log("fetchSponsorsData")
         const result = await getSponsorsChartsData()
 
         // setSponsorsTop10ByTrialsBarChartData(result.sponsors_bar);
@@ -3362,6 +3360,25 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="What Outcomes Have Been Used to Evaluate These Interventions?"
+                      colors="rainbow"
+                      chartData={interventionsLandscapeChartData}
+                      chartHeight={900}
+                      marginBottom={100}
+                      type={"point"}
+                      minNodeSize={interventionsLandscapeMinNodeSize}
+                      maxNodeSize={interventionsLandscapeMaxNodeSize}
+                      xAxisLabel={"Outcomes"}
+                      yAxisLabel={"Interventions"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingInterventionsLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
 
 
                   <Row>
@@ -3424,24 +3441,7 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="What Music-Based Activities Have Been Studied?"
-                      colors="rainbow"
-                      chartData={interventionsLandscapeChartData}
-                      chartHeight={900}
-                      marginBottom={100}
-                      type={"point"}
-                      minNodeSize={interventionsLandscapeMinNodeSize}
-                      maxNodeSize={interventionsLandscapeMaxNodeSize}
-                      xAxisLabel={"Condition"}
-                      yAxisLabel={"Interventions"}
-                      zAxisLabel={"Sample Size"}
-                      loading={loadingInterventionsLandscapeData}
-                    />
-                  </Col>
-                  </Row>
+
 
 
                   <Row>
