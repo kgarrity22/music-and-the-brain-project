@@ -81,7 +81,7 @@ const PrismBarChart = (props) => {
     setAxisLeft({
         tickSize: 0,
         tickPadding: 5,
-        tickRotation: -90,
+        tickRotation: 0,
         legend: props.yAxisLabel,
         legendPosition: 'middle',
         legendOffset: -100
