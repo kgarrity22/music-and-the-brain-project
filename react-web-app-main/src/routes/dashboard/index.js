@@ -3371,7 +3371,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={populationsLandscapeChartData}
                       chartHeight={900}
-                      marginBottom={205}
+                      marginBottom={90}
                       type={"point"}
                       minNodeSize={populationsLandscapeMinNodeSize}
                       maxNodeSize={populationsLandscapeMaxNodeSize}
@@ -3414,7 +3414,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={interventionsLandscapeChartData}
                       chartHeight={900}
-                      marginBottom={100}
+                      marginBottom={135}
                       type={"point"}
                       minNodeSize={interventionsLandscapeMinNodeSize}
                       maxNodeSize={interventionsLandscapeMaxNodeSize}
@@ -3467,7 +3467,7 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
                       chartHeight={900}
-                      marginBottom={100}
+                      marginBottom={130}
                       type={"point"}
                       minNodeSize={outcomesLandscapeMinNodeSize}
                       maxNodeSize={outcomesLandscapeMaxNodeSize}
