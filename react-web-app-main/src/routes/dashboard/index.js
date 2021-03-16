@@ -1981,8 +1981,8 @@ function createSunburst(level1, level2, level3, data) {
           let zs = []
           //console.log("Ys: ", ys)
           let xs = []
-          let xtype = 'Conditions'
-          let ytype = 'Results'
+          let xtype = 'Outcomes'
+          let ytype = 'Conditions'
 
 
 
@@ -2014,8 +2014,8 @@ function createSunburst(level1, level2, level3, data) {
             for (let status of list_all){
               let l1 = []
               for (let j of all){
-                //console.log("type check: ", j[ytype], ids[2])
-                if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && (j.Outcomes).includes(status)){
+                console.log("type check: ", j[ytype], ids[1])
+                if ((j[xtype]).includes(ids[2]) && (j[ytype]).includes(ids[1]) && (j.Results).includes(status)){
                   l1.push(j)
                   //console.log("JJJ: ", j)
                 }
@@ -2027,7 +2027,7 @@ function createSunburst(level1, level2, level3, data) {
               }
             }
 
-            item[ids[0]] = {"x": ids[2], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+            item[ids[2]] = {"x": ids[0], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }
@@ -3396,6 +3396,24 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="What Were the Results of These Studies, for Each Condition?"
+                      colors="rainbow"
+                      chartData={outcomesLandscapeChartData}
+                      chartHeight={900}
+                      marginBottom={100}
+                      type={"point"}
+                      minNodeSize={outcomesLandscapeMinNodeSize}
+                      maxNodeSize={outcomesLandscapeMaxNodeSize}
+                      xAxisLabel={"Condition"}
+                      yAxisLabel={"Outcomes"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingOutcomesLandscapeData}
+                    />
+                  </Col>
+                  </Row>
 
 
                   <Row>
@@ -3424,28 +3442,6 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
-
-
-
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="What Were the Results of These Studies, for Each Condition?"
-                      colors="rainbow"
-                      chartData={outcomesLandscapeChartData}
-                      chartHeight={900}
-                      marginBottom={100}
-                      type={"point"}
-                      minNodeSize={outcomesLandscapeMinNodeSize}
-                      maxNodeSize={outcomesLandscapeMaxNodeSize}
-                      xAxisLabel={"Condition"}
-                      yAxisLabel={"Outcomes"}
-                      zAxisLabel={"Sample Size"}
-                      loading={loadingOutcomesLandscapeData}
-                    />
-                  </Col>
-                  </Row>
-
 
 
                   <Row>
