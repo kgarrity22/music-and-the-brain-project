@@ -20,7 +20,7 @@ const PrismBarChart = (props) => {
   useEffect(() => {
     if (props.layout === "vertical"){
       setLegends([])
-      setMargins(m => ({...m, right: 50, left: 50, bottom: 150, top: 20}))
+      setMargins(m => ({...m, right: 50, left: 50, bottom: props.marginBottom, top: 20}))
     }
     else if (props.layout !== 'horizontal') {
       setLegends([{

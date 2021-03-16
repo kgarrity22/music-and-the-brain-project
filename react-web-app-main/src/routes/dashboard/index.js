@@ -2478,9 +2478,6 @@ function createSunburst(level1, level2, level3, data) {
     let outcomes_bar_dict = {}
     //Let outcomes_bar = []
 
-
-
-
     // console.log("getOutcomesChartsData")
     return new Promise((resolve, reject) => {
       base('Studies').select({
@@ -2517,7 +2514,7 @@ function createSunburst(level1, level2, level3, data) {
             small["type"] = single
             res.push(small)
           }
-          //aardvark
+
 
 
           let bar = {}
@@ -2622,16 +2619,30 @@ function createSunburst(level1, level2, level3, data) {
           // console.log("AREA BUMP CHECK: ", outcome_areabump_result)
           pie_formatting(interventions_types_dict, intervention_types_pie)
           let group_keys = Object.keys(interventions_bar_dict)
+          let res = []
+          for (let single of group_keys){
+            let small = {}
+            small[single] = interventions_bar_dict[single]
+            small["type"] = single
+            res.push(small)
+          }
+
           let bar = {}
           // interventions_bar_dict["int"] = "Interventions"
-          bar["data"] = [interventions_bar_dict]
-
+          bar["data"] = res
           bar['group_keys'] = group_keys
 
           let group_keys2 = Object.keys(comparator_bar_dict)
+          let res2 = []
+          for (let single of group_keys2){
+            let small = {}
+            small[single] = comparator_bar_dict[single]
+            small["type"] = single
+            res2.push(small)
+          }
           let bar2 = {}
           // comparator_bar_dict["comp"] = "Comparators"
-          bar2["data"] = [comparator_bar_dict]
+          bar2["data"] = res2
           bar2['group_keys'] = group_keys2
         //  pie_formatting(interventions_arms_dict, intervention_arms_pie)
           interventions_result["intervention_types_pie"] = intervention_types_pie
@@ -3233,16 +3244,17 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      colors="rainbow"
+                      color="yellow"
                       layout="vertical"
                       title="Interventions"
                       chartHeight={600}
                       chartData={interventionsBarData.data}
                       groupKeys={interventionsBarData.group_keys}
-                      indexKey="int"
+                      indexKey="type"
                       xAxisLabel=""
                       yAxisLabel=""
                       groupMode={'stacked'}
+                      marginBottom={170}
                       loading={loadingInterventionsData}
                     />
                   </Col>
@@ -3250,15 +3262,16 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      colors="rainbow"
+                      color="orange"
                       layout="vertical"
                       title="Comparators"
                       chartData={comparatorsBarData.data}
                       groupKeys={comparatorsBarData.group_keys}
-                      indexKey="comp"
+                      indexKey="type"
                       xAxisLabel=""
                       yAxisLabel=""
                       groupMode={'stacked'}
+                      marginBottom={190}
                       loading={loadingInterventionsData}
                     />
                   </Col>
@@ -3282,6 +3295,7 @@ function createSunburst(level1, level2, level3, data) {
                       xAxisLabel=""
                       yAxisLabel=""
                       groupMode={'stacked'}
+                      marginBottom={130}
                       loading={loadingActivityTypesData}
                     />
                   </Col>
@@ -3316,6 +3330,7 @@ function createSunburst(level1, level2, level3, data) {
                       xAxisLabel=""
                       yAxisLabel=""
                       groupMode={'grouped'}
+                      marginBottom={130}
                       loading={loadingSponsorsData}
                     />
                   </Col>
