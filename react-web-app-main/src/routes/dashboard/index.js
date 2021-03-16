@@ -1508,9 +1508,10 @@ function createSunburst(level1, level2, level3, data) {
           let status = record.get('Results')
           all_ids.add(status)
 
-          let allx = String(record.get('Conditions'))
+          let allx = String(record.get('Comparator'))
 
-          let ally = String(record.get('Comparator'))
+          let ally = String(record.get('Interventions'))
+        //  console.log("ALLY : ", ally)
           // console.log("COMPARATOR: ", allx)
           // console.log("alls: ", allx, ally)
           //let z = record.get('landscapeZAxis')
@@ -1525,21 +1526,31 @@ function createSunburst(level1, level2, level3, data) {
 
           let y_list = ally.split(", ")
           //console.log("CHECKINg ys: ", ally)
-          if (ally==="Other CAM, Different Art Therapy (Drama, Visual art, Creative Play)") {
-            y_list = ["Other CAM", "Different Art Therapy (Drama, Visual art, Creative Play)"]
-          }
-          if (ally==="Different Art Therapy (Drama, Visual art, Creative Play)"){
-            y_list = ["Different Art Therapy (Drama, Visual art, Creative Play)"]
-          }
+          // if (ally==="Other CAM, Different Art Therapy (Drama, Visual art, Creative Play)") {
+          //   y_list = ["Other CAM", "Different Art Therapy (Drama, Visual art, Creative Play)"]
+          // }
+          // if (ally==="Different Art Therapy (Drama, Visual art, Creative Play)"){
+          //   y_list = ["Different Art Therapy (Drama, Visual art, Creative Play)"]
+          // }
 
-          let x_list = allx.split(",")
+
+          let x_list = []
+          if (typeof(allx)!=="undefined"){
+            x_list = allx.split(",")
+          }
 
           // need to do each y with each x
           for (var y of y_list){
-            //console.log("y: ", y)
             if (y !== ""){
+              if (y === "N/A"){
+                y = " N/A"
+              }
               if (y.charAt(0)===" "){
                 y = y.slice(1, y.length)
+              }
+              //onsole.log("Y: ", y)
+              if (y !== 'undefined'){
+                all_ids.add(y)
               }
               for (var x of x_list){
                 //console.log("x: ", x)
@@ -1567,8 +1578,8 @@ function createSunburst(level1, level2, level3, data) {
           let new_data_list = []
           let clean_data = {}
           let zs = []
-          let xtype = 'Conditions'
-          let ytype = 'Comparator'
+          let xtype = 'Comparator'
+          let ytype = 'Interventions'
 
           //console.log("Ys: ", ys)
           for (var i of uni){
@@ -1607,11 +1618,15 @@ function createSunburst(level1, level2, level3, data) {
               for (let status of list_all){
                 let l1 = []
                 for (let j of all){
-                  //console.log("type check: ", j[xtype], j[ytype], j.Results)
-                  if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && j.Results === status){
-                    l1.push(j)
-                    //console.log("JJJ: ", j)
+                  if (typeof(j.Interventions) !== 'undefined' && typeof(j.Comparator) !== 'undefined'){
+                    //console.log("type check: ", j[xtype], j[ytype], j.Results)
+                    if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && j.Results === status){
+                      l1.push(j)
+                      //console.log("JJJ: ", j)
+                    }
+
                   }
+
                 }
                 //console.log("L1: ", l1)
                 if (l1.length!==0){
@@ -1630,9 +1645,14 @@ function createSunburst(level1, level2, level3, data) {
               //     limited.push(j)
               //   }
               // }
-              item[ids[0]] = {"x": ids[2], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+              if (ids[2]!=="undefined"){
+                item[ids[0]] = {"x": ids[2], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
-              new_data_list.push(item)
+                new_data_list.push(item)
+              }
+
+
+
 
           }
           //console.log("new LIST: ", new_data_list)
@@ -3210,6 +3230,28 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="How has research activity for these conditions changed over time?"
+                      colors="rainbow"
+                      chartData={trialsLandscapeChartData}
+                      chartHeight={900}
+                      marginBottom={100}
+                      type={'time'}
+                      format={'%Y'}
+                      tickValues={20}
+                      axisBottomFormat={'%Y'}
+
+                      minNodeSize={trialsLandscapeMinNodeSize}
+                      maxNodeSize={trialsLandscapeMaxNodeSize}
+                      xAxisLabel={"Start Date"}
+                      yAxisLabel={"Condition"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingTrialsLandscapeData}
+                    />
+                  </Col>
+                  </Row>
 
 
 
@@ -3244,7 +3286,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      color="yellow"
+                      color="orange"
                       layout="vertical"
                       title="Interventions"
                       chartHeight={600}
@@ -3262,7 +3304,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      color="orange"
+                      color="yellow"
                       layout="vertical"
                       title="Comparators"
                       chartData={comparatorsBarData.data}
@@ -3273,6 +3315,25 @@ function createSunburst(level1, level2, level3, data) {
                       groupMode={'stacked'}
                       marginBottom={190}
                       loading={loadingInterventionsData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="What Have Music-Based Activities Been Compared To?"
+                      colors="rainbow"
+                      chartData={populationsLandscapeChartData}
+                      chartHeight={900}
+                      marginBottom={205}
+                      type={"point"}
+                      minNodeSize={populationsLandscapeMinNodeSize}
+                      maxNodeSize={populationsLandscapeMaxNodeSize}
+                      xAxisLabel={"Condition"}
+                      yAxisLabel={"Comparator"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingPopulationsLandscapeData}
                     />
                   </Col>
                   </Row>
@@ -3336,28 +3397,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="How has research activity for these conditions changed over time?"
-                      colors="rainbow"
-                      chartData={trialsLandscapeChartData}
-                      chartHeight={900}
-                      marginBottom={100}
-                      type={'time'}
-                      format={'%Y'}
-                      tickValues={20}
-                      axisBottomFormat={'%Y'}
 
-                      minNodeSize={trialsLandscapeMinNodeSize}
-                      maxNodeSize={trialsLandscapeMaxNodeSize}
-                      xAxisLabel={"Start Date"}
-                      yAxisLabel={"Condition"}
-                      zAxisLabel={"Sample Size"}
-                      loading={loadingTrialsLandscapeData}
-                    />
-                  </Col>
-                  </Row>
                   <Row>
                   <Col lg={{span: 12}}>
                     <PrismTextBlock
@@ -3385,24 +3425,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="What Have Music-Based Activities Been Compared To?"
-                      colors="rainbow"
-                      chartData={populationsLandscapeChartData}
-                      chartHeight={900}
-                      marginBottom={205}
-                      type={"point"}
-                      minNodeSize={populationsLandscapeMinNodeSize}
-                      maxNodeSize={populationsLandscapeMaxNodeSize}
-                      xAxisLabel={"Condition"}
-                      yAxisLabel={"Comparator"}
-                      zAxisLabel={"Sample Size"}
-                      loading={loadingPopulationsLandscapeData}
-                    />
-                  </Col>
-                  </Row>
+
 
                   <Row>
                   <Col>
