@@ -2555,8 +2555,12 @@ function createSunburst(level1, level2, level3, data) {
             small["type"] = single
             res.push(small)
           }
-
-
+        //  console.log("RES: ", res)
+          res.sort(function(first, second) {
+            let type1 = first.type
+            let type2 = second.type
+            return second[type2] - first[type1];
+          });
 
           let bar = {}
           bar["data"] = res
@@ -2669,6 +2673,12 @@ function createSunburst(level1, level2, level3, data) {
           }
 
           let bar = {}
+
+          res.sort(function(first, second) {
+            let type1 = first.type
+            let type2 = second.type
+            return second[type2] - first[type1];
+          });
           // interventions_bar_dict["int"] = "Interventions"
           bar["data"] = res
           bar['group_keys'] = group_keys
@@ -2682,6 +2692,11 @@ function createSunburst(level1, level2, level3, data) {
             res2.push(small)
           }
           let bar2 = {}
+          res2.sort(function(first, second) {
+            let type1 = first.type
+            let type2 = second.type
+            return second[type2] - first[type1];
+          });
           // comparator_bar_dict["comp"] = "Comparators"
           bar2["data"] = res2
           bar2['group_keys'] = group_keys2
