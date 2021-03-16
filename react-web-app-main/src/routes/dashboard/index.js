@@ -826,6 +826,7 @@ function createSunburst(level1, level2, level3, data) {
 
   const [trialsLandscapeMinNodeSize, setTrialsLandscapeMinNodeSize] = useState(0)
   const [trialsLandscapeMaxNodeSize, setTrialsLandscapeMaxNodeSize] = useState(1)
+  const [trialsLandscapeXs, setTrialsLandscapeXs] = useState([])
   const [populationsLandscapeMinNodeSize, setPopulationsLandscapeMinNodeSize] = useState(0)
   const [populationsLandscapeMaxNodeSize, setPopulationsLandscapeMaxNodeSize] = useState(1)
   const [interventionsLandscapeMinNodeSize, setInterventionsLandscapeMinNodeSize] = useState(0)
@@ -1330,9 +1331,9 @@ function createSunburst(level1, level2, level3, data) {
             let status = record.get('Design')
             all_ids.add(status)
 
-            let year = String(record.get('Year'))
-            xs.add(year)
-            let date = year
+            let year = record.get('Year')
+            xs.add(String(year))
+            let date = String(year)
 
             let ally = String(record.get('Conditions'))
 
@@ -1378,6 +1379,18 @@ function createSunburst(level1, level2, level3, data) {
           let zs = []
           let xtype = "Year"
           let ytype = "Conditions"
+
+          let dates = []
+          for (let x=1945; x<=2020; x=x+5){
+              let num = x+1
+              let d = new Date(String(num))
+              dates.push(d)
+
+          }
+          console.log("DATES: ", dates)
+
+
+
 
           //console.log("Ys: ", ys)
           for (var i of uni){
@@ -1432,16 +1445,24 @@ function createSunburst(level1, level2, level3, data) {
 
             }
             //console.log("LIMITED: ", limited)
-
+            //console.log("ids[1]: ", ids[1], typeof(ids[1]))
             item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }
           // let dict = {}
-          // dict[""] = {"x": "1945", "y": "", "z": 0}
-          //
+          // dict[""] = {"x": "1945", "y": "", "z": -1}
+          // dict[""] = {"x": "1946", "y": "", "z": -1}
+          // dict[""] = {"x": "1948", "y": "", "z": -1}
+          // dict[""] = {"x": "1943", "y": "", "z": -1}
+          // dict[""] = {"x": "1942", "y": "", "z": -1}
+
+
+          // dict[""] = {"x": "1944", "y": "", "z": -1}
+          // dict[""] = {"x": "1943", "y": "", "z": -1}
+
           // new_data_list.push(dict)
-          // console.log("new LIST: ", new_data_list)
+          console.log("new LIST: ", new_data_list)
 
           for (var j of new_data_list){
             let stat = Object.keys(j)[0]
@@ -1477,6 +1498,7 @@ function createSunburst(level1, level2, level3, data) {
           let filtered = zs.filter(item => item !== 0)
           console.log("filtered: ", filtered)
           landscape_result["min"] = Math.min(...zs)
+          landscape_result["dates"] = dates
           console.log("LANDscape RESul; ", landscape_result)
           resolve(landscape_result)
 
@@ -2012,7 +2034,7 @@ function createSunburst(level1, level2, level3, data) {
             for (let status of list_all){
               let l1 = []
               for (let j of all){
-                console.log("type check: ", j[xtype], status)
+                //console.log("type check: ", j[xtype], status)
                 if ((j[xtype]).includes(status) && (j[ytype]).includes(ids[1]) && (j.Results).includes(ids[2])){
                   l1.push(j)
                   //console.log("JJJ: ", j)
@@ -2266,6 +2288,7 @@ function createSunburst(level1, level2, level3, data) {
     setTrialsLandscapeChartData(trials.data);
     setTrialsLandscapeMinNodeSize(trials.min);
     setTrialsLandscapeMaxNodeSize(trials.max);
+    setTrialsLandscapeXs(trials.dates)
 
     setLoadingTrialsLandscapeData(false)
   }
@@ -3238,9 +3261,8 @@ function createSunburst(level1, level2, level3, data) {
                       marginBottom={100}
                       type={'time'}
                       format={'%Y'}
-                      tickValues={20}
+                      tickValues={trialsLandscapeXs}
                       axisBottomFormat={'%Y'}
-
                       minNodeSize={trialsLandscapeMinNodeSize}
                       maxNodeSize={trialsLandscapeMaxNodeSize}
                       xAxisLabel={"Start Date"}
