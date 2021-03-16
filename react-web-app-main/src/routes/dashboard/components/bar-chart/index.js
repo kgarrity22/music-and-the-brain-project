@@ -18,7 +18,11 @@ const PrismBarChart = (props) => {
   const [legends, setLegends] = useState([])
   const [margins, setMargins] = useState({ top: 20, right: 10, bottom: 50, left: 200 })
   useEffect(() => {
-    if (props.layout !== 'horizontal') {
+    if (props.layout === "vertical"){
+      setLegends([])
+      setMargins(m => ({...m, right: 50, left: 50, bottom: 150, top: 20}))
+    }
+    else if (props.layout !== 'horizontal') {
       setLegends([{
         dataFrom: 'keys',
         anchor: 'right',
@@ -65,6 +69,7 @@ const PrismBarChart = (props) => {
     setAxisBottom({
         tickSize: 0,
         tickPadding: 5,
+        tickRotation: -50,
         legend: props.xAxisLabel,
         legendPosition: 'middle',
         legendOffset: 0
@@ -76,7 +81,7 @@ const PrismBarChart = (props) => {
     setAxisLeft({
         tickSize: 0,
         tickPadding: 5,
-        tickRotation: 0,
+        tickRotation: -90,
         legend: props.yAxisLabel,
         legendPosition: 'middle',
         legendOffset: -100
@@ -107,7 +112,7 @@ const PrismBarChart = (props) => {
       <div className="chart" style={{"height": props.chartHeight}}>
         <ResponsiveBar
           theme={ theme }
-          
+
           data={props.chartData}
           keys={props.groupKeys}
           margin={margins}
@@ -129,7 +134,7 @@ const PrismBarChart = (props) => {
           animate={false}
           enableGridX={ enableGridX}
           enableGridY={ enableGridY }
-          groupMode={ 'grouped' }
+          groupMode={ props.groupMode }
       />
       </div>
       {

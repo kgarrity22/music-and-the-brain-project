@@ -10,7 +10,7 @@ import CsvDownloader from 'react-csv-downloader';
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 
-import { FaArrowCircleLeft } from 'react-icons/fa'
+import { FaArrowCircleLeft, FaArrowCircleDown } from 'react-icons/fa'
 
 import Navbar from './components/navbar'
 import Searchbar from './components/searchbar'
@@ -2510,37 +2510,21 @@ function createSunburst(level1, level2, level3, data) {
           }
           //console.log("OUTCOMES DICT: ", outcomes_dict)
           let group_keys = Object.keys(outcomes_bar_dict)
+          let res = []
+          for (let single of group_keys){
+            let small = {}
+            small[single] = outcomes_bar_dict[single]
+            small["type"] = single
+            res.push(small)
+          }
+          //aardvark
+
+
           let bar = {}
-          bar["data"] = [outcomes_bar_dict]
+          bar["data"] = res
           bar["group_keys"] = group_keys
 
-          // var items = Object.keys(outcomes_dict).map(function(key) {
-          //   return [key, outcomes_dict[key]];
-          // });
-          //
-          // // Sort the array based on the second element
-          // items.sort(function(first, second) {
-          //   return second[1] - first[1];
-          // });
-          //
-          // var updated_outcomes_dict = {}
-          // let updated = []
-          // for (var item of items.slice(0, 10)){
-          //   updated_outcomes_dict[item[0]] = item[1]
-          // }
-          // for (var item of items.slice(0, 20)){
-          //   updated.push(item[0])
-          // }
-          //
-          // //console.log('updated:', updated_outcomes_dict)
-          //
-          // areaBumpFormatting(outcome_area_dict, updated, outcome_areabump_result, years)
-          // pie_formatting(outcomes_pie_dict, primary_outcomes_pie)
-          // bar_formatting(updated_outcomes_dict, outcomes_bar, outcomes_bar_formatted, "outcome")
-          // outcomes_result["outcome_bar"] = outcomes_bar_formatted
-          // outcomes_result["primary_outcomes_pie"] = primary_outcomes_pie
-          // outcomes_result["area_bump"] = outcome_areabump_result
-          //console.log("OUTCOME data: ", outcome_areabump_result)
+
           outcomes_result["outcomes_bar"] = bar
 
           resolve(outcomes_result)
@@ -3238,7 +3222,7 @@ function createSunburst(level1, level2, level3, data) {
                     <PrismTextBlock
                       paddingTop={90}
                       paddingBottom={0}
-                      arrow={<FaArrowCircleLeft/ >}
+                      arrow={<FaArrowCircleDown/ >}
                       textTitle={ '     How did we classify interventions?' }
                       mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
                     />
@@ -3258,6 +3242,7 @@ function createSunburst(level1, level2, level3, data) {
                       indexKey="int"
                       xAxisLabel=""
                       yAxisLabel=""
+                      groupMode={'stacked'}
                       loading={loadingInterventionsData}
                     />
                   </Col>
@@ -3273,6 +3258,7 @@ function createSunburst(level1, level2, level3, data) {
                       indexKey="comp"
                       xAxisLabel=""
                       yAxisLabel=""
+                      groupMode={'stacked'}
                       loading={loadingInterventionsData}
                     />
                   </Col>
@@ -3287,7 +3273,7 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Col>
                     <PrismBarChart
-                      colors="rainbow"
+                      color="green"
                       layout="vertical"
                       title="Outcomes"
                       chartData={outcomesBarData.data}
@@ -3295,6 +3281,7 @@ function createSunburst(level1, level2, level3, data) {
                       indexKey="type"
                       xAxisLabel=""
                       yAxisLabel=""
+                      groupMode={'stacked'}
                       loading={loadingActivityTypesData}
                     />
                   </Col>
@@ -3328,6 +3315,7 @@ function createSunburst(level1, level2, level3, data) {
                       indexKey="type"
                       xAxisLabel=""
                       yAxisLabel=""
+                      groupMode={'grouped'}
                       loading={loadingSponsorsData}
                     />
                   </Col>
