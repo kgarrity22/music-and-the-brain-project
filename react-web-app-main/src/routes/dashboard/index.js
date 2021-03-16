@@ -1387,7 +1387,7 @@ function createSunburst(level1, level2, level3, data) {
               dates.push(d)
 
           }
-          console.log("DATES: ", dates)
+          //console.log("DATES: ", dates)
 
 
 
@@ -2818,7 +2818,7 @@ function createSunburst(level1, level2, level3, data) {
 
       const cc = require('@genyus/country-code');
       function getGeographyData() {
-        console.log("getGeographyData")
+        //console.log("getGeographyData")
         return new Promise((resolve, reject) => {
           base('Studies').select({
               // Selecting the first 3 records in Raw View:
@@ -2831,30 +2831,51 @@ function createSunburst(level1, level2, level3, data) {
               records.forEach(function(record) {
                 // countries_list.push(record.get('Geography_Countries'))
 
-                var country = record.get('Countries_Rollup_Unique')
-                var trial_NCT = record.get('NCT')
-
-                let region = record.get('Geography_Regions')
-                if (typeof(region)==='object'){
-                  for (let i of region){
-                    pie_collection(regions_dict, i)
-                  }
+                var country = record.get('Location')
+                //console.log("country: ", country, typeof(country))
+                // if (country.chartAt(0)===" "){
+                //   console.log("COUNT: ", country)
+                //   country = country.slice(1, country.length)
+                // }
+                //var trial_NCT = record.get('NCT')
+                if (country === "Czechia") {
+                  pie_collection(geography_country_dict, "CZE")
+                } else if (country === "Various"){
+                  pie_collection(geography_country_dict, "Various")
+                } else if (country.includes("USA")){
+                  pie_collection(geography_country_dict, "USA")
+                } else if (country.includes("Taiwan")){
+                  pie_collection(geography_country_dict, "TWN")
+                } else if (country==="NR"){
+                  pie_collection(geography_country_dict, "NR")
+                } else if (country.includes("Singapore")){
+                  pie_collection(geography_country_dict, "SGP")
                 } else {
-                  pie_collection(regions_dict, region)
-                }
+                  var code = cc.nameIncludes(country)[0].alpha3
+                  pie_collection(geography_country_dict, code)
 
-                if (typeof(country)==='object'){
-                  for (var item of country){
-                    // this if statement is just because the library isn't able to convert it
-                    if (item === "Czechia") {
-                      pie_collection(geography_country_dict, "CZE")
-                    } else {
-                      var code = cc.nameIncludes(item)[0].alpha3
-                      pie_collection(geography_country_dict, code)
-
-                    }
-                  }
                 }
+                // let region = record.get('Geography_Regions')
+                // if (typeof(region)==='object'){
+                //   for (let i of region){
+                //     pie_collection(regions_dict, i)
+                //   }
+                // } else {
+                //   pie_collection(regions_dict, region)
+                // }
+                // for (var item of country){
+                //   // this if statement is just because the library isn't able to convert it
+                //   if (item === "Czechia") {
+                //     pie_collection(geography_country_dict, "CZE")
+                //   } else {
+                //     var code = cc.nameIncludes(item)[0].alpha3
+                //     pie_collection(geography_country_dict, code)
+                //
+                //   }
+                // }
+                // if (typeof(country)==='object'){
+                //
+                // }
 
               });
 
@@ -2866,27 +2887,28 @@ function createSunburst(level1, level2, level3, data) {
                 return reject({});
               }
 
-              pie_formatting(regions_dict, regions_pie)
+            //  pie_formatting(regions_dict, regions_pie)
               geog_formatting(geography_country_dict, geography_result)
-              var items = Object.keys(geography_country_dict).map(function(key) {
-                return [key, geography_country_dict[key]];
-              });
-
-              // Sort the array based on the second element
-              items.sort(function(first, second) {
-                return second[1] - first[1];
-              });
-
-              var updated_countries_dict = {}
-              for (var item of items.slice(0, 10)){
-                updated_countries_dict[item[0]] = item[1]
-              }
+              console.log("Geography!!: ", geography_result)
+              // var items = Object.keys(geography_country_dict).map(function(key) {
+              //   return [key, geography_country_dict[key]];
+              // });
+              //
+              // // Sort the array based on the second element
+              // items.sort(function(first, second) {
+              //   return second[1] - first[1];
+              // });
+              //
+              // var updated_countries_dict = {}
+              // for (var item of items.slice(0, 10)){
+              //   updated_countries_dict[item[0]] = item[1]
+              // }
 
               // console.log("bar original: ", countries_bar_formatted)
-              bar_formatting(updated_countries_dict, countries_bar, countries_bar_formatted, "country")
+              //bar_formatting(updated_countries_dict, countries_bar, countries_bar_formatted, "country")
               //console.log("bar: ", countries_bar_formatted)
-              geography["countries_bar"] = countries_bar_formatted
-              geography["regions_pie"] = regions_pie
+            //  geography["countries_bar"] = countries_bar_formatted
+              //geography["regions_pie"] = regions_pie
               geography["map"] = geography_result
               resolve(geography)
 
@@ -2896,11 +2918,11 @@ function createSunburst(level1, level2, level3, data) {
 
 
   const fetchGeographyData = async () => {
-    console.log("fetchGeographyData")
+    // console.log("fetchGeographyData")
     const result = await getGeographyData()
     setGeographyFacilitiesChartData(result.map);
-    setRegionsPieChartData(result.regions_pie)
-    setCountriesTop10BarChartData(result.countries_bar)
+    // setRegionsPieChartData(result.regions_pie)
+    // setCountriesTop10BarChartData(result.countries_bar)
     //console.log("BAR: ", result.countries_bar)
 
     setLoadingGeographyData(false)
@@ -2941,6 +2963,9 @@ function createSunburst(level1, level2, level3, data) {
       setLoadingOutcomesLandscapeData(true)
       fetchOutcomesLandscapeChartData();
       fetchAllTableData();
+
+      setLoadingGeographyData(true);
+      fetchGeographyData();
 
     }
     // eslint-disable-next-line
@@ -3464,6 +3489,23 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Geography" color="indigo" />
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <PrismChoropleth
+                        colors="rainbow"
+                        title="Trial Volume By Country"
+                        chartData={geographyFacilitiesChartData}
+                        loading={loadingGeographyData}
+                      />
+                    </Col>
+                  </Row>
+
 
 
                   <Row>
@@ -3481,6 +3523,7 @@ function createSunburst(level1, level2, level3, data) {
                   </div>
                 </Col>
               </Row>
+
           </div>
         </div>
         { activeCategoryFilter &&
