@@ -2012,8 +2012,8 @@ function createSunburst(level1, level2, level3, data) {
             for (let status of list_all){
               let l1 = []
               for (let j of all){
-                //console.log("type check: ", j[ytype], ids[1])
-                if ((j[xtype]).includes(ids[2]) && (j[ytype]).includes(ids[1]) && (j.Results).includes(status)){
+                console.log("type check: ", j[xtype], status)
+                if ((j[xtype]).includes(status) && (j[ytype]).includes(ids[1]) && (j.Results).includes(ids[2])){
                   l1.push(j)
                   //console.log("JJJ: ", j)
                 }
