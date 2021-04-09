@@ -3242,8 +3242,8 @@ function createSunburst(level1, level2, level3, data) {
                   <Col>
                     <PrismTextBlock
                       textTitle={ 'How to use this landscape' }
-                      mainText={ 'This page provides a dynamic lens for viewing the evidence for the effects of music on mental illness, which are wide-ranging and involve many types of activities, populations, comparators, and study designs. The numbers at the top of the page describe the overall quantitaty of evidence that is summarized by the visuals below.' }
-                      moreText={"On the left side of the page are set of data filters that can be used to narrow down the analysis on specific subsets of the evidence."}
+                      mainText={ 'This page provides a dynamic lens for viewing the evidence for effects of music and music-based activities on serious mental illness. These effects are wide-ranging and involve many types of activities, populations, outcomes, and study designs. The numbers at the top of the page describe the overall quantity of evidence that is summarized by the visuals you’ll see below.' }
+                      moreText={"On the left side of the page are set of data filters. These can be used to focus on specific subsets of the evidence, such as specific populations or conditions."}
                     />
                   </Col>
                   </Row>
@@ -3329,8 +3329,8 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingInterventionsData}
                     />
                   </Col>
-
-                  <Col lg={{span: 6}}>
+                  <Row>
+                  <Col>
 
                     <PrismTextBlock
                       paddingTop={90}
@@ -3340,6 +3340,7 @@ function createSunburst(level1, level2, level3, data) {
                       mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
                     />
                   </Col>
+                  </Row>
 
 
                   </Row>
