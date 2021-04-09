@@ -3389,7 +3389,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  
+
 
                   <Row>
                     <Col>
@@ -3509,7 +3509,7 @@ function createSunburst(level1, level2, level3, data) {
                     <Col>
                       <PrismChoropleth
                         colors="rainbow"
-                        title="Trial Volume By Country"
+                        title="In what countries have these studies taken place?"
                         chartData={geographyFacilitiesChartData}
                         loading={loadingGeographyData}
                       />
