@@ -3324,7 +3324,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      color="orange"
+                      color="yellow"
                       layout="vertical"
                       title="What types of activities were involved in these studies?"
                       chartHeight={600}
@@ -3350,6 +3350,7 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
+
                   <Row>
                   <Col>
 
@@ -3364,14 +3365,18 @@ function createSunburst(level1, level2, level3, data) {
                   </Row>
 
 
-
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Comparators" color="Orange" />
+                    </Col>
+                  </Row>
 
                   <Row>
                   <Col>
                     <PrismBarChart
-                      color="yellow"
+                      color="Orange"
                       layout="vertical"
-                      title="Comparators"
+                      title="What Have Music-Based Activities Been Compared To?"
                       chartData={comparatorsBarData.data}
                       groupKeys={comparatorsBarData.group_keys}
                       indexKey="type"
@@ -3384,24 +3389,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="What Have Music-Based Activities Been Compared To?"
-                      colors="rainbow"
-                      chartData={populationsLandscapeChartData}
-                      chartHeight={900}
-                      marginBottom={90}
-                      type={"point"}
-                      minNodeSize={populationsLandscapeMinNodeSize}
-                      maxNodeSize={populationsLandscapeMaxNodeSize}
-                      xAxisLabel={"Condition"}
-                      yAxisLabel={"Comparator"}
-                      zAxisLabel={"Sample Size"}
-                      loading={loadingPopulationsLandscapeData}
-                    />
-                  </Col>
-                  </Row>
+                  
 
                   <Row>
                     <Col>
