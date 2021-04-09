@@ -3256,7 +3256,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Col lg={{span: 6}}>
                     <PrismPieChart
                       colors="rainbow"
-                      title="What types of studies are included in the analysis?"
+                      title="What types of studies have been conducted?"
                       chartData={trialPurposePieChartData}
                       loading={loadingTrialsData}
                     />
@@ -3267,8 +3267,8 @@ function createSunburst(level1, level2, level3, data) {
                       paddingTop={90}
                       paddingBottom={0}
                       arrow={<FaArrowCircleLeft/ >}
-                      textTitle={ '     Lorem Ipsum?' }
-                      mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
+                      textTitle={ '     How is Music Being Studied?' }
+                      mainText={ "Randomized Controlled Trials (RCTs) comprised the largest percentage of studies (23.2%), followed by Pre/Post Tests (21.8%) and Case Reports (18.3%). Hover over the graph to view more information." }
                     />
                   </Col>
                   </Row>
@@ -3276,7 +3276,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Col lg={{span: 6}}>
                     <PrismPieChart
                       colors="rainbow"
-                      title="What is the distribution of study results?"
+                      title="What were the study results? Hover over each color for information."
                       chartData={trialStatusPieChartData}
                       loading={loadingTrialsData}
                     />
@@ -3317,39 +3317,16 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Row>
                     <Col>
-                      <SectionTitle title="Interventions" color="yellow" />
+                      <SectionTitle title="Interventions/Activities" color="yellow" />
                     </Col>
                   </Row>
-                  <Row>
-                  <Col>
-                    <PrismPieChart
-                      colors="yellow"
-                      title="What is the distribution of intervention types?"
-                      chartData={interventionTypesPieChartData}
-                      loading={loadingInterventionsData}
-                    />
-                  </Col>
-                  <Row>
-                  <Col>
 
-                    <PrismTextBlock
-                      paddingTop={90}
-                      paddingBottom={0}
-                      arrow={<FaArrowCircleDown/ >}
-                      textTitle={ '     How did we classify interventions?' }
-                      mainText={ "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }
-                    />
-                  </Col>
-                  </Row>
-
-
-                  </Row>
                   <Row>
                   <Col>
                     <PrismBarChart
                       color="orange"
                       layout="vertical"
-                      title="Interventions"
+                      title="What types of activities were involved in these studies?"
                       chartHeight={600}
                       chartData={interventionsBarData.data}
                       groupKeys={interventionsBarData.group_keys}
@@ -3362,6 +3339,33 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismPieChart
+                      colors="yellow"
+                      title="Were these activities passive, active, or both?"
+                      chartData={interventionTypesPieChartData}
+                      loading={loadingInterventionsData}
+                    />
+                  </Col>
+                  </Row>
+                  <Row>
+                  <Col>
+
+                    <PrismTextBlock
+                      paddingTop={90}
+                      paddingBottom={0}
+                      arrow={<FaArrowCircleDown/ >}
+                      textTitle={ '     What do we mean by active and passive?' }
+                      mainText={ "Levels of felt engagement can vary from participant to participant, but these terms allowed researchers to calculate how many music activities involved active engagement (e.g., playing an instrument) versus comparatively passive engagement (e.g., listening to music). The distinction is important, as previous studies have indicated that passive and active experiences can generate different changes via differing mechanisms." }
+                    />
+                  </Col>
+                  </Row>
+
+
+
+
                   <Row>
                   <Col>
                     <PrismBarChart
@@ -3401,58 +3405,13 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Row>
                     <Col>
-                      <SectionTitle title="Outcomes" color="green" />
-                    </Col>
-                  </Row>
-                  <Row>
-
-                  <Col>
-                    <PrismBarChart
-                      color="green"
-                      layout="vertical"
-                      title="Outcomes"
-                      chartData={outcomesBarData.data}
-                      groupKeys={outcomesBarData.group_keys}
-                      indexKey="type"
-                      xAxisLabel=""
-                      yAxisLabel=""
-                      groupMode={'stacked'}
-                      marginBottom={130}
-                      loading={loadingActivityTypesData}
-                    />
-                  </Col>
-                  </Row>
-
-                  <Row>
-                  <Col>
-                    <PrismStaticScatterplot
-                      title="What Outcomes Have Been Used to Evaluate These Interventions?"
-                      colors="rainbow"
-                      chartData={interventionsLandscapeChartData}
-                      chartHeight={900}
-                      marginBottom={135}
-                      type={"point"}
-                      minNodeSize={interventionsLandscapeMinNodeSize}
-                      maxNodeSize={interventionsLandscapeMaxNodeSize}
-                      xAxisLabel={"Outcomes"}
-                      yAxisLabel={"Interventions"}
-                      zAxisLabel={"Sample Size"}
-                      loading={loadingInterventionsLandscapeData}
-                    />
-                  </Col>
-                  </Row>
-
-
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Conditions" color="blue" />
+                      <SectionTitle title="Conditions" color="green" />
                     </Col>
                   </Row>
                   <Row>
                   <Col lg={{span: 12}}>
                     <PrismPieChart
-                      colors="blue"
+                      colors="green"
                       title="What is the distribution of mental illnesses studied?"
                       chartData={sponsorTypePieChartData}
                       loading={loadingSponsorsData}
@@ -3504,6 +3463,53 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
+
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Outcomes" color="blue" />
+                    </Col>
+                  </Row>
+                  <Row>
+
+                  <Col>
+                    <PrismBarChart
+                      color="blue"
+                      layout="vertical"
+                      title="Outcomes"
+                      chartData={outcomesBarData.data}
+                      groupKeys={outcomesBarData.group_keys}
+                      indexKey="type"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      groupMode={'stacked'}
+                      marginBottom={130}
+                      loading={loadingActivityTypesData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismStaticScatterplot
+                      title="What Outcomes Have Been Used to Evaluate These Interventions?"
+                      colors="rainbow"
+                      chartData={interventionsLandscapeChartData}
+                      chartHeight={900}
+                      marginBottom={135}
+                      type={"point"}
+                      minNodeSize={interventionsLandscapeMinNodeSize}
+                      maxNodeSize={interventionsLandscapeMaxNodeSize}
+                      xAxisLabel={"Outcomes"}
+                      yAxisLabel={"Interventions"}
+                      zAxisLabel={"Sample Size"}
+                      loading={loadingInterventionsLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+
+
 
                   <Row>
                     <Col>
