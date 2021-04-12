@@ -3317,14 +3317,14 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Row>
                     <Col>
-                      <SectionTitle title="Interventions/Activities" color="yellow" />
+                      <SectionTitle title="Interventions/Activities" color="orange" />
                     </Col>
                   </Row>
 
                   <Row>
                   <Col>
                     <PrismBarChart
-                      color="yellow"
+                      color="orange"
                       layout="vertical"
                       title="What types of activities were involved in these studies?"
                       chartHeight={600}
@@ -3343,7 +3343,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismPieChart
-                      colors="yellow"
+                      colors="orange"
                       title="Were these activities passive, active, or both?"
                       chartData={interventionTypesPieChartData}
                       loading={loadingInterventionsData}
@@ -3367,14 +3367,14 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Row>
                     <Col>
-                      <SectionTitle title="Comparators" color="orange" />
+                      <SectionTitle title="Comparators" color="yellow" />
                     </Col>
                   </Row>
 
                   <Row>
                   <Col>
                     <PrismBarChart
-                      color="orange"
+                      color="yellow"
                       layout="vertical"
                       title="What Have Music-Based Activities Been Compared To?"
                       chartData={comparatorsBarData.data}
@@ -3400,7 +3400,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Col lg={{span: 12}}>
                     <PrismPieChart
                       colors="green"
-                      title="What is the distribution of mental illnesses studied?"
+                      title="What is the breakdown of mental illnesses studied?"
                       chartData={sponsorTypePieChartData}
                       loading={loadingSponsorsData}
                     />
@@ -3411,7 +3411,7 @@ function createSunburst(level1, level2, level3, data) {
                     <PrismBarChart
                       colors="rainbow"
                       layout="vertical"
-                      title="What is the breakdown of intervention types evaluated for each condition?"
+                      title="What is the breakdown of activity types for each condition?"
                       chartData={activityBarChartData.data}
                       groupKeys={activityBarChartData.group_keys}
                       indexKey="type"
@@ -3419,14 +3419,44 @@ function createSunburst(level1, level2, level3, data) {
                       yAxisLabel=""
                       groupMode={'grouped'}
                       marginBottom={130}
+
                       loading={loadingSponsorsData}
+                      legend={[{
+                        dataFrom: 'keys',
+                        anchor: 'right',
+                        direction: 'column',
+                        justify: false,
+                        translateX: 160,
+                        translateY: -20,
+                        itemsSpacing: 5,
+                        itemWidth: 200,
+                        itemHeight: 8,
+                        itemDirection: 'left-to-right',
+                        itemOpacity: 0.85,
+                        symbolSize: 8,
+                        effects: [{
+                          on: 'hover',
+                          style: {
+                            itemOpacity: 1
+                          }
+                        }]
+                      }]}
                     />
                   </Col>
                   </Row>
                   <Row>
+                  <Col lg={{span: 12}}>
+                    <PrismTextBlock
+                      textTitle={ 'How to interpret this graph' }
+                      mainText={ "The bubbles in the graph indicate the type and number of studies for each condition and outcome combination. You can hover your mouse over each bubble to see more information. You can also click on a node to view or even download the details of the specific study reports." }
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="What Were the Results of These Studies, for Each Condition?"
+                      title="Below, you can see outcomes graphed according to condition. Study results are noted by color."
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
                       chartHeight={900}
@@ -3443,31 +3473,23 @@ function createSunburst(level1, level2, level3, data) {
                   </Row>
 
 
-                  <Row>
-                  <Col lg={{span: 12}}>
-                    <PrismTextBlock
-                      textTitle={ 'How to interpret this graph' }
-                      mainText={ "The bubbles in the scatterplot indicate the type of and volume of studies for each condition and year combination. You can hover your mouse over each bubble to see more information about the research activity in that disease/time. You can also click on a node to inspect or download the details of the specific study reports." }
-                    />
-                  </Col>
-                  </Row>
-
 
                   <Row>
                     <Col>
                       <SectionTitle title="Outcomes" color="blue" />
                     </Col>
                   </Row>
-                  <Row>
+
 
                   <Row>
-                  <Col lg={{span: 12}}>
+                  <Col>
                     <PrismTextBlock
-                      mainText={ "In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
+                      textTitle={ "In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
                     />
                   </Col>
                   </Row>
 
+                  <Row>
                   <Col>
                     <PrismBarChart
                       color="blue"
