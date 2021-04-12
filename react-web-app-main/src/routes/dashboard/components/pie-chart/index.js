@@ -9,18 +9,18 @@ import ChartTooltip from '../tooltip'
 import './index.css'
 
 const intialLegends = [{
-  anchor: 'center',
+  anchor: 'left',
   direction: 'column',
   justify: false,
-  translateX: 225,
+  translateX: 0,
   translateY: 0,
   itemsSpacing: 5,
-  itemWidth: 100,
-  itemHeight: 18,
+  itemWidth: 80,
+  itemHeight: 12,
   itemTextColor: '#999',
   itemDirection: 'left-to-right',
   itemOpacity: 1,
-  symbolSize: 18,
+  symbolSize: 12,
   symbolShape: 'square',
   effects: [{
     on: 'hover',

@@ -1233,7 +1233,12 @@ function createSunburst(level1, level2, level3, data) {
             // for (var item of age){
             //   pie_collection(age_groups_pie_dict, item)
             // }
-            pie_collection(purpose_pie_dict, record.get('Design'))
+            if (record.get('Design') === "Other NRS (Non-randomized controlled Study)"){
+              pie_collection(purpose_pie_dict, "Other NRS")
+            } else {
+              pie_collection(purpose_pie_dict, record.get('Design'))
+            }
+
             // pie_collection(type_pie_dict, record.get('Study_Type'))
             pie_collection(status_pie_dict, record.get('Results'))
             // pie_collection(trials_line_dict, record.get('Start_Year'))
