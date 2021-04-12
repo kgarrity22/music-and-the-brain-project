@@ -3374,7 +3374,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismBarChart
-                      color="Orange"
+                      color="orange"
                       layout="vertical"
                       title="What Have Music-Based Activities Been Compared To?"
                       chartData={comparatorsBarData.data}
@@ -3460,11 +3460,19 @@ function createSunburst(level1, level2, level3, data) {
                   </Row>
                   <Row>
 
+                  <Row>
+                  <Col lg={{span: 12}}>
+                    <PrismTextBlock
+                      mainText={ "In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
+                    />
+                  </Col>
+                  </Row>
+
                   <Col>
                     <PrismBarChart
                       color="blue"
                       layout="vertical"
-                      title="Outcomes"
+                      title="What kinds of outcomes were music-based interventions seeking to improve?"
                       chartData={outcomesBarData.data}
                       groupKeys={outcomesBarData.group_keys}
                       indexKey="type"
@@ -3480,7 +3488,7 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="What Outcomes Have Been Used to Evaluate These Interventions?"
+                      title="Let’s take a look at these outcomes according to each activity. Study results are noted by color."
                       colors="rainbow"
                       chartData={interventionsLandscapeChartData}
                       chartHeight={900}
