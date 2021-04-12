@@ -3367,7 +3367,7 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Row>
                     <Col>
-                      <SectionTitle title="Comparators" color="Orange" />
+                      <SectionTitle title="Comparators" color="orange" />
                     </Col>
                   </Row>
 
