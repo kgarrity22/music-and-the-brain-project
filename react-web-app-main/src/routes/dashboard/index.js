@@ -3346,7 +3346,7 @@ function createSunburst(level1, level2, level3, data) {
                   </Row>
 
                   <Row>
-                  <Col>
+                  <Col lg={{span: 6}}>
                     <PrismPieChart
                       colors="orange"
                       title="Were these activities passive, active, or both?"
@@ -3354,15 +3354,13 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingInterventionsData}
                     />
                   </Col>
-                  </Row>
 
-                  <Row>
-                  <Col>
+                  <Col lg={{span: 6}}>
 
                     <PrismTextBlock
                       paddingTop={90}
                       paddingBottom={0}
-                      arrow={<FaArrowCircleDown/ >}
+                      arrow={<FaArrowCircleLeft/ >}
                       textTitle={ '     What do we mean by active and passive?' }
                       mainText={ "Levels of felt engagement can vary from participant to participant, but these terms allowed researchers to calculate how many music activities involved active engagement (e.g., playing an instrument) versus comparatively passive engagement (e.g., listening to music). The distinction is important, as previous studies have indicated that passive and active experiences can generate different changes via differing mechanisms." }
                     />
