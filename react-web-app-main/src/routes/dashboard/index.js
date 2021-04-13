@@ -3450,7 +3450,8 @@ function createSunburst(level1, level2, level3, data) {
                   <Row>
                   <Col lg={{span: 12}}>
                     <PrismTextBlock
-                      textTitle={ 'How to interpret this graph' }
+                      textTitle={ '     How to interpret this graph' }
+                      arrow={<FaArrowCircleDown/ >}
                       mainText={ "The bubbles in the graph indicate the type and number of studies for each condition and outcome combination. You can hover your mouse over each bubble to see more information. You can also click on a node to view or even download the details of the specific study reports." }
                     />
                   </Col>
@@ -3483,17 +3484,8 @@ function createSunburst(level1, level2, level3, data) {
                     </Col>
                   </Row>
 
-
                   <Row>
-                  <Col>
-                    <PrismTextBlock
-                      textTitle={ "In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
-                    />
-                  </Col>
-                  </Row>
-
-                  <Row>
-                  <Col>
+                  <Col lg={{span: 6}}>
                     <PrismBarChart
                       color="blue"
                       layout="vertical"
@@ -3508,7 +3500,17 @@ function createSunburst(level1, level2, level3, data) {
                       loading={loadingActivityTypesData}
                     />
                   </Col>
+
+                  <Col lg={{span: 6}}>
+                    <PrismTextBlock
+                      paddingTop={90}
+                      paddingBottom={0}
+                      arrow={<FaArrowCircleLeft/ >}
+                      textTitle={ "         In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
+                    />
+                  </Col>
                   </Row>
+
 
                   <Row>
                   <Col>
