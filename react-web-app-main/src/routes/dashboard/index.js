@@ -1337,7 +1337,7 @@ function createSunburst(level1, level2, level3, data) {
             all_ids.add(status)
 
             let year = record.get('Year')
-            xs.add(String(year))
+            xs.add(parseInt(year))
             let date = String(year)
 
             let ally = String(record.get('Conditions'))
@@ -1386,12 +1386,29 @@ function createSunburst(level1, level2, level3, data) {
           let ytype = "Conditions"
 
           let dates = []
-          for (let x=1945; x<=2020; x=x+5){
-              let num = x+1
-              let d = new Date(String(num))
-              dates.push(d)
+          let all_years = [...xs]
+          console.log("ALl years; ", all_years)
+          let minyear = Math.min(...all_years)
+          let maxyear = Math.max(...all_years)
+          // console.log("MINyeAr: ", minyear)
+          // console.log('maxyear: ', maxyear)
+          minyear = minyear - (minyear%5)
+          maxyear = maxyear + (5 - minyear%5)
+          if (all_years.length===1){
+            let d = new Date(String(all_years[0] + 1))
+            dates.push(d)
+          } else {
+            for (let x=minyear; x<=maxyear; x=x+5){
+                let num = x+1
+                let d = new Date(String(num))
+                dates.push(d)
 
+            }
           }
+
+          // console.log("MINyeAr: ", minyear)
+          // console.log('maxyear: ', maxyear)
+
           //console.log("DATES: ", dates)
 
 
@@ -1450,8 +1467,9 @@ function createSunburst(level1, level2, level3, data) {
 
             }
             //console.log("LIMITED: ", limited)
-            //console.log("ids[1]: ", ids[1], typeof(ids[1]))
-            item[ids[0]] = {"x": ids[1], "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+            console.log("ids[1]: ", ids[1], typeof(ids[1]))
+
+            item[ids[0]] = {"x": String(parseInt(ids[1])+1), "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
             new_data_list.push(item)
           }
