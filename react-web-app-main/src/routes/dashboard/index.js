@@ -3303,14 +3303,14 @@ function createSunburst(level1, level2, level3, data) {
                       colors="rainbow"
                       chartData={trialsLandscapeChartData}
                       chartHeight={900}
-                      marginBottom={100}
+                      marginBottom={130}
                       type={'time'}
                       format={'%Y'}
                       tickValues={trialsLandscapeXs}
                       axisBottomFormat={'%Y'}
                       minNodeSize={trialsLandscapeMinNodeSize}
                       maxNodeSize={trialsLandscapeMaxNodeSize}
-                      xAxisLabel={"Start Date"}
+                      xAxisLabel={"Start Year"}
                       yAxisLabel={"Condition"}
                       zAxisLabel={"Sample Size"}
                       loading={loadingTrialsLandscapeData}

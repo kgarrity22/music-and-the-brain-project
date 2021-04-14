@@ -130,18 +130,20 @@ const PrismStaticScatterplot = (props) => {
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: -45,
-                legend: null,
+                legend: props.xAxisLabel,
                 format: props.axisBottomFormat,
                 tickValues: props.tickValues,
-
-
+                legendPosition: 'middle',
+                legendOffset: 124
             }}
             axisLeft={{
                 orient: 'left',
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: null
+                legend: props.yAxisLabel,
+                legendPosition: 'middle',
+                legendOffset: -170
             }}
 
             legends={[{
