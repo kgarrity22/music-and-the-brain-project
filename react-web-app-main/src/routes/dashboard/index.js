@@ -166,7 +166,7 @@ function DashboardRoute(props) {
     for (var item of filter_list){
 
       // Any fields that are lists of tags should go in this array to get filtered correctly
-      var listFields = ['Geography_Countries','Age_Groups','Outcome_Concepts','Intervention_Types']
+      var listFields = ['Geography_Countries','Age_Groups','Outcome_Concepts','Intervention_Types', 'Location']
 
       var key = Object.keys(item)[0]
       var val = Object.values(item)[0]
@@ -535,7 +535,7 @@ function createSunburst(level1, level2, level3, data) {
           // GEOGRAPHY
 
           create_filter_dict([...regions_set].sort(), unique_regions)
-          geography_filts["Locations"] = unique_regions
+          geography_filts["Location"] = unique_regions
 
 
 
