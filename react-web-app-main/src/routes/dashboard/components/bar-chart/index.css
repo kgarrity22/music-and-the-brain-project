@@ -10,8 +10,9 @@
   font-size: 16px;
   line-height: 20px;
   color: #323338;
-  height: 32px;
+  height: auto;
   background: #F5F6F8;
+  padding: 10px;
 }
 
 .bar-chart-container .chart {

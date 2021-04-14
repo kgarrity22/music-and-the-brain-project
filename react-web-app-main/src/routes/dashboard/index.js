@@ -3273,7 +3273,7 @@ function createSunburst(level1, level2, level3, data) {
                       paddingBottom={0}
                       arrow={<FaArrowCircleLeft/ >}
                       textTitle={ '     How is Music Being Studied?' }
-                      mainText={ "Randomized Controlled Trials (RCTs) comprised the largest percentage of studies (23.2%), followed by Pre/Post Tests (21.8%) and Case Reports (18.3%). Hover over the graph to view more information." }
+                      mainText={ "In our full dataset, randomized Controlled Trials (RCTs) comprised the largest percentage of studies (23.2%), followed by Pre/Post Tests (21.8%) and Case Reports (18.3%). However, if you filter the data using the menus on the left, these proportions will change. But you can also hover over the graph to view more information." }
                     />
                   </Col>
                   </Row>
@@ -3367,42 +3367,15 @@ function createSunburst(level1, level2, level3, data) {
                   </Col>
                   </Row>
 
-
                   <Row>
                     <Col>
-                      <SectionTitle title="Comparators" color="yellow" />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                  <Col>
-                    <PrismBarChart
-                      color="yellow"
-                      layout="vertical"
-                      title="What Have Music-Based Activities Been Compared To?"
-                      chartData={comparatorsBarData.data}
-                      groupKeys={comparatorsBarData.group_keys}
-                      indexKey="type"
-                      xAxisLabel=""
-                      yAxisLabel=""
-                      groupMode={'stacked'}
-                      marginBottom={190}
-                      loading={loadingInterventionsData}
-                    />
-                  </Col>
-                  </Row>
-
-
-
-                  <Row>
-                    <Col>
-                      <SectionTitle title="Conditions" color="green" />
+                      <SectionTitle title="Conditions" color="yellow" />
                     </Col>
                   </Row>
                   <Row>
                   <Col lg={{span: 12}}>
                     <PrismPieChart
-                      colors="green"
+                      colors="yellow"
                       title="What is the breakdown of mental illnesses studied?"
                       chartData={sponsorTypePieChartData}
                       loading={loadingSponsorsData}
@@ -3447,20 +3420,12 @@ function createSunburst(level1, level2, level3, data) {
                     />
                   </Col>
                   </Row>
-                  <Row>
-                  <Col lg={{span: 12}}>
-                    <PrismTextBlock
-                      textTitle={ '     How to interpret this graph' }
-                      arrow={<FaArrowCircleDown/ >}
-                      mainText={ "The bubbles in the graph indicate the type and number of studies for each condition and outcome combination. You can hover your mouse over each bubble to see more information. You can also click on a node to view or even download the details of the specific study reports." }
-                    />
-                  </Col>
-                  </Row>
+
 
                   <Row>
                   <Col>
                     <PrismStaticScatterplot
-                      title="Below, you can see outcomes graphed according to condition. Study results are noted by color."
+                      title="Below, you can see outcomes graphed according to condition. The bubbles in the graph indicate the type and number of studies for each condition and outcome combination. Study results are noted by color. You can hover your mouse over each bubble to see more information. You can also click on a node to view or even download the details of the specific study reports."
                       colors="rainbow"
                       chartData={outcomesLandscapeChartData}
                       chartHeight={900}
@@ -3480,14 +3445,14 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Row>
                     <Col>
-                      <SectionTitle title="Outcomes" color="blue" />
+                      <SectionTitle title="Outcomes" color="green" />
                     </Col>
                   </Row>
 
                   <Row>
                   <Col lg={{span: 6}}>
                     <PrismBarChart
-                      color="blue"
+                      color="green"
                       layout="vertical"
                       title="What kinds of outcomes were music-based interventions seeking to improve?"
                       chartData={outcomesBarData.data}
@@ -3503,10 +3468,10 @@ function createSunburst(level1, level2, level3, data) {
 
                   <Col lg={{span: 6}}>
                     <PrismTextBlock
-                      paddingTop={90}
+                      paddingTop={130}
                       paddingBottom={0}
-                      arrow={<FaArrowCircleLeft/ >}
-                      textTitle={ "         In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
+                      smallArrow={<FaArrowCircleLeft/ >}
+                      mainText={"       In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
                     />
                   </Col>
                   </Row>
@@ -3527,6 +3492,30 @@ function createSunburst(level1, level2, level3, data) {
                       yAxisLabel={"Interventions"}
                       zAxisLabel={"Sample Size"}
                       loading={loadingInterventionsLandscapeData}
+                    />
+                  </Col>
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <SectionTitle title="Comparators" color="blue" />
+                    </Col>
+                  </Row>
+
+                  <Row>
+                  <Col>
+                    <PrismBarChart
+                      color="blue"
+                      layout="vertical"
+                      title="What Have Music-Based Activities Been Compared To?"
+                      chartData={comparatorsBarData.data}
+                      groupKeys={comparatorsBarData.group_keys}
+                      indexKey="type"
+                      xAxisLabel=""
+                      yAxisLabel=""
+                      groupMode={'stacked'}
+                      marginBottom={190}
+                      loading={loadingInterventionsData}
                     />
                   </Col>
                   </Row>
