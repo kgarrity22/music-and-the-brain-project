@@ -2383,8 +2383,10 @@ function createSunburst(level1, level2, level3, data) {
           pie_formatting(ptsd_dict, ptsd_pie)
           pie_formatting(bipolar_dict, bipolar_pie)
           pie_formatting(schizophrenia_dict, schizophrenia_pie)
-          let groupkeys = Object.keys(mdd_dict)
+          // let groupkeys = Object.keys(mdd_dict)
+          let groupkeys = ["Active", "Both", "Passive", "Unspecified"]
 
+          let allPies = [mdd_dict, gad_dict, ptsd_dict, bipolar_pie, schizophrenia_dict]
           mdd_dict["type"] = "Major Depressive Disorder"
           gad_dict["type"] = "Generalized Anxiety Disorder"
           ptsd_dict["type"] = "Post-traumatic Stress Disorder"
@@ -2422,6 +2424,7 @@ function createSunburst(level1, level2, level3, data) {
     setPtsdPieChartData(result.ptsd_pie)
     setBipolarPieChartData(result.bipolar_pie)
     setSchizophreniaPieCharData(result.schizophrenia_pie)
+    console.log("BARARAR: ", result.bar)
     setActivityBarChartData(result.bar)
     setLoadingActivityTypesData(false)
   }
