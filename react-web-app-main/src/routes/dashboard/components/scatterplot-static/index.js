@@ -42,11 +42,13 @@ const PrismStaticScatterplot = (props) => {
 
   function allModal(node){
     console.log("NODE: ", node)
-    //console.log("type: ", typeof(node.data.formattedX))
+    console.log("type: ", typeof(node.data.formattedX))
     let title=""
     if (typeof(node.data.formattedX)==='object'){
+
       let x = String(node.data.x)
-      title = x.slice(4, 15) + " x " + node.data.y
+      console.log(x)
+      title = x.slice(11, 15) + " x " + node.data.y
     } else {
       title = node.data.x + " x " + node.data.y
     }
@@ -106,7 +108,7 @@ const PrismStaticScatterplot = (props) => {
             data={ props.chartData }
 
             height={800}
-            margin={{ top: 70, right: 300, bottom: props.marginBottom, left: 200 }}
+            margin={{ top: 70, right: 300, bottom: props.marginBottom, left: 220 }}
 
             xScale={{ type: props.type, format: props.format, precision: props.precision, min: props.xMin, max: props.xMax  }}
             xFormat={ props.xFormat }
@@ -134,7 +136,7 @@ const PrismStaticScatterplot = (props) => {
                 format: props.axisBottomFormat,
                 tickValues: props.tickValues,
                 legendPosition: 'middle',
-                legendOffset: 124
+                legendOffset: props.bottomOffset
             }}
             axisLeft={{
                 orient: 'left',
@@ -143,7 +145,7 @@ const PrismStaticScatterplot = (props) => {
                 tickRotation: 0,
                 legend: props.yAxisLabel,
                 legendPosition: 'middle',
-                legendOffset: -170
+                legendOffset: props.leftOffset
             }}
 
             legends={[{

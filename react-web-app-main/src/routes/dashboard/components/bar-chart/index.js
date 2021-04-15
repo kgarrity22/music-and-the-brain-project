@@ -16,11 +16,11 @@ const borderColor = { from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }
 const PrismBarChart = (props) => {
 
   const [legends, setLegends] = useState([])
-  const [margins, setMargins] = useState({ top: 20, right: 10, bottom: 50, left: 200 })
+  const [margins, setMargins] = useState({ top: 20, right: 10, bottom: 50, left: 220 })
   useEffect(() => {
     if (props.layout === "vertical"){
       setLegends(props.legend)
-      setMargins(m => ({...m, right: 50, left: 70, bottom: props.marginBottom, top: 20}))
+      setMargins(m => ({...m, right: 50, left: 120, bottom: props.marginBottom, top: 20}))
     }
     else if (props.layout !== 'horizontal') {
       setLegends([{

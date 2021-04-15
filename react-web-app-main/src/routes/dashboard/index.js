@@ -1467,7 +1467,7 @@ function createSunburst(level1, level2, level3, data) {
 
             }
             //console.log("LIMITED: ", limited)
-            console.log("ids[1]: ", ids[1], typeof(ids[1]))
+            //console.log("ids[1]: ", ids[1], typeof(ids[1]))
 
             item[ids[0]] = {"x": String(parseInt(ids[1])+1), "y": ids[2], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
 
@@ -1861,6 +1861,8 @@ function createSunburst(level1, level2, level3, data) {
             for (var arr of data_list){
               //console.log("Arr: ", arr)
               // clickids.add()
+
+
               if (ids[0] === arr[0] && ids[1]===arr[1] && ids[2]===arr[2]){
                 z += arr[3]
                 // if (clickids.indexOf(arr[4])===-1){
@@ -1904,7 +1906,7 @@ function createSunburst(level1, level2, level3, data) {
             }
             //console.log("LIMITED: ", limited)
             if (ids[0]!=="undefined"){
-              item[ids[2]] = {"x": ids[0], "y": ids[1], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
+              item[ids[2]] = {"x": ids[1], "y": ids[0], "z": z, "clickId": list_ids, "all": limited, "xtype": xtype, "ytype": ytype}
               new_data_list.push(item)
             }
 
@@ -3327,6 +3329,8 @@ function createSunburst(level1, level2, level3, data) {
                       marginBottom={130}
                       type={'time'}
                       format={'%Y'}
+                      bottomOffset={80}
+                      leftOffset={-170}
                       tickValues={trialsLandscapeXs}
                       axisBottomFormat={'%Y'}
                       minNodeSize={trialsLandscapeMinNodeSize}
@@ -3358,7 +3362,7 @@ function createSunburst(level1, level2, level3, data) {
                       groupKeys={interventionsBarData.group_keys}
                       indexKey="type"
                       xAxisLabel=""
-                      yAxisLabel=""
+                      yAxisLabel='Number of Studies'
                       groupMode={'stacked'}
                       marginBottom={170}
                       loading={loadingInterventionsData}
@@ -3382,7 +3386,7 @@ function createSunburst(level1, level2, level3, data) {
                       paddingTop={90}
                       paddingBottom={0}
                       arrow={<FaArrowCircleLeft/ >}
-                      textTitle={ '     What do we mean by active and passive?' }
+                      textTitle={ '     What do we mean by "active" and "passive"?' }
                       mainText={ "Levels of felt engagement can vary from participant to participant, but these terms allowed researchers to calculate how many music activities involved active engagement (e.g., playing an instrument) versus comparatively passive engagement (e.g., listening to music). The distinction is important, as previous studies have indicated that passive and active experiences can generate different changes via differing mechanisms." }
                     />
                   </Col>
@@ -3454,8 +3458,10 @@ function createSunburst(level1, level2, level3, data) {
                       type={"point"}
                       minNodeSize={outcomesLandscapeMinNodeSize}
                       maxNodeSize={outcomesLandscapeMaxNodeSize}
-                      xAxisLabel={"Condition"}
-                      yAxisLabel={"Outcomes"}
+                      bottomOffset={124}
+                      leftOffset={-170}
+                      xAxisLabel={"Outcomes"}
+                      yAxisLabel={"Conditions"}
                       zAxisLabel={"Sample Size"}
                       loading={loadingOutcomesLandscapeData}
                     />
@@ -3491,7 +3497,9 @@ function createSunburst(level1, level2, level3, data) {
                     <PrismTextBlock
                       paddingTop={130}
                       paddingBottom={0}
-                      smallArrow={<FaArrowCircleLeft/ >}
+                      arrow={<FaArrowCircleLeft/ >}
+                      textTitle={ '     What do we mean by "Outcomes"?' }
+
                       mainText={"       In research, the word ‘Outcomes’ refers to the variables that an intervention is designed to improve or change." }
                     />
                   </Col>
@@ -3507,6 +3515,8 @@ function createSunburst(level1, level2, level3, data) {
                       chartHeight={900}
                       marginBottom={135}
                       type={"point"}
+                      bottomOffset={124}
+                      leftOffset={-205}
                       minNodeSize={interventionsLandscapeMinNodeSize}
                       maxNodeSize={interventionsLandscapeMaxNodeSize}
                       xAxisLabel={"Outcomes"}
