@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/music-and-the-brain-project/precache-manifest.bc55613ce1cbb3b26f72cc8ad7d52cd1.js"
+  "/music-and-the-brain-project/precache-manifest.f223ab23623d30841f164dfd3a06a48e.js"
 );
 
 self.addEventListener('message', (event) => {
