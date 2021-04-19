@@ -1342,7 +1342,9 @@ function createSunburst(level1, level2, level3, data) {
 
             let ally = String(record.get('Conditions'))
 
-            let z = parseInt(record.get('Sample_Size'))
+            // let z = parseInt(record.get('Sample_Size'))
+            let z = 1
+            // z should actually be the number of trials
 
             let clickId = []
             // console.log(record.get('Covidence_ID'))
@@ -1390,6 +1392,7 @@ function createSunburst(level1, level2, level3, data) {
           console.log("ALl years; ", all_years)
           let minyear = Math.min(...all_years)
           let maxyear = Math.max(...all_years)
+
           // console.log("MINyeAr: ", minyear)
           // console.log('maxyear: ', maxyear)
           minyear = minyear - (minyear%5)
@@ -1984,7 +1987,8 @@ function createSunburst(level1, level2, level3, data) {
 
             let allx = String(record.get('Conditions'))
             let ally = String(record.get('Outcomes'))
-            let z = parseInt(record.get('Sample_Size'))
+            // let z = parseInt(record.get('Sample_Size'))
+            let z = 1
             let clickId = []
             clickId.push(String(record.get('Covidence_ID')))
             // console.log("Z: ", z)
@@ -2002,7 +2006,8 @@ function createSunburst(level1, level2, level3, data) {
                     if (y[0]===" "){
                       y = y.slice(1, y.length)
                     }
-                    all_ids.add(y)
+                    // console.log("STATUS: ", status)
+                    all_ids.add(status)
                     data_list.push([y, x, status, z, clickId[0]])
                     let as_string = y + "; " + x + "; " + status
                     uni.add(as_string)
@@ -2057,16 +2062,19 @@ function createSunburst(level1, level2, level3, data) {
             let list_ids = [...clickids]
             let list_all = [...all_ids]
             for (let status of list_all){
+              //console.log("status: ", status)
+
               let l1 = []
               for (let j of all){
-                //console.log("type check: ", j[xtype], status)
-                if ((j[xtype]).includes(status) && (j[ytype]).includes(ids[1]) && (j.Results).includes(ids[2])){
+                console.log("type check: ", j.Results, status)
+                if ((j[xtype]).includes(ids[0]) && (j[ytype]).includes(ids[1]) && (j.Results).includes(status)){
                   l1.push(j)
                   //console.log("JJJ: ", j)
                 }
               }
               //console.log("L1: ", l1)
               if (l1.length!==0){
+                //console.log("limited[status] : ", l1)
                 limited[status] = l1
                 // limited.push(l1)
               }
