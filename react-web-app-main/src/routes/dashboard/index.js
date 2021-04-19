@@ -1789,10 +1789,10 @@ function createSunburst(level1, level2, level3, data) {
 
             let ally = String(record.get('Interventions'))
             // console.log("INTERVEN: ", ally)
-            let z = 0
-            if (!isNaN(parseInt(record.get('Sample_Size')))){
-              z = parseInt(record.get('Sample_Size'))
-            }
+            let z = 1
+            // if (!isNaN(parseInt(record.get('Sample_Size')))){
+            //   z = parseInt(record.get('Sample_Size'))
+            // }
 
 
             let clickId = []
@@ -1811,9 +1811,10 @@ function createSunburst(level1, level2, level3, data) {
                   y = y.slice(1, y.length)
                 }
                 //onsole.log("Y: ", y)
-                if (y !== 'undefined'){
-                  all_ids.add(y)
-                }
+                // if (y !== 'undefined'){
+                //   all_ids.add(y)
+                // }
+                all_ids.add(status)
 
                 for (var x of x_list){
                   if (x !== "") {
@@ -1887,12 +1888,9 @@ function createSunburst(level1, level2, level3, data) {
               for (let j of all){
 
                 if (typeof(j.Interventions) !== 'undefined'){
-                  //console.log(typeof(j["Interventions"]))
-                  //console.log(j[xtype], j[ytype], j.Interventions)
-                  //console.log("ARE any TRUE: ",((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[2]) && (j["Interventions"]).includes(ids[0])))
-                  //console.log("interventions: ", j.Interventions)
-                  //console.log("j[xtype] vs ids[1]", j[ytype],  ids[0])
-                  if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[0]) && (j.Interventions).includes(status)){
+
+                  //console.log("cHECK here; ", j[ytype], ids[0])
+                  if ((j[xtype]).includes(ids[1]) && (j[ytype]).includes(ids[0]) && (j.Results).includes(status)){
                     l1.push(j)
                     //console.log("JJJ")
                   }
@@ -2066,7 +2064,7 @@ function createSunburst(level1, level2, level3, data) {
 
               let l1 = []
               for (let j of all){
-                console.log("type check: ", j.Results, status)
+              //  console.log("type check: ", j.Results, status)
                 if ((j[xtype]).includes(ids[0]) && (j[ytype]).includes(ids[1]) && (j.Results).includes(status)){
                   l1.push(j)
                   //console.log("JJJ: ", j)
