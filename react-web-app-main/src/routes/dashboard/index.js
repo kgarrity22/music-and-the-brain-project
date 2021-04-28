@@ -3277,7 +3277,7 @@ function createSunburst(level1, level2, level3, data) {
                     <PrismTextBlock
                       textTitle={ 'How to use this landscape' }
                       mainText={ 'This page provides a dynamic lens for viewing the evidence for effects of music and music-based activities on serious mental illness. These effects are wide-ranging and involve many types of activities, populations, outcomes, and study designs. The numbers at the top of the page describe the overall quantity of evidence that is summarized by the visuals you’ll see below.' }
-                      moreText={"On the left side of the page are set of data filters. These can be used to focus on specific subsets of the evidence, such as specific populations or conditions."}
+                      moreText={"On the left side of the page are sets of data filters. These can be used to focus on specific subsets of the evidence, such as specific populations or conditions."}
                     />
                   </Col>
                   </Row>
