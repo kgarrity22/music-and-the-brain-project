@@ -48,7 +48,7 @@ class MainTable extends React.Component {
 
   downloadData = () => {
     console.log("This first one: ", this.ref.table.modules.download)
-      this.ref.table.download("csv", "data.csv");
+      this.ref.table.download("csv", "music.landscape.data.csv");
 
     };
 
