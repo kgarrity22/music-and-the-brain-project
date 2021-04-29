@@ -3301,7 +3301,7 @@ function createSunburst(level1, level2, level3, data) {
                       paddingTop={90}
                       paddingBottom={0}
                       arrow={<FaArrowCircleLeft/ >}
-                      textTitle={ '     How is Music Being Studied?' }
+                      textTitle={ '     How is music being studied?' }
                       mainText={ "In our full dataset, randomized Controlled Trials (RCTs) comprised the largest percentage of studies (23.2%), followed by Pre/Post Tests (21.8%) and Case Reports (18.3%). However, if you filter the data using the menus on the left, these proportions will change. But you can also hover over the graph to view more information." }
                     />
                   </Col>
@@ -3392,7 +3392,7 @@ function createSunburst(level1, level2, level3, data) {
                       paddingTop={90}
                       paddingBottom={0}
                       arrow={<FaArrowCircleLeft/ >}
-                      textTitle={ '     What do we mean by "active" and "passive"?' }
+                      textTitle={ '     What do we mean by "Active" and "Passive"?' }
                       mainText={ "Levels of felt engagement can vary from participant to participant, but these terms allowed researchers to calculate how many music activities involved active engagement (e.g., playing an instrument) versus comparatively passive engagement (e.g., listening to music). The distinction is important, as previous studies have indicated that passive and active experiences can generate different changes via differing mechanisms." }
                     />
                   </Col>
