@@ -158,7 +158,7 @@ function DashboardRoute(props) {
   function formatFiltersForAirtable(filter_list){
     console.log("formatFiltersForAirtable")
     // basic string
-    var openstr = "NOT(OR("
+    var openstr = "NOT(AND("
     var closestr = "))"
 
     var str = openstr
