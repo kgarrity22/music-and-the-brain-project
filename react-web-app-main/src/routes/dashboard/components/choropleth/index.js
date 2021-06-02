@@ -6,6 +6,11 @@ import { ResponsiveChoropleth } from '@nivo/geo'
 import ChartTooltip from '../tooltip'
 import GeoFeatures from './features.js'
 import { COLOR_SCHEMES } from '../../../../constants'
+
+import Modal from 'react-modal';
+import MainTable from '../tabulator'
+
+
 import './index.css'
 
 const legends = [{
@@ -47,6 +52,31 @@ const PrismChoropleth = (props) => {
     }, []
   )
 
+  var subtitle;
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [allTableData, setAllTableData] = useState([])
+  // const [tables, setTables] = useState([])
+  const [modalTitle, setModalTitle] = useState("")
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function allModal(data, title) {
+
+    let tabledata = data[title]
+
+    console.log("TABLE DATA: ", tabledata)
+    setAllTableData(tabledata)
+    setModalTitle(title)
+    openModal()
+  }
+
   return (
     <div className="choropleth-chart-container">
       <p className="chart-title">{ props.title }</p>
@@ -68,7 +98,31 @@ const PrismChoropleth = (props) => {
           isInteractive={ true }
           tooltip={ generateTooltip }
           legends={ legends }
+          formattedData={props.formattedData}
+          onClick={(data) => {
+            // console.log("DATA: ", data)
+            allModal(props.formattedData, data.id)
+          }}
         />
+      </div>
+      <div className="scatter-modal">
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          contentLabel="Example Modal"
+          ariaHideApp={false}
+          className="Modal"
+        >
+          <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
+          <button className="close-btn" onClick={closeModal}>close</button>
+          <div className="tableholder">
+            <MainTable
+              tabledata={allTableData}
+              height={300}
+              columns={props.columns}
+            />
+          </div>
+        </Modal>
       </div>
       {
         props.loading &&

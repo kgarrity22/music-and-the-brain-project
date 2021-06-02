@@ -415,7 +415,7 @@ function newgetfilters(allTableData){
       let status = record[color]
       all_ids.add(status)
 
-      let x_list = (String(record[x_axis])).split(", ")
+      let x_list = (String(record[x_axis])).split(",")
       //console.log("X_LISt; ", x_list)
       // all_xs.add(x_list)
       let y_list = (String(record[y_axis])).split(",")
@@ -426,7 +426,7 @@ function newgetfilters(allTableData){
 
       let clickId = []
       // console.log(record.get('Covidence_ID'))
-      clickId.push(String(record['NCT']))
+      clickId.push(String(record['Covidence_ID']))
       // console.log("CLICKID: ", clickId)
 
 
@@ -435,6 +435,10 @@ function newgetfilters(allTableData){
       for (var y of y_list) {
         //console.log("y: ", y)
         if (y !== "" && typeof(y)!=="undefined") {
+          
+          if (y.charAt(0) === " "){
+            y = y.slice(1, y.length)
+          }
           for (var x of x_list) {
             //console.log("x: ", x)
             if (x !== "" && typeof(x) !== "undefined") {
@@ -1144,6 +1148,46 @@ function newgetfilters(allTableData){
 
 
   const cc = require('@genyus/country-code');
+  function createChoropleth(data){
+    let geog_dict = {}
+    let records_obj = {}
+
+    for (let record of data){
+      let countries = (record["Location"]).split(",")
+      // console.log("Countries: ", countries)
+      for (let country of countries){
+        //console.log("Country: ", country)
+        if (country!=="" && typeof(country)!=='undefined'){
+          if (country.charAt(0)===" "){
+            country = country.slice(1, country.length)
+          }
+          let code = ""
+          //console.log("country: ", country)
+          if (country!=="Various" && country!=="NR"){
+            //console.log("country: ", country)
+            if (country==="USA"){
+              code = "USA"
+            } else {
+              code = cc.nameIncludes(country)[0].alpha3
+            }
+          }
+          
+
+          countOccurrences(geog_dict, code)
+          countRecords(records_obj, code, record)
+
+        }
+      }
+    }
+    let geog_result = []
+    geog_formatting(geog_dict, geog_result)
+    
+    let geo_all = {}
+    geo_all["data"] = geog_result
+    geo_all["formatted_data"] = records_obj
+    //console.log("geog all,: ", geo_all, geo_all.data)
+    return geo_all
+  }
     
   
 
@@ -1332,7 +1376,14 @@ function newgetfilters(allTableData){
   const [comparatorsBar, setComparatorsBar] = useState({data: [], group_keys: []})
   const [loadingComparatorBars, setLoadingComparatorsBar] = useState(true)
 
+  const [conditionsScatter, setConditionsScatter] = useState({data: [], min: 0, max: 1})
+  const [loadingConditionsScatter, setLoadingConditionsScatter] = useState(true)
 
+  const [interventionsScatter, setInterventionsScatter] = useState({data: [], min: 0, max: 1})
+  const [loadingInterventionsScatter, setLoadingInterventionsScatter] = useState(true)
+
+  const [choropleth, setChoropleth] = useState({data: [], formatted_data: []})
+  const [loadingChoropleth, setLoadingChoropleth] = useState(true)
 
 
   useEffect(() => {
@@ -1355,6 +1406,17 @@ function newgetfilters(allTableData){
 
       setComparatorsBar(createBarChart("Comparator", 100, "type", "value", allData))
       setLoadingComparatorsBar(false)
+
+      
+      setConditionsScatter(createScatterPlot("Outcomes", "Conditions", "Results", "trials", allData))
+      setLoadingConditionsScatter(false)
+
+      setInterventionsScatter(createScatterPlot("Outcomes", "Interventions", "Results", "trials", allData))
+      setLoadingInterventionsScatter(false)
+
+      console.log("map: ", createChoropleth(allData))
+      setChoropleth(createChoropleth(allData))
+      setLoadingChoropleth(false)
 
 
      
@@ -1547,6 +1609,7 @@ function newgetfilters(allTableData){
                       groupMode={'stacked'}
                       marginBottom={170}
                       loading={loadingActivitiesBar}
+                      columns={columns}
                     />
                   </Col>
                   </Row>
@@ -1625,6 +1688,7 @@ function newgetfilters(allTableData){
                           }
                         }]
                       }]}
+                      columns={columns}
                     />
                   </Col>
                   </Row>
@@ -1635,18 +1699,18 @@ function newgetfilters(allTableData){
                     <PrismStaticScatterplot
                       title="Below, you can see outcomes graphed according to condition. The bubbles in the graph indicate the type and number of studies for each condition and outcome combination. Study results are noted by color. You can hover your mouse over each bubble to see more information. You can also click on a node to view or even download the details of the specific study reports."
                       colors="rainbow"
-                      chartData={outcomesLandscapeChartData}
+                      chartData={conditionsScatter.data}
                       chartHeight={900}
                       marginBottom={130}
                       type={"point"}
-                      minNodeSize={outcomesLandscapeMinNodeSize}
-                      maxNodeSize={outcomesLandscapeMaxNodeSize}
+                      minNodeSize={conditionsScatter.min}
+                      maxNodeSize={conditionsScatter.max}
                       bottomOffset={124}
                       leftOffset={-170}
                       xAxisLabel={"Outcomes"}
                       yAxisLabel={"Conditions"}
                       zAxisLabel={"Sample Size"}
-                      loading={loadingOutcomesLandscapeData}
+                      loading={loadingConditionsScatter}
                     />
                   </Col>
                   </Row>
@@ -1673,6 +1737,7 @@ function newgetfilters(allTableData){
                       groupMode={'stacked'}
                       marginBottom={130}
                       loading={loadingOutcomesBar}
+                      columns={columns}
                     />
                   </Col>
 
@@ -1694,18 +1759,18 @@ function newgetfilters(allTableData){
                     <PrismStaticScatterplot
                       title="Let’s take a look at these outcomes according to each activity. Study results are noted by color."
                       colors="rainbow"
-                      chartData={interventionsLandscapeChartData}
+                      chartData={interventionsScatter.data}
                       chartHeight={900}
                       marginBottom={135}
                       type={"point"}
                       bottomOffset={124}
                       leftOffset={-205}
-                      minNodeSize={interventionsLandscapeMinNodeSize}
-                      maxNodeSize={interventionsLandscapeMaxNodeSize}
+                      minNodeSize={interventionsScatter.min}
+                      maxNodeSize={interventionsScatter.max}
                       xAxisLabel={"Outcomes"}
                       yAxisLabel={"Interventions"}
                       zAxisLabel={"Sample Size"}
-                      loading={loadingInterventionsLandscapeData}
+                      loading={loadingInterventionsScatter}
                     />
                   </Col>
                   </Row>
@@ -1730,6 +1795,7 @@ function newgetfilters(allTableData){
                       groupMode={'stacked'}
                       marginBottom={190}
                       loading={loadingComparatorBars}
+                      columns={columns}
                     />
                   </Col>
                   </Row>
@@ -1748,8 +1814,9 @@ function newgetfilters(allTableData){
                       <PrismChoropleth
                         colors="rainbow"
                         title="In what countries have these studies taken place?"
-                        chartData={geographyFacilitiesChartData}
-                        loading={loadingGeographyData}
+                        chartData={choropleth.data}
+                        formattedData={choropleth.formatted_data}
+                        loading={loadingChoropleth}
                       />
                     </Col>
                   </Row>

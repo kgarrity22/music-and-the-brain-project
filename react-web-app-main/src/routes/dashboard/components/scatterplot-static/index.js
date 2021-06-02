@@ -98,6 +98,7 @@ const PrismStaticScatterplot = (props) => {
 
       </div>
       {
+          
           props.chartData.length === 0 &&
           <p className="no-data-label">Not Enough Data Selected</p>
       }
