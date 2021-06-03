@@ -251,7 +251,7 @@ function newgetfilters(allTableData){
       // now when we get here, we will have created the set for one subfilter
       // need to pass this subfilter to the create filter dictionary function
       create_filter_dict([...subfilter_set].sort(), unique_subfilters)
-      console.log("SUBFILTER: ", subfilter)
+      //console.log("SUBFILTER: ", subfilter)
       mainfilters[filters_adjusted_names_vals[subfilter]] = unique_subfilters
       //console.log("unique Subfilters: ", unique_subfilters)
       //console.log("subfilter set: ", subfilter_set)
@@ -396,8 +396,45 @@ function newgetfilters(allTableData){
     }
 
     bar_formatted["formatted_data"] = record_obj
-    console.log("Bar formatted: ", bar_formatted)
+    //console.log("Bar formatted: ", bar_formatted)
     return bar_formatted
+  }
+
+  // CREATE MULTI BAR
+  // we need the name of the group - what we want to group by then the name of the 
+  function createMultiBarChart(groupName, barName, data) {
+    let multi_bar = {}
+    let bar_data = []
+    let dataholder = {}
+    let group_keys = new Set()
+
+    for (let record of data){
+      let groups = record[groupName].split(",")
+      for (let group of groups){
+        if (Object.keys(dataholder).indexOf(group)<0){
+          let dict = {}
+          dict["type"] = group
+          let bars = record[barName].split(",")
+          for (let bar of bars){
+            group_keys.add(bar)
+            countOccurrences(dict, bar)
+            dataholder[group] = dict
+          }
+        } else {
+          let bars = record[barName].split(",")
+          for (let bar of bars){
+            countOccurrences(dataholder[group], bars)
+          }
+        }
+      }
+    }
+    for (let item of Object.keys(dataholder)){
+      bar_data.push(dataholder[item])
+    }
+
+    multi_bar["data"] = bar_data
+    multi_bar["group_keys"] = [...group_keys]
+    return multi_bar
   }
 
   // CREATE SCATTER PLOT
@@ -415,7 +452,13 @@ function newgetfilters(allTableData){
       let status = record[color]
       all_ids.add(status)
 
-      let x_list = (String(record[x_axis])).split(",")
+      let x_list = []
+      if (!x_axis.includes("Year")){
+        x_list = (String(record[x_axis])).split(",")
+      } else {
+        x_list = [parseInt(record[x_axis])]
+      }
+      
       //console.log("X_LISt; ", x_list)
       // all_xs.add(x_list)
       let y_list = (String(record[y_axis])).split(",")
@@ -452,31 +495,25 @@ function newgetfilters(allTableData){
           all_ys.add(y)
         }
       }
-    } // we've gone through all the data
-
+    } 
     let new_data_list = []
     let clean_data = {}
     let zs = []
-
-
-
     //console.log("Ys: ", ys)
     for (var i of uni) {
-
+      //console.log("i: ", i)
       var ids = i.split("; ")
       let z = 0;
       let clickids = new Set()
-
-
       for (var arr of data_list) {
-
-        if (ids[0] === arr[0] && ids[1] === arr[1] && ids[2] === arr[2]) {
+        //console.log("arr: ", arr)
+        if (ids[0] === String(arr[0]) && ids[1] === String(arr[1]) && ids[2] === String(arr[2])) {
+          
           z += arr[3]
+          //console.log("is z updating: ", z)
           clickids.add(arr[4])
-
         }
       }
-
       let item = {}
       let limited = {}
       let list_ids = [...clickids]
@@ -493,7 +530,7 @@ function newgetfilters(allTableData){
             // console.log(j[ytype], j.Design, j[xtype], status, ids[1], ids[2])
             //console.log("CHECK: ", typeof(j[xtype]), typeof(ids[1]))
             //console.log("ERORR HERE: ", (j[x_axis]), j[y_axis], j[color])
-            if ((j[x_axis])===(ids[1]) && (j[y_axis]).includes(ids[2]) && (j[color]).includes(status)) {
+            if ((j[x_axis]).includes(ids[1]) && (j[y_axis]).includes(ids[2]) && (j[color]).includes(status)) {
               l1.push(j)
               //console.log("JJJ")
             }
@@ -505,8 +542,6 @@ function newgetfilters(allTableData){
           limited[status] = l1
           // limited.push(l1)
         }
-
-
       }
       //console.log("LIMITED: ", limited)
       //console.log("ids[1]: ", ids[1], typeof(ids[1]))
@@ -533,23 +568,37 @@ function newgetfilters(allTableData){
         clean_data[stat] = val
       }
     }
-    //console.log("zs: ", zs)
+    console.log("zs: ", zs)
     let all_years = getAllYears([...all_xs])
-    console.log("All years: ", all_years)
+    //console.log("All years: ", all_years)
+    let dates = []
+    if (x_axis.includes("Year")){
+        
+        
+      console.log("ALl years; ", all_years)
+      let minyear = Math.min(...all_years)
+      let maxyear = Math.max(...all_years)
 
-    console.log("clean data: ", clean_data)
+        // console.log("MINyeAr: ", minyear)
+        // console.log('maxyear: ', maxyear)
+      minyear = minyear - (minyear%5)
+      maxyear = maxyear + (5 - minyear%5)
+      if (all_years.length===1){
+        let d = new Date(String(all_years[0] + 1))
+        dates.push(d)
+      } else {
+        for (let x=minyear; x<=maxyear; x=x+5){
+          let num = x+1
+          let d = new Date(String(num))
+          dates.push(d)
+
+        }
+      }
+    }
+
+    //console.log("clean data: ", clean_data)
     var all_data = []
     for (var item of Object.keys(clean_data)) {
-      // cleaned[data] = []
-      for (let year of all_years){
-        console.log("HERE: ", clean_data[item])
-        let newdict = {}
-        newdict["x"] = String(year)
-        newdict["y"] = "Massachusetts General Hospital"
-        newdict["all"] = {"": []}
-        clean_data[item].push(newdict)
-
-      }
       
       clean_data[item].sort(function(first, second) {
         return first.x - second.x;
@@ -569,13 +618,16 @@ function newgetfilters(allTableData){
     let filtered = zs.filter(item => item !== 0)
     //console.log("filtered: ", filtered)
     landscape_result["min"] = Math.min(...zs)
+    landscape_result["dates"] = dates
     // landscape_result["dates"] = dates
-    //console.log("LANDscape RESul; ", landscape_result)
+    console.log("LANDscape RESul; ", landscape_result)
 
     return landscape_result
 
 
   } // end of scatter creation function
+
+  
 
   
 
@@ -816,7 +868,7 @@ function newgetfilters(allTableData){
   var alldata = []
 
   function getTableData(){
-    console.log("getTableData")
+    //console.log("getTableData")
         // var Airtable = require('airtable');
         // var base = new Airtable({apiKey: 'keygbNFWvzaP9t8xi'}).base('appmh47tLfNhe7i80');
 
@@ -856,10 +908,10 @@ function newgetfilters(allTableData){
 
 
     const fetchAllTableData = async () => {
-      console.log("did we make it in here: ")
+      //console.log("did we make it in here: ")
       const res = await getTableData()
     //  newgetfilters(alldata)
-    console.log("All DATA Fetching?: ", res)
+    //console.log("All DATA Fetching?: ", res)
 
       // newgetfilters(alldata)
       // let sun = createSunburst("Sponsor_Type", "Intervention_Types", "Status", res.tabledata)
@@ -982,18 +1034,18 @@ function newgetfilters(allTableData){
       let filter_true = {}
       for (let big_filter of Object.keys(filts)) {
         // big filter = studies
-        console.log("big filter: ", big_filter)
-        console.log("whats up with this: ", filts[big_filter])
+        //console.log("big filter: ", big_filter)
+       // console.log("whats up with this: ", filts[big_filter])
         for (let subfilt of Object.keys(filts[big_filter])){
           //subfilt = Phase
           // then the value of phase is a dictionary
-          console.log("SUBFILT: ", subfilt)
+          //console.log("SUBFILT: ", subfilt)
           let new_subfilt = getKeyByValue(filters_adjusted_names_vals, subfilt)
-          console.log("new SUBFILT: ", new_subfilt)
+          //console.log("new SUBFILT: ", new_subfilt)
           let true_list = []
-          console.log(filts[big_filter][subfilt])
+          //console.log(filts[big_filter][subfilt])
           for (let check of Object.keys(filts[big_filter][subfilt])){
-            console.log("CHCEK: ", check)
+            //console.log("CHCEK: ", check)
             if (filts[big_filter][subfilt][check] === true){
               // console.log("Check: ", check)
               true_list.push(check)
@@ -1081,7 +1133,7 @@ function newgetfilters(allTableData){
 
 
   const fetchSingleStatMetrics = async () => {
-    console.log("fetchSingleStatMetrics")
+    //console.log("fetchSingleStatMetrics")
     const result = await getSingleMetrics()
     //console.log("result for single metric: ", result)
 
@@ -1385,6 +1437,11 @@ function newgetfilters(allTableData){
   const [choropleth, setChoropleth] = useState({data: [], formatted_data: []})
   const [loadingChoropleth, setLoadingChoropleth] = useState(true)
 
+  const [activityMultiBar, setActivityMultiBar] = useState({data: [], group_keys: []})
+  const [loadingActivityMultiBar, setLoadingActivityMultiBar] = useState(true)
+
+  const [yearsScatter, setYearsScatter] = useState({data: [], min: 0, max: 1})
+  const [loadingYearsScatter, setLoadingYearsScatter] = useState(true)
 
   useEffect(() => {
     if (allDataLoaded) {
@@ -1407,16 +1464,23 @@ function newgetfilters(allTableData){
       setComparatorsBar(createBarChart("Comparator", 100, "type", "value", allData))
       setLoadingComparatorsBar(false)
 
-      
+      setConditionsPie(createPieChart("Conditions", allData))
+      setLoadingConditionsPie(false)
+
       setConditionsScatter(createScatterPlot("Outcomes", "Conditions", "Results", "trials", allData))
       setLoadingConditionsScatter(false)
 
       setInterventionsScatter(createScatterPlot("Outcomes", "Interventions", "Results", "trials", allData))
       setLoadingInterventionsScatter(false)
 
-      console.log("map: ", createChoropleth(allData))
       setChoropleth(createChoropleth(allData))
       setLoadingChoropleth(false)
+
+      setActivityMultiBar(createMultiBarChart("Conditions", "Activity_Type", allData))
+      setLoadingActivityMultiBar(false)
+
+      setYearsScatter(createScatterPlot("Year", "Conditions", "Design", "trials", allData))
+      setLoadingYearsScatter(false)
 
 
      
@@ -1567,21 +1631,21 @@ function newgetfilters(allTableData){
                     <PrismStaticScatterplot
                       title="How has research activity for these conditions changed over time?"
                       colors="rainbow"
-                      chartData={trialsLandscapeChartData}
+                      chartData={yearsScatter.data}
                       chartHeight={900}
                       marginBottom={130}
                       type={'time'}
                       format={'%Y'}
                       bottomOffset={80}
                       leftOffset={-170}
-                      tickValues={trialsLandscapeXs}
+                      tickValues={yearsScatter.dates}
                       axisBottomFormat={'%Y'}
-                      minNodeSize={trialsLandscapeMinNodeSize}
-                      maxNodeSize={trialsLandscapeMaxNodeSize}
+                      minNodeSize={yearsScatter.min}
+                      maxNodeSize={yearsScatter.max}
                       xAxisLabel={"Start Year"}
                       yAxisLabel={"Condition"}
                       zAxisLabel={"Sample Size"}
-                      loading={loadingTrialsLandscapeData}
+                      loading={loadingYearsScatter}
                     />
                   </Col>
                   </Row>
@@ -1659,8 +1723,8 @@ function newgetfilters(allTableData){
                       colors="rainbow"
                       layout="vertical"
                       title="What is the breakdown of activity types for each condition?"
-                      chartData={activityBarChartData.data}
-                      groupKeys={activityBarChartData.group_keys}
+                      chartData={activityMultiBar.data}
+                      groupKeys={activityMultiBar.group_keys}
                       indexKey="type"
                       xAxisLabel=""
                       yAxisLabel=""
