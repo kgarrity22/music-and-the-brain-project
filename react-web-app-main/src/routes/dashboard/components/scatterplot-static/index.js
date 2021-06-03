@@ -169,8 +169,9 @@ const PrismStaticScatterplot = (props) => {
               }]
             }]}
           />
-          <div className="scatter-modal">
+          <div className="scatter-modal" >
           <Modal
+            style={{"overflow": "auto"}}
             isOpen={modalIsOpen}
             onAfterOpen={afterOpenModal}
             onRequestClose={closeModal}
