@@ -407,15 +407,19 @@ function newgetfilters(allTableData){
     let bar_data = []
     let dataholder = {}
     let group_keys = new Set()
+    let records_obj = {}
+    
 
     for (let record of data){
       let groups = record[groupName].split(",")
       for (let group of groups){
+        countRecords(records_obj, group, record)
         if (Object.keys(dataholder).indexOf(group)<0){
           let dict = {}
           dict["type"] = group
           let bars = record[barName].split(",")
           for (let bar of bars){
+            // console.log("bar: ", bar)
             group_keys.add(bar)
             countOccurrences(dict, bar)
             dataholder[group] = dict
@@ -423,17 +427,39 @@ function newgetfilters(allTableData){
         } else {
           let bars = record[barName].split(",")
           for (let bar of bars){
+            group_keys.add(bar)
             countOccurrences(dataholder[group], bars)
           }
         }
       }
     }
     for (let item of Object.keys(dataholder)){
+      // dataholder[item]["keys"] = records_obj[item]
+      let subdict = {}
+      for (let j of Object.values(records_obj)){
+        //console.log("ecords_obj: ", j)
+          for (let k of j){
+            //console.log("k: ", k)
+            // k is an individual record
+            if (k[groupName].includes(item) && Object.keys(subdict).indexOf(k[barName])<0){
+              //console.log("subdict: ", subdict)
+              let s = new Set()
+              s.add(k)
+              subdict[k[barName]] = s
+            } else if (k[groupName].includes(item)){ // if the record should be in there AND it isn't already
+              // console.log("subdict 2: ", subdict)
+              subdict[k[barName]].add(k)
+            }
+          }
+      }
+      dataholder[item]["keys"] = subdict
+      
       bar_data.push(dataholder[item])
     }
 
     multi_bar["data"] = bar_data
     multi_bar["group_keys"] = [...group_keys]
+    console.log("Multi Bar: ", multi_bar)
     return multi_bar
   }
 
@@ -865,7 +891,7 @@ function newgetfilters(allTableData){
       return total;
   }
 
-  var alldata = []
+  let alldata = []
 
   function getTableData(){
     //console.log("getTableData")
@@ -910,17 +936,7 @@ function newgetfilters(allTableData){
     const fetchAllTableData = async () => {
       //console.log("did we make it in here: ")
       const res = await getTableData()
-    //  newgetfilters(alldata)
-    //console.log("All DATA Fetching?: ", res)
-
-      // newgetfilters(alldata)
-      // let sun = createSunburst("Sponsor_Type", "Intervention_Types", "Status", res.tabledata)
-      // console.log("SUN; ", sun)
-      // setSponsorsSunburstChart(sun)
-      // setLoadingSponsorsSunburstChart(false)
-      // let sun2 = createSunburst("Purpose", "Intervention_Types", "Status", res.tabledata)
-      // setTrialsSunburstChart(sun2)
-      // setLoadingTrialsSunburstChart(false)
+    
 
       for (var record of res.tabledata){
         for (var key of Object.keys(record)){
@@ -1087,11 +1103,6 @@ function newgetfilters(allTableData){
       }
       console.log("FILTERED DATA: ", newData)
       setAllData(newData)
-
-
-
-
-
 
       let cols = []
       for (let i of Object.keys(newData[0])){
@@ -1482,7 +1493,7 @@ function newgetfilters(allTableData){
       setYearsScatter(createScatterPlot("Year", "Conditions", "Design", "trials", allData))
       setLoadingYearsScatter(false)
 
-
+      setAllDataLoaded(false)
      
       // here is where we'll call the chart creation functions 
   
@@ -1632,8 +1643,8 @@ function newgetfilters(allTableData){
                       title="How has research activity for these conditions changed over time?"
                       colors="rainbow"
                       chartData={yearsScatter.data}
-                      chartHeight={900}
-                      marginBottom={130}
+                      chartHeight={800}
+                      marginBottom={100}
                       type={'time'}
                       format={'%Y'}
                       bottomOffset={80}
@@ -1764,7 +1775,7 @@ function newgetfilters(allTableData){
                       title="Below, you can see outcomes graphed according to condition. The bubbles in the graph indicate the type and number of studies for each condition and outcome combination. Study results are noted by color. You can hover your mouse over each bubble to see more information. You can also click on a node to view or even download the details of the specific study reports."
                       colors="rainbow"
                       chartData={conditionsScatter.data}
-                      chartHeight={900}
+                      chartHeight={800}
                       marginBottom={130}
                       type={"point"}
                       minNodeSize={conditionsScatter.min}

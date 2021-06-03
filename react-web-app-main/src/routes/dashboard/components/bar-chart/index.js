@@ -169,8 +169,13 @@ const PrismBarChart = (props) => {
             console.log("DATA: ", data)
             //console.log(props.formattedData[data.id], data.data.year, typeof(props.formattedData[data.id]))
             if (typeof(data.data.year)!=="undefined"){
-              // console.log("props.formattedData: ", props.formattedData, data.id. data.data.year)
               allModal(data.data.key, data.data.year)
+            } else if (typeof(data.data.keys)!=="undefined"){
+              //console.log("data.data.keys: ", data.data.keys)
+             // console.log("data.id: ", data.id)
+              let d = data.data.keys[data.id]
+
+              allModal([...d], data.id)
             } else {
               allModal(data.data.key, data.id)
             }
