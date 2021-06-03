@@ -1142,24 +1142,30 @@ function newgetfilters(allTableData){
 
 
 
-
-  const fetchSingleStatMetrics = async () => {
-    //console.log("fetchSingleStatMetrics")
-    const result = await getSingleMetrics()
+  function createSingleMetrics(data){
+    
     //console.log("result for single metric: ", result)
+    let trials = 0
+    let enrollment = 0
+    for (let record of data){
+      trials += 1
+      if (!isNaN(parseInt(record["Sample_Size"]))){
+        enrollment += parseInt(record["Sample_Size"])
+      }
+    }
 
 
     setStats([
       {
         color: 'red',
         stats: [
-          { title: 'Studies', metric: result.trials }
+          { title: 'Studies', metric: trials }
         ]
       },
       {
         color: 'orange',
         stats: [
-          { title: 'Participants', metric: result.participants }
+          { title: 'Participants', metric: enrollment }
         ]
       },
       {
@@ -1182,21 +1188,10 @@ function newgetfilters(allTableData){
         ]
       },
 
-      // {
-      //   color: 'violet',
-      //   stats: [
-      //     { title: 'Sites', metric: result.sites }
-      //   ]
-      // },
-
     ])
     setLoadingStatsData(false)
   }
-
-
   
-
-
 
   function geog_formatting(dictionary, geog_data){
         var keys = Object.keys(dictionary);
@@ -1331,8 +1326,8 @@ function newgetfilters(allTableData){
  
 
   const onParentFilterClicked = (section, filter, shouldSelect=true) => {
-    console.log("first filter: ", filter)
-    console.log("first section: ", section)
+    //console.log("first filter: ", filter)
+    //console.log("first section: ", section)
     if (filter) {
       //console.log('inside PFC and filter is: ', filter)
       switch (activeCategoryFilter) {
@@ -1492,6 +1487,8 @@ function newgetfilters(allTableData){
 
       setYearsScatter(createScatterPlot("Year", "Conditions", "Design", "trials", allData))
       setLoadingYearsScatter(false)
+
+      createSingleMetrics(allData)
 
       setAllDataLoaded(false)
      
