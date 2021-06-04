@@ -6,6 +6,9 @@ import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../tooltip'
 import { COLORS, COLOR_SCHEMES } from '../../../../constants'
 
+import Modal from 'react-modal';
+import MainTable from '../tabulator'
+
 import './index.css'
 
 const theme = { tooltip: { container: { padding: 0 } } }
@@ -106,6 +109,33 @@ const PrismBarChart = (props) => {
     setLayout(props.layout || 'vertical')
   }, [props.layout])
 
+
+  var subtitle;
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [allTableData, setAllTableData] = useState([])
+  // const [tables, setTables] = useState([])
+  const [modalTitle, setModalTitle] = useState("")
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+
+  function closeModal(){
+    setIsOpen(false);
+  }
+
+  function allModal(data, title){
+    console.log("check this: ", data)
+    let tabledata = data
+
+    console.log("TABLE DATA: ", tabledata)
+    setAllTableData(tabledata)
+    setModalTitle(title)
+    openModal()
+  }
+
+
   return (
     <div className="bar-chart-container">
       <p className="chart-title">{props.title}</p>
@@ -135,8 +165,45 @@ const PrismBarChart = (props) => {
           enableGridX={ enableGridX}
           enableGridY={ enableGridY }
           groupMode={ props.groupMode }
+          onClick={(data) => {
+            console.log("DATA: ", data)
+            //console.log(props.formattedData[data.id], data.data.year, typeof(props.formattedData[data.id]))
+            if (typeof(data.data.year)!=="undefined"){
+              allModal(data.data.key, data.data.year)
+            } else if (typeof(data.data.keys)!=="undefined"){
+              //console.log("data.data.keys: ", data.data.keys)
+             // console.log("data.id: ", data.id)
+              let d = data.data.keys[data.id]
+
+              allModal([...d], data.id)
+            } else {
+              allModal(data.data.key, data.id)
+            }
+            
+        }}
       />
       </div>
+      
+      <div className="scatter-modal">
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          contentLabel="Example Modal"
+          ariaHideApp={false}
+          className="Modal"
+        >
+          <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
+          <button className="close-btn" onClick={closeModal}>close</button>
+          <div className="tableholder">
+            <MainTable
+              tabledata={ allTableData }
+              height={300}
+              columns={props.columns}
+            />
+          </div>
+        </Modal>
+      </div>
+
       {
         props.loading &&
         <div className="overlay">
@@ -144,6 +211,7 @@ const PrismBarChart = (props) => {
         </div>
       }
     </div>
+    
   )
 }
 

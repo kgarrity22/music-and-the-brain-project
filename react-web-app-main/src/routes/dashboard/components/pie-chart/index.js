@@ -5,6 +5,9 @@ import { ResponsivePie } from '@nivo/pie'
 
 import { COLOR_SCHEMES } from '../../../../constants'
 import ChartTooltip from '../tooltip'
+import Modal from 'react-modal';
+import MainTable from '../tabulator'
+
 
 import './index.css'
 
@@ -50,6 +53,42 @@ const PrismPieChart = (props) => {
     }, []
   )
 
+  let subtitle
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [allTableData, setAllTableData] = useState([])
+  // const [tables, setTables] = useState([])
+  const [modalTitle, setModalTitle] = useState("")
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+
+  function closeModal(){
+    setIsOpen(false);
+  }
+
+  function allModal(data, title){
+
+    // let tabledata = data
+
+    console.log("TABLE DATA: ", data)
+    setAllTableData(data)
+    setModalTitle(title)
+    openModal()
+  }
+  let options = {
+
+    // height: 600,
+    placeholder: "Loading Data...",
+    downloadDataFormatter: (data) => data,
+    downloadReady: (fileContents, blob) => blob,
+    resizable:false,
+    virtualDomBuffer:600,
+    tooltips:true,
+
+  };
+
   return (
     <div className="pie-chart-container">
       <p className="chart-title">{props.title}</p>
@@ -68,7 +107,32 @@ const PrismPieChart = (props) => {
           isInteractive={true}
           tooltip={ generateTooltip }
           legends={ legends }
+          onClick={(data) => {
+            console.log("DATA: ", data)
+            setAllTableData(data.data.key)
+            setModalTitle(data.data.id)
+            openModal()
+          }}
       />
+      </div>
+      <div className="scatter-modal">
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          contentLabel="Example Modal"
+          ariaHideApp={false}
+          className="Modal"
+        >
+          <h2 ref={_subtitle => (subtitle = _subtitle)}>{modalTitle}</h2>
+          <button className="close-btn" onClick={closeModal}>close</button>
+          <div className="tableholder">
+            <MainTable
+              tabledata={ allTableData }
+              height={300}
+              columns={props.columns}
+            />
+          </div>
+        </Modal>
       </div>
       {
         props.loading &&

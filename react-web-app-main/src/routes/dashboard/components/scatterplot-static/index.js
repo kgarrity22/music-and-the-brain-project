@@ -98,6 +98,7 @@ const PrismStaticScatterplot = (props) => {
 
       </div>
       {
+          
           props.chartData.length === 0 &&
           <p className="no-data-label">Not Enough Data Selected</p>
       }
@@ -108,7 +109,7 @@ const PrismStaticScatterplot = (props) => {
             data={ props.chartData }
 
             height={800}
-            margin={{ top: 70, right: 300, bottom: props.marginBottom, left: 220 }}
+            margin={{ top: 90, right: 300, bottom: props.marginBottom, left: 220 }}
 
             xScale={{ type: props.type, format: props.format, precision: props.precision, min: props.xMin, max: props.xMax  }}
             xFormat={ props.xFormat }
@@ -168,8 +169,9 @@ const PrismStaticScatterplot = (props) => {
               }]
             }]}
           />
-          <div className="scatter-modal">
+          <div className="scatter-modal" >
           <Modal
+            style={{"overflow": "auto"}}
             isOpen={modalIsOpen}
             onAfterOpen={afterOpenModal}
             onRequestClose={closeModal}
