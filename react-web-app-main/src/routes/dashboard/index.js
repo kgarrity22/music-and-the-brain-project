@@ -65,7 +65,7 @@ const initialStats = [
 
 
 function DashboardRoute(props) {
-  
+
 
   const [airtableFilters, setAirtableFilters] = useState("")
 
@@ -73,7 +73,7 @@ function DashboardRoute(props) {
   const [updateRequested, setUpdatedRequested] = useState("")
   // sets filters
   const onUpdateButtonClicked = (e) => {
-    
+
 
     setUpdatedRequested(Date())
     closeSidebar()
@@ -95,7 +95,7 @@ function DashboardRoute(props) {
   }
 
   const filters_adjusted_names_vals = {
-    
+
     "Design": "Design",
     "Study_Pop_Stnd": "Broad Categories",
     "Gender": "Gender",
@@ -108,7 +108,7 @@ function DashboardRoute(props) {
     "Conditions": "Conditions",
     "Location": "Location"
 
-    
+
   }
 
   const [trialsFilters, setTrialsFilters] = useState({})
@@ -122,7 +122,7 @@ function DashboardRoute(props) {
   // AIRTABLE ACCESS
   var Airtable = require('airtable');
   var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
-  
+
 
   //////////////////////////////////////////
  //          HELPER FUNCTIONS            //
@@ -171,7 +171,7 @@ function DashboardRoute(props) {
     }
   }
 
-  // Function to collect all the years in a range when dealing with a 
+  // Function to collect all the years in a range when dealing with a
   function getAllYears(years_list){
     let min = Math.min(...years_list)
     let max = Math.max(...years_list)
@@ -190,14 +190,14 @@ function DashboardRoute(props) {
     return Object.keys(object).find(key => object[key] === value);
   }
 
- 
 
 
-  
 
-  
 
-  
+
+
+
+
 
 
 function newgetfilters(allTableData){
@@ -264,12 +264,12 @@ function newgetfilters(allTableData){
   return result
 }
 
-  
+
 
   //////////////////////////////////////////
  //    CHART CREATION FUNCTIONS          //
 //////////////////////////////////////////
-  
+
   // CREATE PIE CHART
    function createPieChart(airtableName, data){
     let pie_obj = {}
@@ -305,7 +305,7 @@ function newgetfilters(allTableData){
     return pie
   }
 
-  // CREATE BAR CHART 
+  // CREATE BAR CHART
   function createBarChart(airtableName, numBars, indexKey, sorter, data){
     let bar_obj = {};
     let record_obj = {}
@@ -401,14 +401,14 @@ function newgetfilters(allTableData){
   }
 
   // CREATE MULTI BAR
-  // we need the name of the group - what we want to group by then the name of the 
+  // we need the name of the group - what we want to group by then the name of the
   function createMultiBarChart(groupName, barName, data) {
     let multi_bar = {}
     let bar_data = []
     let dataholder = {}
     let group_keys = new Set()
     let records_obj = {}
-    
+
 
     for (let record of data){
       let groups = record[groupName].split(",")
@@ -453,7 +453,7 @@ function newgetfilters(allTableData){
           }
       }
       dataholder[item]["keys"] = subdict
-      
+
       bar_data.push(dataholder[item])
     }
 
@@ -484,7 +484,7 @@ function newgetfilters(allTableData){
       } else {
         x_list = [parseInt(record[x_axis])]
       }
-      
+
       //console.log("X_LISt; ", x_list)
       // all_xs.add(x_list)
       let y_list = (String(record[y_axis])).split(",")
@@ -504,7 +504,7 @@ function newgetfilters(allTableData){
       for (var y of y_list) {
         //console.log("y: ", y)
         if (y !== "" && typeof(y)!=="undefined") {
-          
+
           if (y.charAt(0) === " "){
             y = y.slice(1, y.length)
           }
@@ -521,7 +521,7 @@ function newgetfilters(allTableData){
           all_ys.add(y)
         }
       }
-    } 
+    }
     let new_data_list = []
     let clean_data = {}
     let zs = []
@@ -534,7 +534,7 @@ function newgetfilters(allTableData){
       for (var arr of data_list) {
         //console.log("arr: ", arr)
         if (ids[0] === String(arr[0]) && ids[1] === String(arr[1]) && ids[2] === String(arr[2])) {
-          
+
           z += arr[3]
           //console.log("is z updating: ", z)
           clickids.add(arr[4])
@@ -599,8 +599,8 @@ function newgetfilters(allTableData){
     //console.log("All years: ", all_years)
     let dates = []
     if (x_axis.includes("Year")){
-        
-        
+
+
       console.log("ALl years; ", all_years)
       let minyear = Math.min(...all_years)
       let maxyear = Math.max(...all_years)
@@ -625,7 +625,7 @@ function newgetfilters(allTableData){
     //console.log("clean data: ", clean_data)
     var all_data = []
     for (var item of Object.keys(clean_data)) {
-      
+
       clean_data[item].sort(function(first, second) {
         return first.x - second.x;
       });
@@ -653,9 +653,9 @@ function newgetfilters(allTableData){
 
   } // end of scatter creation function
 
-  
 
-  
+
+
 
   const generateFiltersPostBody = () => {
     console.log("generateFiltersPostBody")
@@ -727,14 +727,14 @@ function newgetfilters(allTableData){
   const [loadingTrialsSunburstChart, setLoadingTrialsSunburstChart] = useState(true)
 
 
-  
+
   const [trialsLandscapeChartData, setTrialsLandscapeChartData] = useState([])
   const [populationsLandscapeChartData, setPopulationsLandscapeChartData] = useState([])
   const [interventionsLandscapeChartData, setInterventionsLandscapeChartData] = useState([])
   const [outcomesLandscapeChartData, setOutcomesLandscapeChartData] = useState([])
   const [sponsorsLandscapeChartData, setSponsorsLandscapeChartData] = useState([])
 
-  
+
 
   const [trialsLandscapeMinNodeSize, setTrialsLandscapeMinNodeSize] = useState(0)
   const [trialsLandscapeMaxNodeSize, setTrialsLandscapeMaxNodeSize] = useState(1)
@@ -781,7 +781,7 @@ function newgetfilters(allTableData){
   const [activityBarChartData, setActivityBarChartData] = useState({data: [], group_keys: []})
   const [outcomesBarData, setOutcomesBarData] = useState({data: [], group_keys: []})
 
-  
+
 
   /*
   Takes a dictionary formated {key: Occurences of key}
@@ -924,7 +924,7 @@ function newgetfilters(allTableData){
               }
 
               var tabledata = {}
-              
+
               tabledata["tabledata"] = table_data
               resolve(tabledata)
           })
@@ -936,7 +936,7 @@ function newgetfilters(allTableData){
     const fetchAllTableData = async () => {
       //console.log("did we make it in here: ")
       const res = await getTableData()
-    
+
 
       for (var record of res.tabledata){
         for (var key of Object.keys(record)){
@@ -1033,7 +1033,7 @@ function newgetfilters(allTableData){
       setGeographyFilters(filts.Geography)
       setOutcomesFilters(filts.Outcomes)
       setInterventionsFilters(filts.Interventions)
-      
+
 
       setTotalData(res.tabledata)
       setTotalDataLoaded(true)
@@ -1138,12 +1138,12 @@ function newgetfilters(allTableData){
       }
 
     }, [totalDataLoaded])
-    
+
 
 
 
   function createSingleMetrics(data){
-    
+
     //console.log("result for single metric: ", result)
     let trials = 0
     let enrollment = 0
@@ -1191,7 +1191,7 @@ function newgetfilters(allTableData){
     ])
     setLoadingStatsData(false)
   }
-  
+
 
   function geog_formatting(dictionary, geog_data){
         var keys = Object.keys(dictionary);
@@ -1229,7 +1229,7 @@ function newgetfilters(allTableData){
               code = cc.nameIncludes(country)[0].alpha3
             }
           }
-          
+
 
           countOccurrences(geog_dict, code)
           countRecords(records_obj, code, record)
@@ -1239,19 +1239,19 @@ function newgetfilters(allTableData){
     }
     let geog_result = []
     geog_formatting(geog_dict, geog_result)
-    
+
     let geo_all = {}
     geo_all["data"] = geog_result
     geo_all["formatted_data"] = records_obj
     //console.log("geog all,: ", geo_all, geo_all.data)
     return geo_all
   }
-    
-  
 
-  
 
-  
+
+
+
+
 
 
 
@@ -1323,7 +1323,7 @@ function newgetfilters(allTableData){
     })
   }
 
- 
+
 
   const onParentFilterClicked = (section, filter, shouldSelect=true) => {
     //console.log("first filter: ", filter)
@@ -1411,7 +1411,7 @@ function newgetfilters(allTableData){
     'Geography': 'violet',
   }
 
-  
+
   const [designPie, setDesignPie] = useState([])
   const [loadingDesignPie, setLoadingDesignPie] = useState(true)
 
@@ -1491,11 +1491,11 @@ function newgetfilters(allTableData){
       createSingleMetrics(allData)
 
       setAllDataLoaded(false)
-     
-      // here is where we'll call the chart creation functions 
-  
+
+      // here is where we'll call the chart creation functions
+
     }
-    
+
   }, [allDataLoaded])
 
 
@@ -1517,6 +1517,39 @@ function newgetfilters(allTableData){
               />
           </Col>
           </Row>
+          <Row>
+          <Col lg={{span: 6}}>
+            <PrismTextBlock
+              mainText={<p><b>Authors</b>: Tasha L. Golden, Stacey Springs, Hannah J. Kimmel, Sonakshi Gupta, Alyssa Tiedemann, Clara C. Sandu, and Susan Magsamen</p> }
+              />
+          </Col>
+          <Col lg={{span: 6}}>
+            <PrismTextBlock
+              mainText={<p><b>Publication</b>: <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.649840/full" target="_blank">The Use of Music in the Treatment and Management of Serious Mental Illness: A Global Scoping Review of the Literature.</a> Frontiers in psychology. 2021 Mar 31;12:880.</p> }
+              />
+          </Col>
+          </Row>
+          <Row>
+          <Col lg={{span: 6}}>
+            <PrismTextBlock
+              textTitle={ 'How to use this landscape' }
+              mainText={ 'This page provides a dynamic lens for viewing the evidence for effects of music and music-based activities on serious mental illness. These effects are wide-ranging and involve many types of activities, populations, outcomes, and study designs. The numbers at the top of the page describe the overall quantity of evidence that is summarized by the visuals you’ll see below.' }
+              moreText={"On the left side of the page are sets of data filters. These can be used to focus on specific subsets of the evidence, such as specific populations or conditions."}
+            />
+          </Col>
+          <Col lg={{span: 6}}>
+            <PrismTextBlock
+              moreText={<iframe width="95%vw" height="315" src="https://www.youtube.com/embed/H0D5jvlTuVQ?autoplay=1&autohide=0&controls=0&modestbranding=1" frameborder="0"></iframe>}
+            />
+          </Col>
+          </Row>
+          <Row>
+          <Col>
+            <PrismTextBlock
+              textTitle={ 'Data Summary' }
+              />
+          </Col>
+          </Row>
             <Row className="d-none d-xl-block">
               <Col xl={{span: 12}}>
                 <div className="single-stats-containers">
@@ -1535,7 +1568,7 @@ function newgetfilters(allTableData){
                 </div>
               </Col>
             </Row>
-            <Row className="d-xl-none" style={{ paddingTop: '80px'}}>
+            <Row className="d-xl-none" style={{ paddingTop: '10px'}}>
               <Col lg={{span: 12}}>
                 <div className="single-stats-containers">
                   {
@@ -1579,15 +1612,7 @@ function newgetfilters(allTableData){
 
               <Row className="dashboard-charts-container">
                 <Col>
-                  <Row>
-                  <Col>
-                    <PrismTextBlock
-                      textTitle={ 'How to use this landscape' }
-                      mainText={ 'This page provides a dynamic lens for viewing the evidence for effects of music and music-based activities on serious mental illness. These effects are wide-ranging and involve many types of activities, populations, outcomes, and study designs. The numbers at the top of the page describe the overall quantity of evidence that is summarized by the visuals you’ll see below.' }
-                      moreText={"On the left side of the page are sets of data filters. These can be used to focus on specific subsets of the evidence, such as specific populations or conditions."}
-                    />
-                  </Col>
-                  </Row>
+
                   <Row>
                     <Col>
                       <SectionTitle title="Studies" color="red" />
