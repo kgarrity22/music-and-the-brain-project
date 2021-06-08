@@ -1642,7 +1642,7 @@ function newgetfilters(allTableData){
                   <Row>
                   <Col lg={{span: 6}}>
                     <PrismPieChart
-                      colors="rainbow"
+                      colors="red"
                       title="What were the study results? Hover over each color for information."
                       chartData={resultsPie}
                       loading={loadingResultsPie}
@@ -1740,7 +1740,7 @@ function newgetfilters(allTableData){
                     </Col>
                   </Row>
                   <Row>
-                  <Col lg={{span: 12}}>
+                  <Col lg={{span: 6}}>
                     <PrismPieChart
                       colors="yellow"
                       title="What is the breakdown of mental illnesses studied?"
@@ -1749,11 +1749,9 @@ function newgetfilters(allTableData){
                       columns={columns}
                     />
                   </Col>
-                  </Row>
-                  <Row>
-                  <Col>
+                  <Col lg={{span: 6}}>
                     <PrismBarChart
-                      colors="rainbow"
+                      colors="orange"
                       layout="vertical"
                       title="What is the breakdown of activity types for each condition?"
                       chartData={activityMultiBar.data}

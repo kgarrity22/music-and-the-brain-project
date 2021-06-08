@@ -179,11 +179,11 @@ const PrismBarChart = (props) => {
             } else {
               allModal(data.data.key, data.id)
             }
-            
+
         }}
       />
       </div>
-      
+
       <div className="scatter-modal">
         <Modal
           isOpen={modalIsOpen}
@@ -207,11 +207,11 @@ const PrismBarChart = (props) => {
       {
         props.loading &&
         <div className="overlay">
-          <Spinner name="ball-beat" color={"blue"} />
+          <Spinner name="ball-beat" color={colors[0]} />
         </div>
       }
     </div>
-    
+
   )
 }
 
