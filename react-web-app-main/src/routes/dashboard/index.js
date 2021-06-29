@@ -1537,9 +1537,9 @@ function newgetfilters(allTableData){
               moreText={"On the left side of the page are sets of data filters. These can be used to focus on specific subsets of the evidence, such as specific populations or conditions."}
             />
           </Col>
-          <Col lg={{span: 6}}>
+           <Col lg={{span: 6}}>
             <PrismTextBlock
-              moreText={<iframe width="95%vw" height="315" src="https://www.youtube.com/embed/H0D5jvlTuVQ?autoplay=1&autohide=0&controls=0&modestbranding=1" frameborder="0"></iframe>}
+              moreText={<iframe width="95%vw" height="315" src="https://www.youtube.com/embed/6NGnFYmskYM?autoplay=1&autohide=0&controls=0&modestbranding=1" frameborder="0"></iframe>}
             />
           </Col>
           </Row>
