@@ -121,7 +121,9 @@ function DashboardRoute(props) {
 
   // AIRTABLE ACCESS
   var Airtable = require('airtable');
-  var base = new Airtable({apiKey: 'key8POUQgTG9Ubm4J'}).base('appE1OLuKp1Aq9dRl');
+  var base = new Airtable({ apiKey: "keyAqzc80rjCVNtAf" }).base(
+    "appE1OLuKp1Aq9dRl"
+  );
 
 
   //////////////////////////////////////////
