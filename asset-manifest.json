@@ -1,20 +1,25 @@
 {
   "files": {
-    "main.css": "/music-and-the-brain-project/static/css/main.ea824694.chunk.css",
-    "main.js": "/music-and-the-brain-project/static/js/main.a765aa46.chunk.js",
+    "main.css": "/music-and-the-brain-project/static/css/main.e48c187c.chunk.css",
+    "main.js": "/music-and-the-brain-project/static/js/main.9fc7763b.chunk.js",
+    "main.js.map": "/music-and-the-brain-project/static/js/main.9fc7763b.chunk.js.map",
     "runtime-main.js": "/music-and-the-brain-project/static/js/runtime-main.3f2f2f89.js",
-    "static/css/2.2767ae3f.chunk.css": "/music-and-the-brain-project/static/css/2.2767ae3f.chunk.css",
-    "static/js/2.4c8d59e5.chunk.js": "/music-and-the-brain-project/static/js/2.4c8d59e5.chunk.js",
+    "runtime-main.js.map": "/music-and-the-brain-project/static/js/runtime-main.3f2f2f89.js.map",
+    "static/css/2.790efb08.chunk.css": "/music-and-the-brain-project/static/css/2.790efb08.chunk.css",
+    "static/js/2.74a8faa6.chunk.js": "/music-and-the-brain-project/static/js/2.74a8faa6.chunk.js",
+    "static/js/2.74a8faa6.chunk.js.map": "/music-and-the-brain-project/static/js/2.74a8faa6.chunk.js.map",
     "index.html": "/music-and-the-brain-project/index.html",
-    "precache-manifest.81701d98d393853232c8b0c4156c04bf.js": "/music-and-the-brain-project/precache-manifest.81701d98d393853232c8b0c4156c04bf.js",
+    "precache-manifest.0a8f1f1599d9b94660bca657d15df198.js": "/music-and-the-brain-project/precache-manifest.0a8f1f1599d9b94660bca657d15df198.js",
     "service-worker.js": "/music-and-the-brain-project/service-worker.js",
-    "static/js/2.4c8d59e5.chunk.js.LICENSE.txt": "/music-and-the-brain-project/static/js/2.4c8d59e5.chunk.js.LICENSE.txt"
+    "static/css/2.790efb08.chunk.css.map": "/music-and-the-brain-project/static/css/2.790efb08.chunk.css.map",
+    "static/css/main.e48c187c.chunk.css.map": "/music-and-the-brain-project/static/css/main.e48c187c.chunk.css.map",
+    "static/js/2.74a8faa6.chunk.js.LICENSE.txt": "/music-and-the-brain-project/static/js/2.74a8faa6.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.3f2f2f89.js",
-    "static/css/2.2767ae3f.chunk.css",
-    "static/js/2.4c8d59e5.chunk.js",
-    "static/css/main.ea824694.chunk.css",
-    "static/js/main.a765aa46.chunk.js"
+    "static/css/2.790efb08.chunk.css",
+    "static/js/2.74a8faa6.chunk.js",
+    "static/css/main.e48c187c.chunk.css",
+    "static/js/main.9fc7763b.chunk.js"
   ]
 }
