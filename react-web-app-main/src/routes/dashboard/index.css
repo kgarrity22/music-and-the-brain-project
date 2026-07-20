@@ -150,3 +150,109 @@
 .title-block{
   background: #ffffff;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Mobile layout                                                     */
+/*                                                                    */
+/*  The desktop layout reserves a fixed 250px gutter for the nav and   */
+/*  offsets the filter pane to match. Below 768px the nav becomes an   */
+/*  overlay drawer, so both offsets have to go.                        */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  .dashboard-route {
+    padding-left: 0;
+    /* Clears the fixed hamburger button. */
+    padding-top: 56px;
+  }
+
+  /* The pane covers the drawer instead of sitting beside it, so it has to
+     outrank .filter-nav (z-index 5) and its backdrop (4). Without this the
+     pane renders behind the drawer and only a sliver is visible. */
+  .slide-pane__overlay {
+    z-index: 10;
+  }
+
+  /* The filter pane covers the drawer rather than sitting beside it, so it
+     stacks its back-header above a full-width filter list. */
+  .sliding-pane-container {
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+
+  .sliding-pane-container .left-pane {
+    margin-left: 0;
+    margin-top: 0;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .sliding-pane-container .right-pane {
+    width: 100%;
+    border-left: none;
+  }
+
+  /* Border-right reads as a stray vertical line once the pane is full width;
+     the category color moves to the header instead. */
+  .sliding-pane-container[class*="sliding-pane-container"] {
+    border-right: none;
+  }
+
+  .mobile-filter-header {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 56px;
+    padding-right: 12px;
+    background-color: #FFFFFF;
+    border-bottom: 3px solid #EBEFF2;
+  }
+
+  .mobile-filter-header .back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin-left: 4px;
+    border: none;
+    background-color: transparent;
+    color: #192A3E;
+  }
+
+  .mobile-filter-header .back-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mobile-filter-header .title {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #192A3E;
+    margin: 0;
+  }
+
+  .mobile-filter-header.red { border-bottom-color: #E2445C; }
+  .mobile-filter-header.orange { border-bottom-color: #FDAB3D; }
+  .mobile-filter-header.yellow { border-bottom-color: #F8C500; }
+  .mobile-filter-header.green { border-bottom-color: #2ED47A; }
+  .mobile-filter-header.blue { border-bottom-color: #579BFC; }
+  .mobile-filter-header.indigo { border-bottom-color: #7E3B8A; }
+  .mobile-filter-header.violet { border-bottom-color: #A25DDC; }
+
+  /* Charts are laid out for a wide viewport; let wide ones scroll rather than
+     forcing the whole page to scroll sideways. */
+  .dashboard-route .table-container {
+    margin-left: 10px;
+    margin-right: 10px;
+    overflow-x: auto;
+  }
+
+  .dashboard-route .single-stats-containers {
+    margin-left: 10px;
+    flex-wrap: wrap;
+  }
+}

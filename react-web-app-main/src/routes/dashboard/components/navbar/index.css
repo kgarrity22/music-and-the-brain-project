@@ -3,36 +3,36 @@
   flex-direction: column;
   width: 250px;
   min-width: 250px;
-  background-color: #192A3E;
+  background-color: #192a3e;
   height: 100vh;
   z-index: 5;
   position: fixed;
 }
 
 .filter-nav .header-container {
-  border-bottom: 1px solid #EBEFF2;
+  border-bottom: 1px solid #ebeff2;
   height: 60px;
   display: flex;
   align-items: center;
   /* text-align: center; */
-  background-color: #334D6E;
+  background-color: #334d6e;
 }
 
 .filter-nav .header-container p {
   font-weight: 500;
   font-size: 14px;
   line-height: 20px;
-  color: #EBEFF2;
+  color: #ebeff2;
   margin-left: 5px;
   margin-bottom: 0px;
 }
 
 .filter-nav .header-container .hidden {
-  opacity: 0
+  opacity: 0;
 }
 
 .filter-nav .header-container {
-  color: #EBEFF2;
+  color: #ebeff2;
 }
 
 .filter-nav .header-container svg {
@@ -46,14 +46,14 @@
   flex-direction: column;
 }
 
-.filter-nav .nav-item-container h4{
+.filter-nav .nav-item-container h4 {
   font-weight: 500;
   margin-left: 26px;
   /* font-size: 16px; */
   line-height: 20px;
   letter-spacing: 0.1px;
   margin-bottom: 20px;
-  color: #FFFFFF;
+  color: #ffffff;
   display: flex;
   align-items: center;
   /* padding: 0px; */
@@ -65,38 +65,38 @@
   line-height: 20px;
   letter-spacing: 0.1px;
   margin-bottom: 20px;
-  color: #FFFFFF;
+  color: #ffffff;
   display: flex;
   align-items: center;
   padding: 0px;
 }
 
 .filter-nav .nav-item .nav-link.red {
-  color: #E2445C;
+  color: #e2445c;
 }
 
 .filter-nav .nav-item .nav-link.orange {
-  color: #FDAB3D;
+  color: #fdab3d;
 }
 
 .filter-nav .nav-item .nav-link.yellow {
-  color: #F8C500;
+  color: #f8c500;
 }
 
 .filter-nav .nav-item .nav-link.green {
-  color: #2ED47A;
+  color: #2ed47a;
 }
 
 .filter-nav .nav-item .nav-link.blue {
-  color: #579BFC;
+  color: #579bfc;
 }
 
 .filter-nav .nav-item .nav-link.indigo {
-  color: #7E3B8A;
+  color: #7e3b8a;
 }
 
 .filter-nav .nav-item .nav-link.violet {
-  color: #A25DDC;
+  color: #a25ddc;
 }
 
 .filter-nav .nav-item .nav-link svg {
@@ -107,17 +107,122 @@
 .filter-nav .btn {
   height: 32px;
   width: 95%;
-  background: #3899EC;
+  background: #3899ec;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 93px;
   margin: auto;
   margin-top: 30px;
   text-align: start;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 0px;
 }
 
 .filter-nav .btn svg {
   margin-right: 14px;
   margin-left: 20px;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Mobile drawer                                                     */
+/*                                                                    */
+/*  Below 768px the fixed 250px column becomes an off-canvas drawer    */
+/*  opened by the hamburger. Desktop layout is untouched — every rule  */
+/*  here is scoped to either .drawer or the media query.               */
+/* ------------------------------------------------------------------ */
+
+.filter-nav-toggle,
+.filter-nav-close {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .filter-nav.drawer {
+    width: 82%;
+    max-width: 300px;
+    min-width: 0;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.25);
+    overflow-y: auto;
+    /* translateX alone leaves the links focusable offscreen — a keyboard user
+       would tab into a drawer they can't see. visibility takes them out of the
+       tab order, delayed so it doesn't cut the slide-out short. */
+    visibility: hidden;
+    transition:
+      transform 0.25s ease,
+      visibility 0s linear 0.25s;
+  }
+
+  .filter-nav.drawer.open {
+    transform: translateX(0);
+    visibility: visible;
+    transition:
+      transform 0.25s ease,
+      visibility 0s linear 0s;
+  }
+
+  .filter-nav-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(25, 42, 62, 0.5);
+    /* Below .filter-nav (z-index 5), above the dashboard content. */
+    z-index: 4;
+  }
+
+  .filter-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background-color: #334d6e;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 6;
+  }
+
+  .filter-nav-toggle svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .filter-nav-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: 12px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #ebeff2;
+  }
+
+  .filter-nav-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Comfortable tap targets — the desktop list is tuned for a cursor. */
+  .filter-nav.drawer .nav-item .nav-link {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-nav.drawer {
+    transition: none;
+  }
 }

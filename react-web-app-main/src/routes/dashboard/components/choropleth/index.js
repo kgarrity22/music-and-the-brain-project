@@ -35,7 +35,8 @@ const legends = [{
     }]
 }]
 
-const domain = [0, 300]
+// Fallback only — the dashboard passes a domain scaled to the actual data.
+const defaultDomain = [0, 300]
 
 const PrismChoropleth = (props) => {
 
@@ -85,12 +86,12 @@ const PrismChoropleth = (props) => {
           data={ props.chartData }
           features={ GeoFeatures.features }
           colors={ colors }
-          domain={ domain }
+          domain={ props.domain || defaultDomain }
           unknownColor="#dddddd"
           label="properties.name"
           projectionType='naturalEarth1'
           projectionScale={ 200 }
-          valueFormat=".0s"
+          valueFormat=".0f"
           enableGraticule={ true }
           graticuleLineColor="#dddddd"
           borderWidth={ 0.5 }
@@ -127,7 +128,9 @@ const PrismChoropleth = (props) => {
       {
         props.loading &&
         <div className="overlay">
-          <Spinner name="ball-beat" color={colors[0]} />
+          {/* Darkest end of the scale — this chart uses a sequential palette
+              whose first entry is near-white and would vanish on the overlay. */}
+          <Spinner name="ball-beat" color={colors[colors.length - 1]} />
         </div>
       }
     </div>

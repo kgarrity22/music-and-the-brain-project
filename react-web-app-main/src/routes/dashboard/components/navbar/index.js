@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, Nav } from 'react-bootstrap'
-import { FiActivity, FiDollarSign, FiMap, FiRefreshCcw, FiGrid, FiMusic} from 'react-icons/fi'
+import { FiActivity, FiDollarSign, FiMap, FiRefreshCcw, FiGrid, FiMusic, FiMenu, FiX } from 'react-icons/fi'
 import { BsPeople } from 'react-icons/bs'
 import { CgPill } from 'react-icons/cg'
 import { RiMentalHealthLine } from 'react-icons/ri'
@@ -52,14 +52,53 @@ function Navbar(props) {
     }
   ]
 
+  // On desktop the nav is a permanently visible fixed column, so none of the
+  // drawer chrome renders and the markup is unchanged.
+  const { isMobile, isOpen, onToggle, onClose } = props
+
   return (
-    <Nav className="filter-nav">
+    <>
+      {
+        isMobile && !isOpen &&
+        <button
+          type="button"
+          className="filter-nav-toggle"
+          onClick={onToggle}
+          aria-label="Open filters"
+          aria-expanded={false}
+          aria-controls="filter-nav"
+        >
+          <FiMenu />
+        </button>
+      }
+
+      {
+        isMobile && isOpen &&
+        <div className="filter-nav-backdrop" onClick={onClose} />
+      }
+
+    <Nav
+      id="filter-nav"
+      className={"filter-nav" + (isMobile ? " drawer" : "") + (isMobile && isOpen ? " open" : "")}
+      aria-hidden={isMobile && !isOpen}
+    >
       <div className="header-container">
         <CanvasIcon />
         <p>Music & Mental Illness
           <br />
           Landscape
         </p>
+        {
+          isMobile &&
+          <button
+            type="button"
+            className="filter-nav-close"
+            onClick={onClose}
+            aria-label="Close filters"
+          >
+            <FiX />
+          </button>
+        }
       </div>
 
       <div className='nav-item-container'>
@@ -82,6 +121,7 @@ function Navbar(props) {
 
       </div>
     </Nav>
+    </>
   )
 }
 

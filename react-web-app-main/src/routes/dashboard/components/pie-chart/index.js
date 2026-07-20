@@ -11,14 +11,21 @@ import MainTable from '../tabulator'
 
 import './index.css'
 
+// Width reserved on the left for the legend. The legend is anchored to the
+// inner chart area, so it needs a matching negative translateX to sit inside
+// this gutter instead of on top of the pie.
+const LEGEND_WIDTH = 200
+
+const initialMargin = { top: 20, right: 20, bottom: 20, left: LEGEND_WIDTH }
+
 const intialLegends = [{
   anchor: 'left',
   direction: 'column',
   justify: false,
-  translateX: 0,
+  translateX: -(LEGEND_WIDTH - 10), // 10px of breathing room at the container edge
   translateY: 0,
   itemsSpacing: 5,
-  itemWidth: 80,
+  itemWidth: LEGEND_WIDTH - 20,
   itemHeight: 12,
   itemTextColor: '#999',
   itemDirection: 'left-to-right',
@@ -96,6 +103,7 @@ const PrismPieChart = (props) => {
         <ResponsivePie
           data={ props.chartData }
           colors={ colors }
+          margin={ initialMargin }
           borderWidth={1}
           borderColor={ borderColor }
           enableRadialLabels={false}
